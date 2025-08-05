@@ -69,6 +69,11 @@ export type cover_sign_status = $Result.DefaultSelection<Prisma.$cover_sign_stat
  */
 export type files = $Result.DefaultSelection<Prisma.$filesPayload>
 /**
+ * Model ips
+ * 
+ */
+export type ips = $Result.DefaultSelection<Prisma.$ipsPayload>
+/**
  * Model old_case_decisions
  * 
  */
@@ -596,6 +601,16 @@ export class PrismaClient<
     * ```
     */
   get files(): Prisma.filesDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.ips`: Exposes CRUD operations for the **ips** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Ips
+    * const ips = await prisma.ips.findMany()
+    * ```
+    */
+  get ips(): Prisma.ipsDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.old_case_decisions`: Exposes CRUD operations for the **old_case_decisions** model.
@@ -1597,6 +1612,7 @@ export namespace Prisma {
     court_levels: 'court_levels',
     cover_sign_status: 'cover_sign_status',
     files: 'files',
+    ips: 'ips',
     old_case_decisions: 'old_case_decisions',
     old_case_person: 'old_case_person',
     old_cases: 'old_cases',
@@ -1670,7 +1686,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "court_appeal_types" | "court_appeals" | "court_claim_initiators" | "court_claim_members" | "court_claims" | "court_cliam_status" | "court_decision_types" | "court_decisions" | "court_levels" | "cover_sign_status" | "files" | "old_case_decisions" | "old_case_person" | "old_cases" | "tb_arm_com" | "tb_arm_com__" | "tb_calendar" | "tb_cancel" | "tb_cards" | "tb_case" | "tb_case_status" | "tb_checkin" | "tb_coi" | "tb_country" | "tb_cover_files" | "tb_deadline" | "tb_deadline_types" | "tb_decision_status" | "tb_decision_types" | "tb_decisions" | "tb_doss" | "tb_draft" | "tb_drooms" | "tb_edu_lvl" | "tb_education" | "tb_employment" | "tb_etnics" | "tb_file_type" | "tb_handed" | "tb_inter" | "tb_inter_notified" | "tb_inter_recivers" | "tb_inter_send_type" | "tb_inter_status_types" | "tb_inter_type" | "tb_lawyer" | "tb_marz" | "tb_members" | "tb_notifications" | "tb_orders" | "tb_person" | "tb_person_status" | "tb_process" | "tb_process_type" | "tb_religions" | "tb_request_bodies" | "tb_request_out" | "tb_role" | "tb_settlement" | "tb_settlement_" | "tb_sign_status" | "tb_translate" | "tb_translate_sign_statuses" | "tb_translation_type" | "tb_translators" | "users"
+      modelProps: "court_appeal_types" | "court_appeals" | "court_claim_initiators" | "court_claim_members" | "court_claims" | "court_cliam_status" | "court_decision_types" | "court_decisions" | "court_levels" | "cover_sign_status" | "files" | "ips" | "old_case_decisions" | "old_case_person" | "old_cases" | "tb_arm_com" | "tb_arm_com__" | "tb_calendar" | "tb_cancel" | "tb_cards" | "tb_case" | "tb_case_status" | "tb_checkin" | "tb_coi" | "tb_country" | "tb_cover_files" | "tb_deadline" | "tb_deadline_types" | "tb_decision_status" | "tb_decision_types" | "tb_decisions" | "tb_doss" | "tb_draft" | "tb_drooms" | "tb_edu_lvl" | "tb_education" | "tb_employment" | "tb_etnics" | "tb_file_type" | "tb_handed" | "tb_inter" | "tb_inter_notified" | "tb_inter_recivers" | "tb_inter_send_type" | "tb_inter_status_types" | "tb_inter_type" | "tb_lawyer" | "tb_marz" | "tb_members" | "tb_notifications" | "tb_orders" | "tb_person" | "tb_person_status" | "tb_process" | "tb_process_type" | "tb_religions" | "tb_request_bodies" | "tb_request_out" | "tb_role" | "tb_settlement" | "tb_settlement_" | "tb_sign_status" | "tb_translate" | "tb_translate_sign_statuses" | "tb_translation_type" | "tb_translators" | "users"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2397,6 +2413,72 @@ export namespace Prisma {
           count: {
             args: Prisma.filesCountArgs<ExtArgs>
             result: $Utils.Optional<FilesCountAggregateOutputType> | number
+          }
+        }
+      }
+      ips: {
+        payload: Prisma.$ipsPayload<ExtArgs>
+        fields: Prisma.ipsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ipsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ipsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ipsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ipsPayload>
+          }
+          findFirst: {
+            args: Prisma.ipsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ipsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ipsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ipsPayload>
+          }
+          findMany: {
+            args: Prisma.ipsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ipsPayload>[]
+          }
+          create: {
+            args: Prisma.ipsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ipsPayload>
+          }
+          createMany: {
+            args: Prisma.ipsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.ipsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ipsPayload>
+          }
+          update: {
+            args: Prisma.ipsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ipsPayload>
+          }
+          deleteMany: {
+            args: Prisma.ipsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ipsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.ipsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ipsPayload>
+          }
+          aggregate: {
+            args: Prisma.IpsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateIps>
+          }
+          groupBy: {
+            args: Prisma.ipsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<IpsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ipsCountArgs<ExtArgs>
+            result: $Utils.Optional<IpsCountAggregateOutputType> | number
           }
         }
       }
@@ -6133,6 +6215,7 @@ export namespace Prisma {
     court_levels?: court_levelsOmit
     cover_sign_status?: cover_sign_statusOmit
     files?: filesOmit
+    ips?: ipsOmit
     old_case_decisions?: old_case_decisionsOmit
     old_case_person?: old_case_personOmit
     old_cases?: old_casesOmit
@@ -16692,6 +16775,900 @@ export namespace Prisma {
 
 
   /**
+   * Model ips
+   */
+
+  export type AggregateIps = {
+    _count: IpsCountAggregateOutputType | null
+    _avg: IpsAvgAggregateOutputType | null
+    _sum: IpsSumAggregateOutputType | null
+    _min: IpsMinAggregateOutputType | null
+    _max: IpsMaxAggregateOutputType | null
+  }
+
+  export type IpsAvgAggregateOutputType = {
+    id: number | null
+  }
+
+  export type IpsSumAggregateOutputType = {
+    id: number | null
+  }
+
+  export type IpsMinAggregateOutputType = {
+    id: number | null
+    ip: string | null
+    created_at: Date | null
+  }
+
+  export type IpsMaxAggregateOutputType = {
+    id: number | null
+    ip: string | null
+    created_at: Date | null
+  }
+
+  export type IpsCountAggregateOutputType = {
+    id: number
+    ip: number
+    created_at: number
+    _all: number
+  }
+
+
+  export type IpsAvgAggregateInputType = {
+    id?: true
+  }
+
+  export type IpsSumAggregateInputType = {
+    id?: true
+  }
+
+  export type IpsMinAggregateInputType = {
+    id?: true
+    ip?: true
+    created_at?: true
+  }
+
+  export type IpsMaxAggregateInputType = {
+    id?: true
+    ip?: true
+    created_at?: true
+  }
+
+  export type IpsCountAggregateInputType = {
+    id?: true
+    ip?: true
+    created_at?: true
+    _all?: true
+  }
+
+  export type IpsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ips to aggregate.
+     */
+    where?: ipsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ips to fetch.
+     */
+    orderBy?: ipsOrderByWithRelationInput | ipsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ipsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ips from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ips.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ips
+    **/
+    _count?: true | IpsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: IpsAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: IpsSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: IpsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: IpsMaxAggregateInputType
+  }
+
+  export type GetIpsAggregateType<T extends IpsAggregateArgs> = {
+        [P in keyof T & keyof AggregateIps]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateIps[P]>
+      : GetScalarType<T[P], AggregateIps[P]>
+  }
+
+
+
+
+  export type ipsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ipsWhereInput
+    orderBy?: ipsOrderByWithAggregationInput | ipsOrderByWithAggregationInput[]
+    by: IpsScalarFieldEnum[] | IpsScalarFieldEnum
+    having?: ipsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: IpsCountAggregateInputType | true
+    _avg?: IpsAvgAggregateInputType
+    _sum?: IpsSumAggregateInputType
+    _min?: IpsMinAggregateInputType
+    _max?: IpsMaxAggregateInputType
+  }
+
+  export type IpsGroupByOutputType = {
+    id: number
+    ip: string
+    created_at: Date
+    _count: IpsCountAggregateOutputType | null
+    _avg: IpsAvgAggregateOutputType | null
+    _sum: IpsSumAggregateOutputType | null
+    _min: IpsMinAggregateOutputType | null
+    _max: IpsMaxAggregateOutputType | null
+  }
+
+  type GetIpsGroupByPayload<T extends ipsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<IpsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof IpsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], IpsGroupByOutputType[P]>
+            : GetScalarType<T[P], IpsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ipsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    ip?: boolean
+    created_at?: boolean
+  }, ExtArgs["result"]["ips"]>
+
+
+
+  export type ipsSelectScalar = {
+    id?: boolean
+    ip?: boolean
+    created_at?: boolean
+  }
+
+  export type ipsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ip" | "created_at", ExtArgs["result"]["ips"]>
+
+  export type $ipsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ips"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      ip: string
+      created_at: Date
+    }, ExtArgs["result"]["ips"]>
+    composites: {}
+  }
+
+  type ipsGetPayload<S extends boolean | null | undefined | ipsDefaultArgs> = $Result.GetResult<Prisma.$ipsPayload, S>
+
+  type ipsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ipsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: IpsCountAggregateInputType | true
+    }
+
+  export interface ipsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ips'], meta: { name: 'ips' } }
+    /**
+     * Find zero or one Ips that matches the filter.
+     * @param {ipsFindUniqueArgs} args - Arguments to find a Ips
+     * @example
+     * // Get one Ips
+     * const ips = await prisma.ips.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ipsFindUniqueArgs>(args: SelectSubset<T, ipsFindUniqueArgs<ExtArgs>>): Prisma__ipsClient<$Result.GetResult<Prisma.$ipsPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Ips that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ipsFindUniqueOrThrowArgs} args - Arguments to find a Ips
+     * @example
+     * // Get one Ips
+     * const ips = await prisma.ips.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ipsFindUniqueOrThrowArgs>(args: SelectSubset<T, ipsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ipsClient<$Result.GetResult<Prisma.$ipsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Ips that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ipsFindFirstArgs} args - Arguments to find a Ips
+     * @example
+     * // Get one Ips
+     * const ips = await prisma.ips.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ipsFindFirstArgs>(args?: SelectSubset<T, ipsFindFirstArgs<ExtArgs>>): Prisma__ipsClient<$Result.GetResult<Prisma.$ipsPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Ips that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ipsFindFirstOrThrowArgs} args - Arguments to find a Ips
+     * @example
+     * // Get one Ips
+     * const ips = await prisma.ips.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ipsFindFirstOrThrowArgs>(args?: SelectSubset<T, ipsFindFirstOrThrowArgs<ExtArgs>>): Prisma__ipsClient<$Result.GetResult<Prisma.$ipsPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Ips that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ipsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Ips
+     * const ips = await prisma.ips.findMany()
+     * 
+     * // Get first 10 Ips
+     * const ips = await prisma.ips.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const ipsWithIdOnly = await prisma.ips.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ipsFindManyArgs>(args?: SelectSubset<T, ipsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ipsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Ips.
+     * @param {ipsCreateArgs} args - Arguments to create a Ips.
+     * @example
+     * // Create one Ips
+     * const Ips = await prisma.ips.create({
+     *   data: {
+     *     // ... data to create a Ips
+     *   }
+     * })
+     * 
+     */
+    create<T extends ipsCreateArgs>(args: SelectSubset<T, ipsCreateArgs<ExtArgs>>): Prisma__ipsClient<$Result.GetResult<Prisma.$ipsPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Ips.
+     * @param {ipsCreateManyArgs} args - Arguments to create many Ips.
+     * @example
+     * // Create many Ips
+     * const ips = await prisma.ips.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ipsCreateManyArgs>(args?: SelectSubset<T, ipsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Ips.
+     * @param {ipsDeleteArgs} args - Arguments to delete one Ips.
+     * @example
+     * // Delete one Ips
+     * const Ips = await prisma.ips.delete({
+     *   where: {
+     *     // ... filter to delete one Ips
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ipsDeleteArgs>(args: SelectSubset<T, ipsDeleteArgs<ExtArgs>>): Prisma__ipsClient<$Result.GetResult<Prisma.$ipsPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Ips.
+     * @param {ipsUpdateArgs} args - Arguments to update one Ips.
+     * @example
+     * // Update one Ips
+     * const ips = await prisma.ips.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ipsUpdateArgs>(args: SelectSubset<T, ipsUpdateArgs<ExtArgs>>): Prisma__ipsClient<$Result.GetResult<Prisma.$ipsPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Ips.
+     * @param {ipsDeleteManyArgs} args - Arguments to filter Ips to delete.
+     * @example
+     * // Delete a few Ips
+     * const { count } = await prisma.ips.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ipsDeleteManyArgs>(args?: SelectSubset<T, ipsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Ips.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ipsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Ips
+     * const ips = await prisma.ips.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ipsUpdateManyArgs>(args: SelectSubset<T, ipsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Ips.
+     * @param {ipsUpsertArgs} args - Arguments to update or create a Ips.
+     * @example
+     * // Update or create a Ips
+     * const ips = await prisma.ips.upsert({
+     *   create: {
+     *     // ... data to create a Ips
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Ips we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ipsUpsertArgs>(args: SelectSubset<T, ipsUpsertArgs<ExtArgs>>): Prisma__ipsClient<$Result.GetResult<Prisma.$ipsPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Ips.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ipsCountArgs} args - Arguments to filter Ips to count.
+     * @example
+     * // Count the number of Ips
+     * const count = await prisma.ips.count({
+     *   where: {
+     *     // ... the filter for the Ips we want to count
+     *   }
+     * })
+    **/
+    count<T extends ipsCountArgs>(
+      args?: Subset<T, ipsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], IpsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Ips.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {IpsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends IpsAggregateArgs>(args: Subset<T, IpsAggregateArgs>): Prisma.PrismaPromise<GetIpsAggregateType<T>>
+
+    /**
+     * Group by Ips.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ipsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ipsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ipsGroupByArgs['orderBy'] }
+        : { orderBy?: ipsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ipsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetIpsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ips model
+   */
+  readonly fields: ipsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ips.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ipsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ips model
+   */
+  interface ipsFieldRefs {
+    readonly id: FieldRef<"ips", 'Int'>
+    readonly ip: FieldRef<"ips", 'String'>
+    readonly created_at: FieldRef<"ips", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ips findUnique
+   */
+  export type ipsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ips
+     */
+    select?: ipsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ips
+     */
+    omit?: ipsOmit<ExtArgs> | null
+    /**
+     * Filter, which ips to fetch.
+     */
+    where: ipsWhereUniqueInput
+  }
+
+  /**
+   * ips findUniqueOrThrow
+   */
+  export type ipsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ips
+     */
+    select?: ipsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ips
+     */
+    omit?: ipsOmit<ExtArgs> | null
+    /**
+     * Filter, which ips to fetch.
+     */
+    where: ipsWhereUniqueInput
+  }
+
+  /**
+   * ips findFirst
+   */
+  export type ipsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ips
+     */
+    select?: ipsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ips
+     */
+    omit?: ipsOmit<ExtArgs> | null
+    /**
+     * Filter, which ips to fetch.
+     */
+    where?: ipsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ips to fetch.
+     */
+    orderBy?: ipsOrderByWithRelationInput | ipsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ips.
+     */
+    cursor?: ipsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ips from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ips.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ips.
+     */
+    distinct?: IpsScalarFieldEnum | IpsScalarFieldEnum[]
+  }
+
+  /**
+   * ips findFirstOrThrow
+   */
+  export type ipsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ips
+     */
+    select?: ipsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ips
+     */
+    omit?: ipsOmit<ExtArgs> | null
+    /**
+     * Filter, which ips to fetch.
+     */
+    where?: ipsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ips to fetch.
+     */
+    orderBy?: ipsOrderByWithRelationInput | ipsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ips.
+     */
+    cursor?: ipsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ips from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ips.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ips.
+     */
+    distinct?: IpsScalarFieldEnum | IpsScalarFieldEnum[]
+  }
+
+  /**
+   * ips findMany
+   */
+  export type ipsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ips
+     */
+    select?: ipsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ips
+     */
+    omit?: ipsOmit<ExtArgs> | null
+    /**
+     * Filter, which ips to fetch.
+     */
+    where?: ipsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ips to fetch.
+     */
+    orderBy?: ipsOrderByWithRelationInput | ipsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ips.
+     */
+    cursor?: ipsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ips from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ips.
+     */
+    skip?: number
+    distinct?: IpsScalarFieldEnum | IpsScalarFieldEnum[]
+  }
+
+  /**
+   * ips create
+   */
+  export type ipsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ips
+     */
+    select?: ipsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ips
+     */
+    omit?: ipsOmit<ExtArgs> | null
+    /**
+     * The data needed to create a ips.
+     */
+    data: XOR<ipsCreateInput, ipsUncheckedCreateInput>
+  }
+
+  /**
+   * ips createMany
+   */
+  export type ipsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ips.
+     */
+    data: ipsCreateManyInput | ipsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ips update
+   */
+  export type ipsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ips
+     */
+    select?: ipsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ips
+     */
+    omit?: ipsOmit<ExtArgs> | null
+    /**
+     * The data needed to update a ips.
+     */
+    data: XOR<ipsUpdateInput, ipsUncheckedUpdateInput>
+    /**
+     * Choose, which ips to update.
+     */
+    where: ipsWhereUniqueInput
+  }
+
+  /**
+   * ips updateMany
+   */
+  export type ipsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ips.
+     */
+    data: XOR<ipsUpdateManyMutationInput, ipsUncheckedUpdateManyInput>
+    /**
+     * Filter which ips to update
+     */
+    where?: ipsWhereInput
+    /**
+     * Limit how many ips to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ips upsert
+   */
+  export type ipsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ips
+     */
+    select?: ipsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ips
+     */
+    omit?: ipsOmit<ExtArgs> | null
+    /**
+     * The filter to search for the ips to update in case it exists.
+     */
+    where: ipsWhereUniqueInput
+    /**
+     * In case the ips found by the `where` argument doesn't exist, create a new ips with this data.
+     */
+    create: XOR<ipsCreateInput, ipsUncheckedCreateInput>
+    /**
+     * In case the ips was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ipsUpdateInput, ipsUncheckedUpdateInput>
+  }
+
+  /**
+   * ips delete
+   */
+  export type ipsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ips
+     */
+    select?: ipsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ips
+     */
+    omit?: ipsOmit<ExtArgs> | null
+    /**
+     * Filter which ips to delete.
+     */
+    where: ipsWhereUniqueInput
+  }
+
+  /**
+   * ips deleteMany
+   */
+  export type ipsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ips to delete
+     */
+    where?: ipsWhereInput
+    /**
+     * Limit how many ips to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ips without action
+   */
+  export type ipsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ips
+     */
+    select?: ipsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ips
+     */
+    omit?: ipsOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Model old_case_decisions
    */
 
@@ -25981,16 +26958,19 @@ export namespace Prisma {
   export type Tb_case_statusMinAggregateOutputType = {
     case_status_id: number | null
     case_status: string | null
+    case_status_eng: string | null
   }
 
   export type Tb_case_statusMaxAggregateOutputType = {
     case_status_id: number | null
     case_status: string | null
+    case_status_eng: string | null
   }
 
   export type Tb_case_statusCountAggregateOutputType = {
     case_status_id: number
     case_status: number
+    case_status_eng: number
     _all: number
   }
 
@@ -26006,16 +26986,19 @@ export namespace Prisma {
   export type Tb_case_statusMinAggregateInputType = {
     case_status_id?: true
     case_status?: true
+    case_status_eng?: true
   }
 
   export type Tb_case_statusMaxAggregateInputType = {
     case_status_id?: true
     case_status?: true
+    case_status_eng?: true
   }
 
   export type Tb_case_statusCountAggregateInputType = {
     case_status_id?: true
     case_status?: true
+    case_status_eng?: true
     _all?: true
   }
 
@@ -26108,6 +27091,7 @@ export namespace Prisma {
   export type Tb_case_statusGroupByOutputType = {
     case_status_id: number
     case_status: string
+    case_status_eng: string | null
     _count: Tb_case_statusCountAggregateOutputType | null
     _avg: Tb_case_statusAvgAggregateOutputType | null
     _sum: Tb_case_statusSumAggregateOutputType | null
@@ -26132,6 +27116,7 @@ export namespace Prisma {
   export type tb_case_statusSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     case_status_id?: boolean
     case_status?: boolean
+    case_status_eng?: boolean
   }, ExtArgs["result"]["tb_case_status"]>
 
 
@@ -26139,9 +27124,10 @@ export namespace Prisma {
   export type tb_case_statusSelectScalar = {
     case_status_id?: boolean
     case_status?: boolean
+    case_status_eng?: boolean
   }
 
-  export type tb_case_statusOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"case_status_id" | "case_status", ExtArgs["result"]["tb_case_status"]>
+  export type tb_case_statusOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"case_status_id" | "case_status" | "case_status_eng", ExtArgs["result"]["tb_case_status"]>
 
   export type $tb_case_statusPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "tb_case_status"
@@ -26149,6 +27135,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       case_status_id: number
       case_status: string
+      case_status_eng: string | null
     }, ExtArgs["result"]["tb_case_status"]>
     composites: {}
   }
@@ -26520,6 +27507,7 @@ export namespace Prisma {
   interface tb_case_statusFieldRefs {
     readonly case_status_id: FieldRef<"tb_case_status", 'Int'>
     readonly case_status: FieldRef<"tb_case_status", 'String'>
+    readonly case_status_eng: FieldRef<"tb_case_status", 'String'>
   }
     
 
@@ -32513,16 +33501,19 @@ export namespace Prisma {
   export type Tb_decision_statusMinAggregateOutputType = {
     decision_status_id: number | null
     decision_status: string | null
+    decision_status_eng: string | null
   }
 
   export type Tb_decision_statusMaxAggregateOutputType = {
     decision_status_id: number | null
     decision_status: string | null
+    decision_status_eng: string | null
   }
 
   export type Tb_decision_statusCountAggregateOutputType = {
     decision_status_id: number
     decision_status: number
+    decision_status_eng: number
     _all: number
   }
 
@@ -32538,16 +33529,19 @@ export namespace Prisma {
   export type Tb_decision_statusMinAggregateInputType = {
     decision_status_id?: true
     decision_status?: true
+    decision_status_eng?: true
   }
 
   export type Tb_decision_statusMaxAggregateInputType = {
     decision_status_id?: true
     decision_status?: true
+    decision_status_eng?: true
   }
 
   export type Tb_decision_statusCountAggregateInputType = {
     decision_status_id?: true
     decision_status?: true
+    decision_status_eng?: true
     _all?: true
   }
 
@@ -32640,6 +33634,7 @@ export namespace Prisma {
   export type Tb_decision_statusGroupByOutputType = {
     decision_status_id: number
     decision_status: string
+    decision_status_eng: string | null
     _count: Tb_decision_statusCountAggregateOutputType | null
     _avg: Tb_decision_statusAvgAggregateOutputType | null
     _sum: Tb_decision_statusSumAggregateOutputType | null
@@ -32664,6 +33659,7 @@ export namespace Prisma {
   export type tb_decision_statusSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     decision_status_id?: boolean
     decision_status?: boolean
+    decision_status_eng?: boolean
   }, ExtArgs["result"]["tb_decision_status"]>
 
 
@@ -32671,9 +33667,10 @@ export namespace Prisma {
   export type tb_decision_statusSelectScalar = {
     decision_status_id?: boolean
     decision_status?: boolean
+    decision_status_eng?: boolean
   }
 
-  export type tb_decision_statusOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"decision_status_id" | "decision_status", ExtArgs["result"]["tb_decision_status"]>
+  export type tb_decision_statusOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"decision_status_id" | "decision_status" | "decision_status_eng", ExtArgs["result"]["tb_decision_status"]>
 
   export type $tb_decision_statusPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "tb_decision_status"
@@ -32681,6 +33678,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       decision_status_id: number
       decision_status: string
+      decision_status_eng: string | null
     }, ExtArgs["result"]["tb_decision_status"]>
     composites: {}
   }
@@ -33052,6 +34050,7 @@ export namespace Prisma {
   interface tb_decision_statusFieldRefs {
     readonly decision_status_id: FieldRef<"tb_decision_status", 'Int'>
     readonly decision_status: FieldRef<"tb_decision_status", 'String'>
+    readonly decision_status_eng: FieldRef<"tb_decision_status", 'String'>
   }
     
 
@@ -33396,16 +34395,19 @@ export namespace Prisma {
   export type Tb_decision_typesMinAggregateOutputType = {
     decision_type_id: number | null
     decision_type: string | null
+    decision_type_eng: string | null
   }
 
   export type Tb_decision_typesMaxAggregateOutputType = {
     decision_type_id: number | null
     decision_type: string | null
+    decision_type_eng: string | null
   }
 
   export type Tb_decision_typesCountAggregateOutputType = {
     decision_type_id: number
     decision_type: number
+    decision_type_eng: number
     _all: number
   }
 
@@ -33421,16 +34423,19 @@ export namespace Prisma {
   export type Tb_decision_typesMinAggregateInputType = {
     decision_type_id?: true
     decision_type?: true
+    decision_type_eng?: true
   }
 
   export type Tb_decision_typesMaxAggregateInputType = {
     decision_type_id?: true
     decision_type?: true
+    decision_type_eng?: true
   }
 
   export type Tb_decision_typesCountAggregateInputType = {
     decision_type_id?: true
     decision_type?: true
+    decision_type_eng?: true
     _all?: true
   }
 
@@ -33523,6 +34528,7 @@ export namespace Prisma {
   export type Tb_decision_typesGroupByOutputType = {
     decision_type_id: number
     decision_type: string
+    decision_type_eng: string
     _count: Tb_decision_typesCountAggregateOutputType | null
     _avg: Tb_decision_typesAvgAggregateOutputType | null
     _sum: Tb_decision_typesSumAggregateOutputType | null
@@ -33547,6 +34553,7 @@ export namespace Prisma {
   export type tb_decision_typesSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     decision_type_id?: boolean
     decision_type?: boolean
+    decision_type_eng?: boolean
   }, ExtArgs["result"]["tb_decision_types"]>
 
 
@@ -33554,9 +34561,10 @@ export namespace Prisma {
   export type tb_decision_typesSelectScalar = {
     decision_type_id?: boolean
     decision_type?: boolean
+    decision_type_eng?: boolean
   }
 
-  export type tb_decision_typesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"decision_type_id" | "decision_type", ExtArgs["result"]["tb_decision_types"]>
+  export type tb_decision_typesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"decision_type_id" | "decision_type" | "decision_type_eng", ExtArgs["result"]["tb_decision_types"]>
 
   export type $tb_decision_typesPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "tb_decision_types"
@@ -33564,6 +34572,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       decision_type_id: number
       decision_type: string
+      decision_type_eng: string
     }, ExtArgs["result"]["tb_decision_types"]>
     composites: {}
   }
@@ -33935,6 +34944,7 @@ export namespace Prisma {
   interface tb_decision_typesFieldRefs {
     readonly decision_type_id: FieldRef<"tb_decision_types", 'Int'>
     readonly decision_type: FieldRef<"tb_decision_types", 'String'>
+    readonly decision_type_eng: FieldRef<"tb_decision_types", 'String'>
   }
     
 
@@ -55389,16 +56399,19 @@ export namespace Prisma {
   export type Tb_person_statusMinAggregateOutputType = {
     person_status_id: number | null
     person_status: string | null
+    person_status_eng: string | null
   }
 
   export type Tb_person_statusMaxAggregateOutputType = {
     person_status_id: number | null
     person_status: string | null
+    person_status_eng: string | null
   }
 
   export type Tb_person_statusCountAggregateOutputType = {
     person_status_id: number
     person_status: number
+    person_status_eng: number
     _all: number
   }
 
@@ -55414,16 +56427,19 @@ export namespace Prisma {
   export type Tb_person_statusMinAggregateInputType = {
     person_status_id?: true
     person_status?: true
+    person_status_eng?: true
   }
 
   export type Tb_person_statusMaxAggregateInputType = {
     person_status_id?: true
     person_status?: true
+    person_status_eng?: true
   }
 
   export type Tb_person_statusCountAggregateInputType = {
     person_status_id?: true
     person_status?: true
+    person_status_eng?: true
     _all?: true
   }
 
@@ -55516,6 +56532,7 @@ export namespace Prisma {
   export type Tb_person_statusGroupByOutputType = {
     person_status_id: number
     person_status: string
+    person_status_eng: string | null
     _count: Tb_person_statusCountAggregateOutputType | null
     _avg: Tb_person_statusAvgAggregateOutputType | null
     _sum: Tb_person_statusSumAggregateOutputType | null
@@ -55540,6 +56557,7 @@ export namespace Prisma {
   export type tb_person_statusSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     person_status_id?: boolean
     person_status?: boolean
+    person_status_eng?: boolean
   }, ExtArgs["result"]["tb_person_status"]>
 
 
@@ -55547,9 +56565,10 @@ export namespace Prisma {
   export type tb_person_statusSelectScalar = {
     person_status_id?: boolean
     person_status?: boolean
+    person_status_eng?: boolean
   }
 
-  export type tb_person_statusOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"person_status_id" | "person_status", ExtArgs["result"]["tb_person_status"]>
+  export type tb_person_statusOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"person_status_id" | "person_status" | "person_status_eng", ExtArgs["result"]["tb_person_status"]>
 
   export type $tb_person_statusPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "tb_person_status"
@@ -55557,6 +56576,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       person_status_id: number
       person_status: string
+      person_status_eng: string | null
     }, ExtArgs["result"]["tb_person_status"]>
     composites: {}
   }
@@ -55928,6 +56948,7 @@ export namespace Prisma {
   interface tb_person_statusFieldRefs {
     readonly person_status_id: FieldRef<"tb_person_status", 'Int'>
     readonly person_status: FieldRef<"tb_person_status", 'String'>
+    readonly person_status_eng: FieldRef<"tb_person_status", 'String'>
   }
     
 
@@ -69465,6 +70486,15 @@ export namespace Prisma {
   export type FilesScalarFieldEnum = (typeof FilesScalarFieldEnum)[keyof typeof FilesScalarFieldEnum]
 
 
+  export const IpsScalarFieldEnum: {
+    id: 'id',
+    ip: 'ip',
+    created_at: 'created_at'
+  };
+
+  export type IpsScalarFieldEnum = (typeof IpsScalarFieldEnum)[keyof typeof IpsScalarFieldEnum]
+
+
   export const Old_case_decisionsScalarFieldEnum: {
     old_decision_id: 'old_decision_id',
     old_case_id: 'old_case_id',
@@ -69639,7 +70669,8 @@ export namespace Prisma {
 
   export const Tb_case_statusScalarFieldEnum: {
     case_status_id: 'case_status_id',
-    case_status: 'case_status'
+    case_status: 'case_status',
+    case_status_eng: 'case_status_eng'
   };
 
   export type Tb_case_statusScalarFieldEnum = (typeof Tb_case_statusScalarFieldEnum)[keyof typeof Tb_case_statusScalarFieldEnum]
@@ -69720,7 +70751,8 @@ export namespace Prisma {
 
   export const Tb_decision_statusScalarFieldEnum: {
     decision_status_id: 'decision_status_id',
-    decision_status: 'decision_status'
+    decision_status: 'decision_status',
+    decision_status_eng: 'decision_status_eng'
   };
 
   export type Tb_decision_statusScalarFieldEnum = (typeof Tb_decision_statusScalarFieldEnum)[keyof typeof Tb_decision_statusScalarFieldEnum]
@@ -69728,7 +70760,8 @@ export namespace Prisma {
 
   export const Tb_decision_typesScalarFieldEnum: {
     decision_type_id: 'decision_type_id',
-    decision_type: 'decision_type'
+    decision_type: 'decision_type',
+    decision_type_eng: 'decision_type_eng'
   };
 
   export type Tb_decision_typesScalarFieldEnum = (typeof Tb_decision_typesScalarFieldEnum)[keyof typeof Tb_decision_typesScalarFieldEnum]
@@ -70040,7 +71073,8 @@ export namespace Prisma {
 
   export const Tb_person_statusScalarFieldEnum: {
     person_status_id: 'person_status_id',
-    person_status: 'person_status'
+    person_status: 'person_status',
+    person_status_eng: 'person_status_eng'
   };
 
   export type Tb_person_statusScalarFieldEnum = (typeof Tb_person_statusScalarFieldEnum)[keyof typeof Tb_person_statusScalarFieldEnum]
@@ -70292,6 +71326,13 @@ export namespace Prisma {
   export type filesOrderByRelevanceFieldEnum = (typeof filesOrderByRelevanceFieldEnum)[keyof typeof filesOrderByRelevanceFieldEnum]
 
 
+  export const ipsOrderByRelevanceFieldEnum: {
+    ip: 'ip'
+  };
+
+  export type ipsOrderByRelevanceFieldEnum = (typeof ipsOrderByRelevanceFieldEnum)[keyof typeof ipsOrderByRelevanceFieldEnum]
+
+
   export const old_case_personOrderByRelevanceFieldEnum: {
     f_name_arm: 'f_name_arm',
     l_name_arm: 'l_name_arm',
@@ -70376,7 +71417,8 @@ export namespace Prisma {
 
 
   export const tb_case_statusOrderByRelevanceFieldEnum: {
-    case_status: 'case_status'
+    case_status: 'case_status',
+    case_status_eng: 'case_status_eng'
   };
 
   export type tb_case_statusOrderByRelevanceFieldEnum = (typeof tb_case_statusOrderByRelevanceFieldEnum)[keyof typeof tb_case_statusOrderByRelevanceFieldEnum]
@@ -70413,14 +71455,16 @@ export namespace Prisma {
 
 
   export const tb_decision_statusOrderByRelevanceFieldEnum: {
-    decision_status: 'decision_status'
+    decision_status: 'decision_status',
+    decision_status_eng: 'decision_status_eng'
   };
 
   export type tb_decision_statusOrderByRelevanceFieldEnum = (typeof tb_decision_statusOrderByRelevanceFieldEnum)[keyof typeof tb_decision_statusOrderByRelevanceFieldEnum]
 
 
   export const tb_decision_typesOrderByRelevanceFieldEnum: {
-    decision_type: 'decision_type'
+    decision_type: 'decision_type',
+    decision_type_eng: 'decision_type_eng'
   };
 
   export type tb_decision_typesOrderByRelevanceFieldEnum = (typeof tb_decision_typesOrderByRelevanceFieldEnum)[keyof typeof tb_decision_typesOrderByRelevanceFieldEnum]
@@ -70615,7 +71659,8 @@ export namespace Prisma {
 
 
   export const tb_person_statusOrderByRelevanceFieldEnum: {
-    person_status: 'person_status'
+    person_status: 'person_status',
+    person_status_eng: 'person_status_eng'
   };
 
   export type tb_person_statusOrderByRelevanceFieldEnum = (typeof tb_person_statusOrderByRelevanceFieldEnum)[keyof typeof tb_person_statusOrderByRelevanceFieldEnum]
@@ -71462,6 +72507,51 @@ export namespace Prisma {
     file_path?: StringNullableWithAggregatesFilter<"files"> | string | null
     process_type_id?: IntNullableWithAggregatesFilter<"files"> | number | null
     actual?: IntWithAggregatesFilter<"files"> | number
+  }
+
+  export type ipsWhereInput = {
+    AND?: ipsWhereInput | ipsWhereInput[]
+    OR?: ipsWhereInput[]
+    NOT?: ipsWhereInput | ipsWhereInput[]
+    id?: IntFilter<"ips"> | number
+    ip?: StringFilter<"ips"> | string
+    created_at?: DateTimeFilter<"ips"> | Date | string
+  }
+
+  export type ipsOrderByWithRelationInput = {
+    id?: SortOrder
+    ip?: SortOrder
+    created_at?: SortOrder
+    _relevance?: ipsOrderByRelevanceInput
+  }
+
+  export type ipsWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: ipsWhereInput | ipsWhereInput[]
+    OR?: ipsWhereInput[]
+    NOT?: ipsWhereInput | ipsWhereInput[]
+    ip?: StringFilter<"ips"> | string
+    created_at?: DateTimeFilter<"ips"> | Date | string
+  }, "id">
+
+  export type ipsOrderByWithAggregationInput = {
+    id?: SortOrder
+    ip?: SortOrder
+    created_at?: SortOrder
+    _count?: ipsCountOrderByAggregateInput
+    _avg?: ipsAvgOrderByAggregateInput
+    _max?: ipsMaxOrderByAggregateInput
+    _min?: ipsMinOrderByAggregateInput
+    _sum?: ipsSumOrderByAggregateInput
+  }
+
+  export type ipsScalarWhereWithAggregatesInput = {
+    AND?: ipsScalarWhereWithAggregatesInput | ipsScalarWhereWithAggregatesInput[]
+    OR?: ipsScalarWhereWithAggregatesInput[]
+    NOT?: ipsScalarWhereWithAggregatesInput | ipsScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"ips"> | number
+    ip?: StringWithAggregatesFilter<"ips"> | string
+    created_at?: DateTimeWithAggregatesFilter<"ips"> | Date | string
   }
 
   export type old_case_decisionsWhereInput = {
@@ -72328,11 +73418,13 @@ export namespace Prisma {
     NOT?: tb_case_statusWhereInput | tb_case_statusWhereInput[]
     case_status_id?: IntFilter<"tb_case_status"> | number
     case_status?: StringFilter<"tb_case_status"> | string
+    case_status_eng?: StringNullableFilter<"tb_case_status"> | string | null
   }
 
   export type tb_case_statusOrderByWithRelationInput = {
     case_status_id?: SortOrder
     case_status?: SortOrder
+    case_status_eng?: SortOrderInput | SortOrder
     _relevance?: tb_case_statusOrderByRelevanceInput
   }
 
@@ -72342,11 +73434,13 @@ export namespace Prisma {
     OR?: tb_case_statusWhereInput[]
     NOT?: tb_case_statusWhereInput | tb_case_statusWhereInput[]
     case_status?: StringFilter<"tb_case_status"> | string
+    case_status_eng?: StringNullableFilter<"tb_case_status"> | string | null
   }, "case_status_id">
 
   export type tb_case_statusOrderByWithAggregationInput = {
     case_status_id?: SortOrder
     case_status?: SortOrder
+    case_status_eng?: SortOrderInput | SortOrder
     _count?: tb_case_statusCountOrderByAggregateInput
     _avg?: tb_case_statusAvgOrderByAggregateInput
     _max?: tb_case_statusMaxOrderByAggregateInput
@@ -72360,6 +73454,7 @@ export namespace Prisma {
     NOT?: tb_case_statusScalarWhereWithAggregatesInput | tb_case_statusScalarWhereWithAggregatesInput[]
     case_status_id?: IntWithAggregatesFilter<"tb_case_status"> | number
     case_status?: StringWithAggregatesFilter<"tb_case_status"> | string
+    case_status_eng?: StringNullableWithAggregatesFilter<"tb_case_status"> | string | null
   }
 
   export type tb_checkinWhereInput = {
@@ -72731,11 +73826,13 @@ export namespace Prisma {
     NOT?: tb_decision_statusWhereInput | tb_decision_statusWhereInput[]
     decision_status_id?: IntFilter<"tb_decision_status"> | number
     decision_status?: StringFilter<"tb_decision_status"> | string
+    decision_status_eng?: StringNullableFilter<"tb_decision_status"> | string | null
   }
 
   export type tb_decision_statusOrderByWithRelationInput = {
     decision_status_id?: SortOrder
     decision_status?: SortOrder
+    decision_status_eng?: SortOrderInput | SortOrder
     _relevance?: tb_decision_statusOrderByRelevanceInput
   }
 
@@ -72745,11 +73842,13 @@ export namespace Prisma {
     OR?: tb_decision_statusWhereInput[]
     NOT?: tb_decision_statusWhereInput | tb_decision_statusWhereInput[]
     decision_status?: StringFilter<"tb_decision_status"> | string
+    decision_status_eng?: StringNullableFilter<"tb_decision_status"> | string | null
   }, "decision_status_id">
 
   export type tb_decision_statusOrderByWithAggregationInput = {
     decision_status_id?: SortOrder
     decision_status?: SortOrder
+    decision_status_eng?: SortOrderInput | SortOrder
     _count?: tb_decision_statusCountOrderByAggregateInput
     _avg?: tb_decision_statusAvgOrderByAggregateInput
     _max?: tb_decision_statusMaxOrderByAggregateInput
@@ -72763,6 +73862,7 @@ export namespace Prisma {
     NOT?: tb_decision_statusScalarWhereWithAggregatesInput | tb_decision_statusScalarWhereWithAggregatesInput[]
     decision_status_id?: IntWithAggregatesFilter<"tb_decision_status"> | number
     decision_status?: StringWithAggregatesFilter<"tb_decision_status"> | string
+    decision_status_eng?: StringNullableWithAggregatesFilter<"tb_decision_status"> | string | null
   }
 
   export type tb_decision_typesWhereInput = {
@@ -72771,11 +73871,13 @@ export namespace Prisma {
     NOT?: tb_decision_typesWhereInput | tb_decision_typesWhereInput[]
     decision_type_id?: IntFilter<"tb_decision_types"> | number
     decision_type?: StringFilter<"tb_decision_types"> | string
+    decision_type_eng?: StringFilter<"tb_decision_types"> | string
   }
 
   export type tb_decision_typesOrderByWithRelationInput = {
     decision_type_id?: SortOrder
     decision_type?: SortOrder
+    decision_type_eng?: SortOrder
     _relevance?: tb_decision_typesOrderByRelevanceInput
   }
 
@@ -72785,11 +73887,13 @@ export namespace Prisma {
     OR?: tb_decision_typesWhereInput[]
     NOT?: tb_decision_typesWhereInput | tb_decision_typesWhereInput[]
     decision_type?: StringFilter<"tb_decision_types"> | string
+    decision_type_eng?: StringFilter<"tb_decision_types"> | string
   }, "decision_type_id">
 
   export type tb_decision_typesOrderByWithAggregationInput = {
     decision_type_id?: SortOrder
     decision_type?: SortOrder
+    decision_type_eng?: SortOrder
     _count?: tb_decision_typesCountOrderByAggregateInput
     _avg?: tb_decision_typesAvgOrderByAggregateInput
     _max?: tb_decision_typesMaxOrderByAggregateInput
@@ -72803,6 +73907,7 @@ export namespace Prisma {
     NOT?: tb_decision_typesScalarWhereWithAggregatesInput | tb_decision_typesScalarWhereWithAggregatesInput[]
     decision_type_id?: IntWithAggregatesFilter<"tb_decision_types"> | number
     decision_type?: StringWithAggregatesFilter<"tb_decision_types"> | string
+    decision_type_eng?: StringWithAggregatesFilter<"tb_decision_types"> | string
   }
 
   export type tb_decisionsWhereInput = {
@@ -74329,11 +75434,13 @@ export namespace Prisma {
     NOT?: tb_person_statusWhereInput | tb_person_statusWhereInput[]
     person_status_id?: IntFilter<"tb_person_status"> | number
     person_status?: StringFilter<"tb_person_status"> | string
+    person_status_eng?: StringNullableFilter<"tb_person_status"> | string | null
   }
 
   export type tb_person_statusOrderByWithRelationInput = {
     person_status_id?: SortOrder
     person_status?: SortOrder
+    person_status_eng?: SortOrderInput | SortOrder
     _relevance?: tb_person_statusOrderByRelevanceInput
   }
 
@@ -74343,11 +75450,13 @@ export namespace Prisma {
     OR?: tb_person_statusWhereInput[]
     NOT?: tb_person_statusWhereInput | tb_person_statusWhereInput[]
     person_status?: StringFilter<"tb_person_status"> | string
+    person_status_eng?: StringNullableFilter<"tb_person_status"> | string | null
   }, "person_status_id">
 
   export type tb_person_statusOrderByWithAggregationInput = {
     person_status_id?: SortOrder
     person_status?: SortOrder
+    person_status_eng?: SortOrderInput | SortOrder
     _count?: tb_person_statusCountOrderByAggregateInput
     _avg?: tb_person_statusAvgOrderByAggregateInput
     _max?: tb_person_statusMaxOrderByAggregateInput
@@ -74361,6 +75470,7 @@ export namespace Prisma {
     NOT?: tb_person_statusScalarWhereWithAggregatesInput | tb_person_statusScalarWhereWithAggregatesInput[]
     person_status_id?: IntWithAggregatesFilter<"tb_person_status"> | number
     person_status?: StringWithAggregatesFilter<"tb_person_status"> | string
+    person_status_eng?: StringNullableWithAggregatesFilter<"tb_person_status"> | string | null
   }
 
   export type tb_processWhereInput = {
@@ -75882,6 +76992,45 @@ export namespace Prisma {
     actual?: IntFieldUpdateOperationsInput | number
   }
 
+  export type ipsCreateInput = {
+    ip: string
+    created_at?: Date | string
+  }
+
+  export type ipsUncheckedCreateInput = {
+    id?: number
+    ip: string
+    created_at?: Date | string
+  }
+
+  export type ipsUpdateInput = {
+    ip?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ipsUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    ip?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ipsCreateManyInput = {
+    id?: number
+    ip: string
+    created_at?: Date | string
+  }
+
+  export type ipsUpdateManyMutationInput = {
+    ip?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ipsUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    ip?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type old_case_decisionsCreateInput = {
     old_case_id: number
     ms_decision: number
@@ -76872,34 +78021,41 @@ export namespace Prisma {
 
   export type tb_case_statusCreateInput = {
     case_status: string
+    case_status_eng?: string | null
   }
 
   export type tb_case_statusUncheckedCreateInput = {
     case_status_id?: number
     case_status: string
+    case_status_eng?: string | null
   }
 
   export type tb_case_statusUpdateInput = {
     case_status?: StringFieldUpdateOperationsInput | string
+    case_status_eng?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type tb_case_statusUncheckedUpdateInput = {
     case_status_id?: IntFieldUpdateOperationsInput | number
     case_status?: StringFieldUpdateOperationsInput | string
+    case_status_eng?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type tb_case_statusCreateManyInput = {
     case_status_id?: number
     case_status: string
+    case_status_eng?: string | null
   }
 
   export type tb_case_statusUpdateManyMutationInput = {
     case_status?: StringFieldUpdateOperationsInput | string
+    case_status_eng?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type tb_case_statusUncheckedUpdateManyInput = {
     case_status_id?: IntFieldUpdateOperationsInput | number
     case_status?: StringFieldUpdateOperationsInput | string
+    case_status_eng?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type tb_checkinCreateInput = {
@@ -77271,66 +78427,80 @@ export namespace Prisma {
 
   export type tb_decision_statusCreateInput = {
     decision_status: string
+    decision_status_eng?: string | null
   }
 
   export type tb_decision_statusUncheckedCreateInput = {
     decision_status_id?: number
     decision_status: string
+    decision_status_eng?: string | null
   }
 
   export type tb_decision_statusUpdateInput = {
     decision_status?: StringFieldUpdateOperationsInput | string
+    decision_status_eng?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type tb_decision_statusUncheckedUpdateInput = {
     decision_status_id?: IntFieldUpdateOperationsInput | number
     decision_status?: StringFieldUpdateOperationsInput | string
+    decision_status_eng?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type tb_decision_statusCreateManyInput = {
     decision_status_id?: number
     decision_status: string
+    decision_status_eng?: string | null
   }
 
   export type tb_decision_statusUpdateManyMutationInput = {
     decision_status?: StringFieldUpdateOperationsInput | string
+    decision_status_eng?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type tb_decision_statusUncheckedUpdateManyInput = {
     decision_status_id?: IntFieldUpdateOperationsInput | number
     decision_status?: StringFieldUpdateOperationsInput | string
+    decision_status_eng?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type tb_decision_typesCreateInput = {
     decision_type: string
+    decision_type_eng: string
   }
 
   export type tb_decision_typesUncheckedCreateInput = {
     decision_type_id?: number
     decision_type: string
+    decision_type_eng: string
   }
 
   export type tb_decision_typesUpdateInput = {
     decision_type?: StringFieldUpdateOperationsInput | string
+    decision_type_eng?: StringFieldUpdateOperationsInput | string
   }
 
   export type tb_decision_typesUncheckedUpdateInput = {
     decision_type_id?: IntFieldUpdateOperationsInput | number
     decision_type?: StringFieldUpdateOperationsInput | string
+    decision_type_eng?: StringFieldUpdateOperationsInput | string
   }
 
   export type tb_decision_typesCreateManyInput = {
     decision_type_id?: number
     decision_type: string
+    decision_type_eng: string
   }
 
   export type tb_decision_typesUpdateManyMutationInput = {
     decision_type?: StringFieldUpdateOperationsInput | string
+    decision_type_eng?: StringFieldUpdateOperationsInput | string
   }
 
   export type tb_decision_typesUncheckedUpdateManyInput = {
     decision_type_id?: IntFieldUpdateOperationsInput | number
     decision_type?: StringFieldUpdateOperationsInput | string
+    decision_type_eng?: StringFieldUpdateOperationsInput | string
   }
 
   export type tb_decisionsCreateInput = {
@@ -78935,34 +80105,41 @@ export namespace Prisma {
 
   export type tb_person_statusCreateInput = {
     person_status: string
+    person_status_eng?: string | null
   }
 
   export type tb_person_statusUncheckedCreateInput = {
     person_status_id?: number
     person_status: string
+    person_status_eng?: string | null
   }
 
   export type tb_person_statusUpdateInput = {
     person_status?: StringFieldUpdateOperationsInput | string
+    person_status_eng?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type tb_person_statusUncheckedUpdateInput = {
     person_status_id?: IntFieldUpdateOperationsInput | number
     person_status?: StringFieldUpdateOperationsInput | string
+    person_status_eng?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type tb_person_statusCreateManyInput = {
     person_status_id?: number
     person_status: string
+    person_status_eng?: string | null
   }
 
   export type tb_person_statusUpdateManyMutationInput = {
     person_status?: StringFieldUpdateOperationsInput | string
+    person_status_eng?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type tb_person_statusUncheckedUpdateManyInput = {
     person_status_id?: IntFieldUpdateOperationsInput | number
     person_status?: StringFieldUpdateOperationsInput | string
+    person_status_eng?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type tb_processCreateInput = {
@@ -80464,6 +81641,38 @@ export namespace Prisma {
     actual?: SortOrder
   }
 
+  export type ipsOrderByRelevanceInput = {
+    fields: ipsOrderByRelevanceFieldEnum | ipsOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type ipsCountOrderByAggregateInput = {
+    id?: SortOrder
+    ip?: SortOrder
+    created_at?: SortOrder
+  }
+
+  export type ipsAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type ipsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    ip?: SortOrder
+    created_at?: SortOrder
+  }
+
+  export type ipsMinOrderByAggregateInput = {
+    id?: SortOrder
+    ip?: SortOrder
+    created_at?: SortOrder
+  }
+
+  export type ipsSumOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
   export type DateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | null
@@ -81157,6 +82366,7 @@ export namespace Prisma {
   export type tb_case_statusCountOrderByAggregateInput = {
     case_status_id?: SortOrder
     case_status?: SortOrder
+    case_status_eng?: SortOrder
   }
 
   export type tb_case_statusAvgOrderByAggregateInput = {
@@ -81166,11 +82376,13 @@ export namespace Prisma {
   export type tb_case_statusMaxOrderByAggregateInput = {
     case_status_id?: SortOrder
     case_status?: SortOrder
+    case_status_eng?: SortOrder
   }
 
   export type tb_case_statusMinOrderByAggregateInput = {
     case_status_id?: SortOrder
     case_status?: SortOrder
+    case_status_eng?: SortOrder
   }
 
   export type tb_case_statusSumOrderByAggregateInput = {
@@ -81461,6 +82673,7 @@ export namespace Prisma {
   export type tb_decision_statusCountOrderByAggregateInput = {
     decision_status_id?: SortOrder
     decision_status?: SortOrder
+    decision_status_eng?: SortOrder
   }
 
   export type tb_decision_statusAvgOrderByAggregateInput = {
@@ -81470,11 +82683,13 @@ export namespace Prisma {
   export type tb_decision_statusMaxOrderByAggregateInput = {
     decision_status_id?: SortOrder
     decision_status?: SortOrder
+    decision_status_eng?: SortOrder
   }
 
   export type tb_decision_statusMinOrderByAggregateInput = {
     decision_status_id?: SortOrder
     decision_status?: SortOrder
+    decision_status_eng?: SortOrder
   }
 
   export type tb_decision_statusSumOrderByAggregateInput = {
@@ -81490,6 +82705,7 @@ export namespace Prisma {
   export type tb_decision_typesCountOrderByAggregateInput = {
     decision_type_id?: SortOrder
     decision_type?: SortOrder
+    decision_type_eng?: SortOrder
   }
 
   export type tb_decision_typesAvgOrderByAggregateInput = {
@@ -81499,11 +82715,13 @@ export namespace Prisma {
   export type tb_decision_typesMaxOrderByAggregateInput = {
     decision_type_id?: SortOrder
     decision_type?: SortOrder
+    decision_type_eng?: SortOrder
   }
 
   export type tb_decision_typesMinOrderByAggregateInput = {
     decision_type_id?: SortOrder
     decision_type?: SortOrder
+    decision_type_eng?: SortOrder
   }
 
   export type tb_decision_typesSumOrderByAggregateInput = {
@@ -82684,6 +83902,7 @@ export namespace Prisma {
   export type tb_person_statusCountOrderByAggregateInput = {
     person_status_id?: SortOrder
     person_status?: SortOrder
+    person_status_eng?: SortOrder
   }
 
   export type tb_person_statusAvgOrderByAggregateInput = {
@@ -82693,11 +83912,13 @@ export namespace Prisma {
   export type tb_person_statusMaxOrderByAggregateInput = {
     person_status_id?: SortOrder
     person_status?: SortOrder
+    person_status_eng?: SortOrder
   }
 
   export type tb_person_statusMinOrderByAggregateInput = {
     person_status_id?: SortOrder
     person_status?: SortOrder
+    person_status_eng?: SortOrder
   }
 
   export type tb_person_statusSumOrderByAggregateInput = {

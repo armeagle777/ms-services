@@ -224,6 +224,12 @@ exports.Prisma.FilesScalarFieldEnum = {
   actual: 'actual'
 };
 
+exports.Prisma.IpsScalarFieldEnum = {
+  id: 'id',
+  ip: 'ip',
+  created_at: 'created_at'
+};
+
 exports.Prisma.Old_case_decisionsScalarFieldEnum = {
   old_decision_id: 'old_decision_id',
   old_case_id: 'old_case_id',
@@ -371,7 +377,8 @@ exports.Prisma.Tb_caseScalarFieldEnum = {
 
 exports.Prisma.Tb_case_statusScalarFieldEnum = {
   case_status_id: 'case_status_id',
-  case_status: 'case_status'
+  case_status: 'case_status',
+  case_status_eng: 'case_status_eng'
 };
 
 exports.Prisma.Tb_checkinScalarFieldEnum = {
@@ -431,12 +438,14 @@ exports.Prisma.Tb_deadline_typesScalarFieldEnum = {
 
 exports.Prisma.Tb_decision_statusScalarFieldEnum = {
   decision_status_id: 'decision_status_id',
-  decision_status: 'decision_status'
+  decision_status: 'decision_status',
+  decision_status_eng: 'decision_status_eng'
 };
 
 exports.Prisma.Tb_decision_typesScalarFieldEnum = {
   decision_type_id: 'decision_type_id',
-  decision_type: 'decision_type'
+  decision_type: 'decision_type',
+  decision_type_eng: 'decision_type_eng'
 };
 
 exports.Prisma.Tb_decisionsScalarFieldEnum = {
@@ -679,7 +688,8 @@ exports.Prisma.Tb_personScalarFieldEnum = {
 
 exports.Prisma.Tb_person_statusScalarFieldEnum = {
   person_status_id: 'person_status_id',
-  person_status: 'person_status'
+  person_status: 'person_status',
+  person_status_eng: 'person_status_eng'
 };
 
 exports.Prisma.Tb_processScalarFieldEnum = {
@@ -853,6 +863,10 @@ exports.Prisma.filesOrderByRelevanceFieldEnum = {
   file_path: 'file_path'
 };
 
+exports.Prisma.ipsOrderByRelevanceFieldEnum = {
+  ip: 'ip'
+};
+
 exports.Prisma.old_case_personOrderByRelevanceFieldEnum = {
   f_name_arm: 'f_name_arm',
   l_name_arm: 'l_name_arm',
@@ -916,7 +930,8 @@ exports.Prisma.tb_caseOrderByRelevanceFieldEnum = {
 };
 
 exports.Prisma.tb_case_statusOrderByRelevanceFieldEnum = {
-  case_status: 'case_status'
+  case_status: 'case_status',
+  case_status_eng: 'case_status_eng'
 };
 
 exports.Prisma.tb_coiOrderByRelevanceFieldEnum = {
@@ -938,11 +953,13 @@ exports.Prisma.tb_deadline_typesOrderByRelevanceFieldEnum = {
 };
 
 exports.Prisma.tb_decision_statusOrderByRelevanceFieldEnum = {
-  decision_status: 'decision_status'
+  decision_status: 'decision_status',
+  decision_status_eng: 'decision_status_eng'
 };
 
 exports.Prisma.tb_decision_typesOrderByRelevanceFieldEnum = {
-  decision_type: 'decision_type'
+  decision_type: 'decision_type',
+  decision_type_eng: 'decision_type_eng'
 };
 
 exports.Prisma.tb_decisionsOrderByRelevanceFieldEnum = {
@@ -1074,7 +1091,8 @@ exports.Prisma.tb_personOrderByRelevanceFieldEnum = {
 };
 
 exports.Prisma.tb_person_statusOrderByRelevanceFieldEnum = {
-  person_status: 'person_status'
+  person_status: 'person_status',
+  person_status_eng: 'person_status_eng'
 };
 
 exports.Prisma.tb_processOrderByRelevanceFieldEnum = {
@@ -1165,6 +1183,7 @@ exports.Prisma.ModelName = {
   court_levels: 'court_levels',
   cover_sign_status: 'cover_sign_status',
   files: 'files',
+  ips: 'ips',
   old_case_decisions: 'old_case_decisions',
   old_case_person: 'old_case_person',
   old_cases: 'old_cases',
