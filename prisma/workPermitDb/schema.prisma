@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../generated/workPermitDb"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL_WORKPERMIT")
+}
+
+model Likes {
+  id        Int      @id @default(autoincrement())
+  uid       String   @db.VarChar(255)
+  text      String   @db.VarChar(255)
+  userId    Int
+  createdAt DateTime @db.DateTime(0)
+  updatedAt DateTime @db.DateTime(0)
+  Users     Users    @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Likes_ibfk_1")
+
+  @@index([userId], map: "userId")
+}
+
+model LogTypes {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(255)
+  createdAt DateTime @db.DateTime(0)
+  updatedAt DateTime @db.DateTime(0)
+  Logs      Logs[]
+}
+
+model Logs {
+  id        Int      @id @default(autoincrement())
+  logTypeId Int
+  userId    Int
+  createdAt DateTime @db.DateTime(0)
+  updatedAt DateTime @db.DateTime(0)
+  fields    Json
+  LogTypes  LogTypes @relation(fields: [logTypeId], references: [id], onDelete: Cascade, map: "Logs_ibfk_59")
+  Users     Users    @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Logs_ibfk_60")
+
+  @@index([logTypeId], map: "logTypeId")
+  @@index([userId], map: "userId")
+}
+
+model Permission_Roles {
+  createdAt    DateTime    @db.DateTime(0)
+  updatedAt    DateTime    @db.DateTime(0)
+  PermissionId Int
+  RoleId       Int
+  Permissions  Permissions @relation(fields: [PermissionId], references: [id], onDelete: Cascade, map: "Permission_Roles_ibfk_1")
+  Roles        Roles       @relation(fields: [RoleId], references: [id], onDelete: Cascade, map: "Permission_Roles_ibfk_2")
+
+  @@id([PermissionId, RoleId])
+  @@index([RoleId], map: "RoleId")
+}
+
+model Permissions {
+  id               Int                @id @default(autoincrement())
+  uid              String             @db.VarChar(255)
+  name             String             @db.VarChar(255)
+  description      String             @db.VarChar(255)
+  createdAt        DateTime           @db.DateTime(0)
+  updatedAt        DateTime           @db.DateTime(0)
+  Permission_Roles Permission_Roles[]
+}
+
+model Roles {
+  id               Int                @id @default(autoincrement())
+  name             String             @db.VarChar(255)
+  createdAt        DateTime           @db.DateTime(0)
+  updatedAt        DateTime           @db.DateTime(0)
+  Permission_Roles Permission_Roles[]
+  Users            Users[]
+}
+
+model Tokens {
+  id           Int      @id @default(autoincrement())
+  refreshToken String?  @db.LongText
+  userId       Int
+  createdAt    DateTime @db.DateTime(0)
+  updatedAt    DateTime @db.DateTime(0)
+  Users        Users    @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Tokens_ibfk_1")
+
+  @@index([userId], map: "userId")
+}
+
+model Users {
+  id             Int      @id @default(autoincrement())
+  email          String   @unique(map: "email") @db.VarChar(100)
+  password       String?  @db.LongText
+  firstName      String   @db.VarChar(255)
+  lastName       String   @db.VarChar(255)
+  pashton        String   @db.VarChar(255)
+  isActivated    Boolean? @default(false)
+  activationLink String?  @unique(map: "activationLink") @db.VarChar(100)
+  phoneNumber    String?  @db.VarChar(255)
+  createdAt      DateTime @db.DateTime(0)
+  updatedAt      DateTime @db.DateTime(0)
+  RoleId         Int?
+  Likes          Likes[]
+  Logs           Logs[]
+  Tokens         Tokens[]
+  Roles          Roles?   @relation(fields: [RoleId], references: [id], map: "Users_ibfk_1")
+
+  @@index([RoleId], map: "RoleId")
+}
