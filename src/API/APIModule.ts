@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 
-import { TestController } from './Controllers';
-
+import { AsylumController, WorkPermitController } from './Controllers';
+import { CoreModule } from 'src/Core/Core.module';
 
 @Module({
-   imports: [],
-   controllers: [TestController],
+   imports: [CoreModule],
+   controllers: [AsylumController, WorkPermitController],
    providers: [],
 })
 export class APIModule {}
