@@ -1,7 +1,12 @@
 import { Transform } from 'class-transformer';
 import { IsInt, Min } from 'class-validator';
 
-class Filters {
+export class CountrySelect{
+   value:number;
+   label:string;
+}
+
+export class Filters {
    card_id: string;
    document_number: string;
    fisrt_name_arm: string;
@@ -10,7 +15,7 @@ class Filters {
    fisrt_name_lat: string;
    last_name_lat: string;
    select_gender: string;
-   select_country: string;
+   select_country: CountrySelect;
    select_procedure: string;
    select_card_status: string;
    select_claim_status: string;
@@ -22,12 +27,12 @@ class Filters {
 
 export class PersonFilterWpDataValidator {
    @IsInt()
-   @Min(0)
+   @Min(1)
    @Transform(({ value }) => (value ? parseFloat(value) : value))
    page: number = 1;
 
    @IsInt()
-   @Min(0)
+   @Min(1)
    @Transform(({ value }) => (value ? parseFloat(value) : value))
    pageSize: number = 10;
 
