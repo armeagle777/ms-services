@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { CountryService } from '../Country/Country.service';
 import { PersonService } from '../Person/Person.service';
 import { extractWpData } from '../Person/Helpers';
+import { PersonFilterWpDataValidator } from 'src/API/Validators/Person/PersonFilterWpData.validator';
+import { PersonDetailWpData } from 'src/API/Validators/Person/PersonDetailWpData.validator';
 
 @Injectable()
 export class WorkPermitService {
@@ -31,38 +33,17 @@ export class WorkPermitService {
       };
    }
 
-   async filterPersonWpData(filterData) {
+   async filterPersonWpData(filterData: PersonFilterWpDataValidator) {
       const { page = 1, pageSize = 10, filters } = filterData;
 
-      const paginatedResult = await this.personService.filterPaginatedWpData(filters, {
+      return await this.personService.filterPaginatedWpData(filters, {
          pagination: { page, pageSize },
       });
-
-      return paginatedResult;
    }
 
-   async getPersonDetailData(id, body) {
-      const { tablename: procedure, user_id } = body;
+   async getPersonDetailData(id: number, body: PersonDetailWpData) {
+      const { tablename: tableName, user_id } = body;
 
-      //       const queries = [
-      //          { key: 'baseInfo', query: getFullInfoBaseQuery(procedure, id) }, //for tab 1
-      //          { key: 'fines', query: getFinesQuery(procedure, id) }, //for tab 4
-      //          { key: 'claims', query: getClaimsQuery(procedure, id) }, // for tab 2
-      //          { key: 'cards', query: getCardsQuery(procedure, id) }, // for tab 3
-      //          ...(procedure === TABLE_NAMES.EAEU
-      //             ? [
-      //                  {
-      //                     key: 'familyMembers',
-      //                     query: getFamilyMemberQuery(procedure, user_id),
-      //                  },
-      //               ]
-      //             : []), // conditional for tab 5
-      //       ];
-      //       const resultsArray = await Promise.all(queries.map((q) => wpSequelize.query(q.query)));
-      //       const results = {};
-      //       queries.forEach((q, i) => {
-      //          results[q.key] = q.key === 'baseInfo' ? formatBaseResult(resultsArray[i]) : resultsArray[i];
-      //       });
-      //       return results;
+      return this.personService.getWpDataById({ id, tableName, user_id });
    }
 }
