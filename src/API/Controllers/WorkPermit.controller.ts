@@ -23,8 +23,8 @@ export class WorkPermitController {
       return this.wpService.filterPersonWpData(filterData);
    }
 
-   @Get('persons/detail/:id')
-   getPersonDetailData(@Param() params: IdValidator, @Body() body:PersonDetailWpData) {
+   @Post('persons/detail/:id')
+   getPersonDetailData(@Param() params: IdValidator, @Body() body: PersonDetailWpData) {
       return this.wpService.getPersonDetailData(params.id, body);
    }
 }
