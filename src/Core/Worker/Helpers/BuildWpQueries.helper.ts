@@ -1,9 +1,9 @@
-import { WpTableNamesEnum } from '../../Shared/Enums';
+import { WorkerTbNamesEnum } from '../../Shared/Enums';
 
 export class BuildWpQueries {
-   buildFullInfoBaseQuery(tableName: WpTableNamesEnum, id: number) {
+   buildFullInfoBaseQuery(tableName: WorkerTbNamesEnum, id: number) {
       switch (tableName) {
-         case WpTableNamesEnum.FAMILY:
+         case WorkerTbNamesEnum.FAMILY:
             return `SELECT 
         claims.id as claim_id,
         claims.status as claim_status,
@@ -16,7 +16,7 @@ export class BuildWpQueries {
         a.birthday_month,
         a.birthday_year,
         a.actual_address as full_address,
-        a.status emplyee_status,
+        a.status as emplyee_status,
         a.first_name_am,
         a.first_name_en,
         a.last_name_am,
@@ -67,7 +67,7 @@ export class BuildWpQueries {
                 WHERE
                     h.eaeu_employee_family_member_id = t5.eaeu_employee_family_member_id)) AS cards ON cards.eaeu_employee_family_member_id = a.id  
         WHERE a.id = ${id} and g.type = 'photo' and g.active = '1'`;
-         case WpTableNamesEnum.EMPLOYEE:
+         case WorkerTbNamesEnum.EMPLOYEE:
             return `SELECT 
         claims.id as claim_id,
         claims.status as claim_status,
@@ -81,7 +81,7 @@ export class BuildWpQueries {
         a.birthday_month,
         a.birthday_year,
         a.full_address,
-        a.status emplyee_status,
+        a.status as emplyee_status,
         b.first_name_am,
         b.first_name_en,
         b.last_name_am,
@@ -136,7 +136,7 @@ export class BuildWpQueries {
                 WHERE
                     h.employee_id = t5.employee_id)) AS cards ON cards.employee_id = a.id 
           where a.id = ${id} and g.type = 'photo' and g.active = '1'`;
-         case WpTableNamesEnum.EAEU:
+         case WorkerTbNamesEnum.EAEU:
             return `SELECT 
         claims.id as claim_id,
         claims.status as claim_status,
@@ -149,7 +149,7 @@ export class BuildWpQueries {
         a.birthday_month,
         a.birthday_year,
         a.actual_address as full_address,
-        a.status emplyee_status,
+        a.status as emplyee_status,
         b.first_name_am,
         b.first_name_en,
         b.last_name_am,
@@ -209,23 +209,23 @@ export class BuildWpQueries {
       }
    }
 
-   buildFinesQuery(tableName: WpTableNamesEnum, id: number) {
+   buildFinesQuery(tableName: WorkerTbNamesEnum, id: number) {
       switch (tableName) {
-         case WpTableNamesEnum.FAMILY:
+         case WorkerTbNamesEnum.FAMILY:
             return `SELECT a.claim_id, a.employee_id, a.eaeu_employee_id, 
                           a.eaeu_employee_family_member_id, a.status, 
                           a.created_at as notify_date, b.created_at as fined_date
                    FROM fines a 
                    left join fine_logs b on b.fine_id = a.id 
                    where eaeu_employee_family_member_id = ${id}`;
-         case WpTableNamesEnum.EMPLOYEE:
+         case WorkerTbNamesEnum.EMPLOYEE:
             return `SELECT a.claim_id, a.employee_id, a.eaeu_employee_id, 
                           a.eaeu_employee_family_member_id, a.status, 
                           a.created_at as notify_date, b.created_at as fined_date
                    FROM fines a 
                    left join fine_logs b on b.fine_id = a.id 
                    where employee_id = ${id}`;
-         case WpTableNamesEnum.EAEU:
+         case WorkerTbNamesEnum.EAEU:
             return `SELECT a.claim_id, a.employee_id, a.eaeu_employee_id, 
                           a.eaeu_employee_family_member_id, a.status, 
                           a.created_at as notify_date, b.created_at as fined_date
@@ -237,9 +237,9 @@ export class BuildWpQueries {
       }
    }
 
-   buildClaimsQuery(tableName: WpTableNamesEnum, id: number) {
+   buildClaimsQuery(tableName: WorkerTbNamesEnum, id: number) {
       switch (tableName) {
-         case WpTableNamesEnum.FAMILY:
+         case WorkerTbNamesEnum.FAMILY:
             return `SELECT 
               a.id,
               a.eaeu_employee_family_member_id,
@@ -265,7 +265,7 @@ export class BuildWpQueries {
               WHERE
                   type = 6) AS log ON log.claim_id = a.id
           WHERE a.eaeu_employee_family_member_id = ${id}`;
-         case WpTableNamesEnum.EMPLOYEE:
+         case WorkerTbNamesEnum.EMPLOYEE:
             return `SELECT 
                 a.id,
                 a.employee_id,
@@ -291,7 +291,7 @@ export class BuildWpQueries {
                 WHERE
                     type = 6) AS log ON log.claim_id = a.id
              WHERE a.employee_id = ${id}`;
-         case WpTableNamesEnum.EAEU:
+         case WorkerTbNamesEnum.EAEU:
             return `SELECT 
             a.id,
             a.eaeu_employee_id,
@@ -322,22 +322,22 @@ export class BuildWpQueries {
       }
    }
 
-   buildCardsQuery(tableName: WpTableNamesEnum, id: number) {
+   buildCardsQuery(tableName: WorkerTbNamesEnum, id: number) {
       switch (tableName) {
-         case WpTableNamesEnum.FAMILY:
+         case WorkerTbNamesEnum.FAMILY:
             return `SELECT * FROM ms_cards  WHERE eaeu_employee_family_member_id = ${id}`;
-         case WpTableNamesEnum.EMPLOYEE:
+         case WorkerTbNamesEnum.EMPLOYEE:
             return `SELECT * FROM ms_cards  WHERE employee_id = ${id}`;
-         case WpTableNamesEnum.EAEU:
+         case WorkerTbNamesEnum.EAEU:
             return `SELECT * FROM ms_cards  WHERE eaeu_employee_id = ${id}`;
          default:
             return '';
       }
    }
 
-   buildFamilyMemberQuery(tableName: WpTableNamesEnum, user_id: number) {
+   buildFamilyMemberQuery(tableName: WorkerTbNamesEnum, user_id: number) {
       switch (tableName) {
-         case WpTableNamesEnum.EAEU:
+         case WorkerTbNamesEnum.EAEU:
             return `SELECT 
                 a.id,
                 a.user_id,
@@ -366,7 +366,7 @@ export class BuildWpQueries {
                 ms_cards cards ON cards.claim_id = b.id
             WHERE a.user_id = ${user_id}`;
          default:
-            return '';
+            return null;
       }
    }
 }

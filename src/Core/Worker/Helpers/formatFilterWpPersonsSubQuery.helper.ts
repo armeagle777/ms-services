@@ -1,4 +1,4 @@
-import { FormatFilterWpPersonsBaseQuery } from '../Queries';
+import { FilterWorkersBaseQuery } from '../Queries';
 import { convertToMysqlDate } from './convertToMysqlDate.helper';
 
 export const formatFilterWpPersonsSubQuery = (filters) => {
@@ -21,7 +21,7 @@ export const formatFilterWpPersonsSubQuery = (filters) => {
       select_claim_status,
    } = { ...filters };
 
-   let baseQuery = FormatFilterWpPersonsBaseQuery;
+   let baseQuery = FilterWorkersBaseQuery;
 
    if (created_at_start) {
       const startDate = convertToMysqlDate(created_at_start);

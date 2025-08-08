@@ -1,4 +1,4 @@
-export const formatGetEatmQuery = (pnum: string) => `SELECT
+export const formatGetEatmQuery = (pnum: string): string => `SELECT
                         a.id as user_id,
                         a.ssn,
                         a.first_name_am ,
@@ -9,7 +9,7 @@ export const formatGetEatmQuery = (pnum: string) => `SELECT
                         a.patronymic_en,
                         b.id AS eaeu_employee_id,
                         c.id AS claim_id,
-                        c.created_at,
+                        c.created_at as claim_created_at,
                         c.status,
                         c.type as claim_type,
                         b.actual_address as filled_in_address,

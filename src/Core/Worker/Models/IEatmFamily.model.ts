@@ -1,0 +1,37 @@
+export interface IEatmFamily {
+   applicant_user_id: number;
+   family_member_ssn: string;
+   eaeu_employee_family_member_id: number;
+   family_member_first_name_am: string;
+   family_member_last_name_am: string;
+   family_member_patronymic_am: string;
+   family_member_first_name_en: string;
+   family_member_last_name_en: string;
+   family_member_patronymic_en: string;
+   family_member_passport: string;
+   family_member_passport_issued: string;
+   family_member_passport_valid: string;
+   family_member_email: string;
+   family_member_tel: unknown;
+   gender_id: number;
+   family_member_id: number;
+   family_member_bday: string;
+   family_member_citizenship: unknown;
+   family_member_citizenship_alpha_3: unknown;
+   claim_id: number;
+   claim_date: string;
+   claim_status: unknown;
+   claim_type: unknown;
+   decision_date: string;
+   action: unknown;
+   type: unknown;
+   family_member_card: unknown;
+   family_member_card_issue_date: string;
+   family_member_card_expire_date: string;
+   applicant_ssn: string;
+   applicant_first_name_am: string;
+   applicant_last_name_am: string;
+   applicant_first_name_en: string;
+   applicant_last_name_em: string;
+   photo_path: string;
+}

@@ -1,9 +1,9 @@
 import { IsInt, IsString, Min } from 'class-validator';
-import { WpTableNamesEnum } from 'src/Core/Shared/Enums';
+import { WorkerTbNamesEnum } from 'src/Core/Shared/Enums';
 
 export class PersonDetailWpData {
    @IsString()
-   tablename: WpTableNamesEnum;
+   tablename: WorkerTbNamesEnum;
 
    @IsInt()
    @Min(1)

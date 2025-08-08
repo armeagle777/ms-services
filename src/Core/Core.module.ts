@@ -1,13 +1,19 @@
 import { Module } from '@nestjs/common';
+
+import { BuildWpQueries } from './Worker/Helpers';
 import { AsylumService } from './Asylum/Asylum.service';
-import { WorkPermitService } from './WorkPermit/WorkPermit.service';
+import { WorkerService } from './Worker/Worker.service';
+import { RefugeeService } from './Refugee/Refugee.service';
 import { CountryService } from './Country/Country.service';
-import { PersonService } from './Person/Person.service';
-import { BuildWpQueries } from './Person/Helpers';
+import { WorkPermitService } from './WorkPermit/WorkPermit.service';
+
+const services = [WorkerService, RefugeeService, AsylumService, WorkPermitService, CountryService];
+
+const helpers = [BuildWpQueries];
 
 @Module({
    imports: [],
-   providers: [AsylumService, WorkPermitService, CountryService, PersonService, BuildWpQueries],
-   exports: [WorkPermitService, PersonService],
+   providers: [...services, ...helpers],
+   exports: [WorkPermitService],
 })
 export class CoreModule {}

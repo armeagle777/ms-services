@@ -1,4 +1,4 @@
-export const enum WpTableNamesEnum {
+export const enum WorkerTbNamesEnum {
    FAMILY = 'FAMILY',
    EMPLOYEE = 'Employee',
    EAEU = 'EAEU',

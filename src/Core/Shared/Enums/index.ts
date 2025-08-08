@@ -1,1 +1,1 @@
-export * from './WpTableNamesEnum';
+export * from './WorkerTbNames.enum';

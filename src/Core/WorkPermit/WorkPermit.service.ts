@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
+
+import { Country } from '../Country/Models';
+import { WorkerService } from '../Worker/Worker.service';
 import { CountryService } from '../Country/Country.service';
-import { PersonService } from '../Person/Person.service';
-import { extractWpData } from '../Person/Helpers';
 import { PersonFilterWpDataValidator } from 'src/API/Validators/Person/PersonFilterWpData.validator';
 import { PersonDetailWpData } from 'src/API/Validators/Person/PersonDetailWpData.validator';
 
@@ -9,34 +10,21 @@ import { PersonDetailWpData } from 'src/API/Validators/Person/PersonDetailWpData
 export class WorkPermitService {
    constructor(
       private readonly countryService: CountryService,
-      private readonly personService: PersonService,
+      private readonly workerService: WorkerService,
    ) {}
-   async getCountries() {
+
+   async getCountries(): Promise<Partial<Country>[]> {
       return this.countryService.findAll();
    }
 
-   async getPersonWpData(pnum) {
-      const promisess = [
-         this.personService.getWpData(pnum),
-         this.personService.getEatmData(pnum),
-         this.personService.getEatmFamilyData(pnum),
-      ];
-      const [wpResponse, eatmResponse, eatmFamilyResponse] = await Promise.all(promisess);
-      const { cards: wpCards, data: wpData } = extractWpData(wpResponse);
-      const { cards: eatmCards, data: eatmData } = extractWpData(eatmResponse);
-      const { cards: eatmFamilyCards, data: eatmFamilyData } = extractWpData(eatmFamilyResponse);
-      return {
-         wpData,
-         eatmData,
-         eatmFamilyData,
-         cards: [...wpCards, ...eatmCards, ...eatmFamilyCards],
-      };
+   async getPersonWpData(pnum: string) {
+      return this.workerService.getFullDataByPnum(pnum);
    }
 
    async filterPersonWpData(filterData: PersonFilterWpDataValidator) {
       const { page = 1, pageSize = 10, filters } = filterData;
 
-      return await this.personService.filterPaginatedWpData(filters, {
+      return await this.workerService.filterFullData(filters, {
          pagination: { page, pageSize },
       });
    }
@@ -44,6 +32,6 @@ export class WorkPermitService {
    async getPersonDetailData(id: number, body: PersonDetailWpData) {
       const { tablename: tableName, user_id } = body;
 
-      return this.personService.getWpDataById({ id, tableName, user_id });
+      return this.workerService.getFullDataById({ id, tableName, user_id });
    }
 }
