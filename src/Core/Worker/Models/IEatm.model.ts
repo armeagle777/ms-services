@@ -21,11 +21,11 @@ export interface IEatm {
    decision_date: string;
    action: unknown;
    type: unknown;
-   serial_number: unknown;
+   serial_number: string;
    issue_date: string;
    expire_date: string;
    printed_at: string;
-   transferred_at: string;
+   transferred_at?: string;
    created_at: string;
    user_email: string;
    user_tel: unknown;

@@ -18,6 +18,9 @@ import {
    IEatmFamily,
    IWorkerAdvanced,
    ITableResultsMap,
+   IGetFullDataByIdProps,
+   IFilterFullDataResponse,
+   IGetFullDataByIdResponse,
    IGetWpFamilyMemberResponse,
    IGetFullDataByPnumResponse,
 } from './Models';
@@ -33,7 +36,7 @@ export class WorkerService {
    ) {}
 
    // Filter paginated work permit data
-   async filterFullData(filters: Filters, { pagination }) {
+   async filterFullData(filters: Filters, { pagination }): Promise<IFilterFullDataResponse> {
       const { page, pageSize } = pagination;
       const offset = (page - 1) * pageSize;
       const limit = pageSize;
@@ -42,7 +45,7 @@ export class WorkerService {
       const query = `${countSubQuery} LIMIT :limit OFFSET :offset`;
 
       // Get total count of records
-      const [countResult] = await this.wpDb.query(countSubQuery);
+      const countResult = await this.wpDb.query(countSubQuery, SequelizeSelectOptions);
       const total = countResult?.length || 0;
 
       // Get paginated records
@@ -73,11 +76,7 @@ export class WorkerService {
       id,
       tableName,
       user_id,
-   }: {
-      id: number;
-      tableName: WorkerTbNamesEnum;
-      user_id: number;
-   }) {
+   }: IGetFullDataByIdProps): Promise<IGetFullDataByIdResponse> {
       const promisess = [
          this.getWpAdvancedData(tableName, id),
          this.getWpFinesData(tableName, id),
@@ -99,16 +98,15 @@ export class WorkerService {
 
    // Get worker data by pnum
    async getFullDataByPnum(pnum: string): Promise<IGetFullDataByPnumResponse> {
-      const promisess = [
+      const promisess: [Promise<IWp[]>, Promise<IEatm[]>, Promise<IEatmFamily[]>] = [
          this.getWpDataByPnum(pnum),
          this.getEatmDataByPnum(pnum),
          this.getEatmFamilyDataByPnum(pnum),
       ];
       const [wpResponse, eatmResponse, eatmFamilyResponse] = await Promise.all(promisess);
-      const { cards: wpCards, data: wpData } = extractWpData<IWp>(wpResponse);
-      const { cards: eatmCards, data: eatmData } = extractWpData<IEatm>(eatmResponse);
-      const { cards: eatmFamilyCards, data: eatmFamilyData } =
-         extractWpData<IEatmFamily>(eatmFamilyResponse);
+      const { cards: wpCards, data: wpData } = extractWpData(wpResponse);
+      const { cards: eatmCards, data: eatmData } = extractWpData(eatmResponse);
+      const { cards: eatmFamilyCards, data: eatmFamilyData } = extractWpData(eatmFamilyResponse);
       return {
          wpData,
          eatmData,

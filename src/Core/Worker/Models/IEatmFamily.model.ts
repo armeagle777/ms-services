@@ -25,9 +25,13 @@ export interface IEatmFamily {
    decision_date: string;
    action: unknown;
    type: unknown;
-   family_member_card: unknown;
-   family_member_card_issue_date: string;
-   family_member_card_expire_date: string;
+   serial_number: string;
+   issue_date: string;
+   expire_date: string;
+   printed_at: string;
+   transferred_at: string;
+   card_status: string;
+   created_at: string;
    applicant_ssn: string;
    applicant_first_name_am: string;
    applicant_last_name_am: string;
