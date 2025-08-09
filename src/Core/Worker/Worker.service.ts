@@ -105,9 +105,10 @@ export class WorkerService {
          this.getEatmFamilyDataByPnum(pnum),
       ];
       const [wpResponse, eatmResponse, eatmFamilyResponse] = await Promise.all(promisess);
-      const { cards: wpCards, data: wpData } = extractWpData(wpResponse);
-      const { cards: eatmCards, data: eatmData } = extractWpData(eatmResponse);
-      const { cards: eatmFamilyCards, data: eatmFamilyData } = extractWpData(eatmFamilyResponse);
+      const { cards: wpCards, data: wpData } = extractWpData<IWp>(wpResponse);
+      const { cards: eatmCards, data: eatmData } = extractWpData<IEatm>(eatmResponse);
+      const { cards: eatmFamilyCards, data: eatmFamilyData } =
+         extractWpData<IEatmFamily>(eatmFamilyResponse);
       return {
          wpData,
          eatmData,

@@ -1,6 +1,13 @@
-export const extractWpData = (row) => {
-   const cards = [];
-   const data = row?.map((row) => {
+import { IWorkerCard } from '../Models';
+
+export function extractWpData<T extends IWorkerCard>(
+   rows: T[] | null | undefined,
+): {
+   cards: IWorkerCard[];
+   data: Omit<T, keyof IWorkerCard>[] | null;
+} {
+   const cards: IWorkerCard[] = [];
+   const data = rows?.map((row) => {
       const {
          serial_number,
          issue_date,
@@ -20,8 +27,8 @@ export const extractWpData = (row) => {
             transferred_at,
          });
       }
-      return rowData;
+      return rowData as Omit<T, keyof IWorkerCard>;
    });
 
    return { cards, data: data ?? null };
-};
+}
