@@ -10,20 +10,20 @@ import {
    formatFilterWpPersonsSubQuery,
    formatGetEatmFamilyMemberQuery,
 } from './Helpers';
-import { WorkerTbNamesEnum } from '../Shared/Enums';
-import { Filters } from 'src/API/Validators/Person/PersonFilterWpData.validator';
-import { SequelizeSelectOptions } from '../Shared/Constants/Sequielize.constants';
 import {
    IWp,
    IEatm,
    IWorkerCard,
+   IWorkerFine,
    IEatmFamily,
+   IWorkerAdvanced,
    ITableResultsMap,
    IGetWpFamilyMemberResponse,
-   IWorkerFine,
-   IWorkerAdvanced,
    IGetFullDataByPnumResponse,
 } from './Models';
+import { WorkerTbNamesEnum } from '../Shared/Enums';
+import { Filters } from 'src/API/Validators/Person/PersonFilterWpData.validator';
+import { SequelizeSelectOptions } from '../Shared/Constants/Sequielize.constants';
 
 @Injectable()
 export class WorkerService {
@@ -142,7 +142,7 @@ export class WorkerService {
 
    private async getWpCardsData(tableName: WorkerTbNamesEnum, id: number): Promise<IWorkerCard[]> {
       const query = this.buildWpQueriesHelper.buildCardsQuery(tableName, id);
-      const result = await this.wpDb.query<IWorkerCard[]>(query, SequelizeSelectOptions);
+      const result = await this.wpDb.query<IWorkerCard>(query, SequelizeSelectOptions);
       return result;
    }
 
