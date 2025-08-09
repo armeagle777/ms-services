@@ -30,7 +30,7 @@ export class WorkPermitService {
    }
 
    async getPersonDetailData(id: number, body: PersonDetailWpData) {
-      const { tablename: tableName, user_id } = body;
+      const { tableName, user_id } = body;
 
       return this.workerService.getFullDataById({ id, tableName, user_id });
    }

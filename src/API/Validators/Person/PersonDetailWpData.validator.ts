@@ -3,7 +3,7 @@ import { WorkerTbNamesEnum } from 'src/Core/Shared/Enums';
 
 export class PersonDetailWpData {
    @IsString()
-   tablename: WorkerTbNamesEnum;
+   tableName: WorkerTbNamesEnum;
 
    @IsInt()
    @Min(1)

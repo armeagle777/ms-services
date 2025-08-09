@@ -1,6 +1,29 @@
-export const FilterWorkersBaseQuery = `SELECT ALL_PERSON.tablename, ALL_PERSON.id, ALL_PERSON.passport_number, ALL_PERSON.citizenship_id, ALL_PERSON.ssn, ALL_PERSON.alpha_3, ALL_PERSON.arm_short, ALL_PERSON.first_name_en, ALL_PERSON.last_name_en,ALL_PERSON.serial_number, ALL_PERSON.issue_date, ALL_PERSON.expire_date, ALL_PERSON.card_status, 
-	ALL_PERSON.gender_id, ALL_PERSON.claim_id, ALL_PERSON.user_id, ALL_PERSON.REG_DATE, ALL_PERSON.card_status, ALL_PERSON.EMP_STATUS, ALL_PERSON.claim_date,
-	ALL_PERSON.claim_status, ALL_PERSON.birthday_day, ALL_PERSON.birthday_month, ALL_PERSON.birthday_year, ALL_PERSON.fine_status
+export const FilterWorkersBaseQuery = `SELECT 
+	ALL_PERSON.tablename, 
+	ALL_PERSON.id, 
+	ALL_PERSON.passport_number, 
+	ALL_PERSON.citizenship_id, 
+	ALL_PERSON.ssn, 
+	ALL_PERSON.alpha_3, 
+	ALL_PERSON.arm_short, 
+	ALL_PERSON.first_name_en, 
+	ALL_PERSON.last_name_en,
+	ALL_PERSON.serial_number, 
+	ALL_PERSON.issue_date, 
+	ALL_PERSON.expire_date, 
+	ALL_PERSON.card_status, 
+	ALL_PERSON.gender_id, 
+	ALL_PERSON.claim_id, 
+	ALL_PERSON.user_id, 
+	ALL_PERSON.REG_DATE, 
+	ALL_PERSON.card_status, 
+	ALL_PERSON.EMP_STATUS, 
+	ALL_PERSON.claim_date,
+	ALL_PERSON.claim_status, 
+	ALL_PERSON.birthday_day, 
+	ALL_PERSON.birthday_month, 
+	ALL_PERSON.birthday_year, 
+	ALL_PERSON.fine_status
    
    FROM (
    
