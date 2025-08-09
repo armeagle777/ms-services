@@ -25,6 +25,7 @@ export const formatGetEatmQuery = (pnum: string): string => `SELECT
                         d.issue_date,
                         d.expire_date,
                         d.printed_at,
+                        d.status  as card_status,
                         d.transferred_at,
                         d.created_at,
                         a.email as user_email,
