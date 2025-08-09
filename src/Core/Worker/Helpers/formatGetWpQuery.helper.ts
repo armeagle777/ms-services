@@ -9,6 +9,7 @@ export const formatGetWpQuery = (pnum: string): string => `SELECT
                     log.action,
                     log.type,
                     d.serial_number,
+                    d.status as card_status,
                     d.issue_date,
                     d.expire_date,
                     d.printed_at,
