@@ -1,5 +1,7 @@
+import axios from 'axios';
+import * as https from 'https';
 import { Sequelize } from 'sequelize-typescript';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 
 import {
    extractWpData,
@@ -30,6 +32,11 @@ import { SequelizeSelectOptions } from '../Shared/Constants/Sequielize.constants
 
 @Injectable()
 export class WorkerService {
+   private readonly logger = new Logger(WorkerService.name);
+   private readonly httpsAgent = new https.Agent({
+      rejectUnauthorized: false,
+   });
+
    constructor(
       private readonly buildWpQueriesHelper: BuildWpQueries,
       @Inject('WORKPERMIT_CONNECTION') private readonly wpDb: Sequelize,
@@ -87,12 +94,14 @@ export class WorkerService {
             : []),
       ];
       const [baseInfo, fines, claims, cards, familyMembers] = await Promise.all(promisess);
+      const formatedBaseInfo = await formatBaseInfoResult(baseInfo);
+      await this.addWorkerProfileImage(formatedBaseInfo);
       return {
          fines: fines,
          cards: cards,
          claims: claims,
          familyMembers: familyMembers,
-         baseInfo: formatBaseInfoResult(baseInfo),
+         baseInfo: formatedBaseInfo,
       };
    }
 
@@ -172,5 +181,25 @@ export class WorkerService {
       const query = formatGetEatmFamilyMemberQuery(pnum);
       const results = await this.wpDb.query<IEatmFamily>(query, SequelizeSelectOptions);
       return results;
+   }
+
+   private async addWorkerProfileImage(baseInfo: IWorkerAdvanced): Promise<void> {
+      if (baseInfo.path) {
+         try {
+            const imageUrl = `${process.env.WP_IMAGE_SERVER_URL}${baseInfo.path}`;
+            const response = await axios.get(imageUrl, {
+               responseType: 'arraybuffer',
+               httpsAgent: this.httpsAgent,
+            });
+
+            const base64Image = Buffer.from(response.data, 'binary').toString('base64');
+            const mimeType = response.headers['content-type'] || 'image/jpeg';
+
+            baseInfo.path = `data:${mimeType};base64,${base64Image}`;
+         } catch (error) {
+            this.logger.error(`Failed to fetch image: ${error.message}`);
+            baseInfo.path = null;
+         }
+      }
    }
 }

@@ -13,9 +13,9 @@ export class WorkPermitController {
       return this.wpService.getCountries();
    }
 
-   @Get('persons/:pnum')
-   getPersonWpData(@Param() params: PersonWpDataValidator) {
-      return this.wpService.getPersonWpData(params.pnum);
+   @Post('persons/detail/pnum')
+   getPersonWpData(@Body() body: PersonWpDataValidator) {
+      return this.wpService.getPersonWpData(body.pnum);
    }
 
    @Post('persons/filter')
