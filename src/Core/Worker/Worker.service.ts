@@ -1,5 +1,4 @@
 import axios from 'axios';
-import * as https from 'https';
 import { Sequelize } from 'sequelize-typescript';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 
@@ -29,16 +28,15 @@ import {
 import { WorkerTbNamesEnum } from '../Shared/Enums';
 import { Filters } from 'src/API/Validators/Person/PersonFilterWpData.validator';
 import { SequelizeSelectOptions } from '../Shared/Constants/Sequielize.constants';
+import { WPBackendIntegration } from 'src/Infrustructure/Services/WPBackendIntegration/WPBackend.integration';
 
 @Injectable()
 export class WorkerService {
    private readonly logger = new Logger(WorkerService.name);
-   private readonly httpsAgent = new https.Agent({
-      rejectUnauthorized: false,
-   });
 
    constructor(
       private readonly buildWpQueriesHelper: BuildWpQueries,
+      private readonly wpBackIntegration: WPBackendIntegration,
       @Inject('WORKPERMIT_CONNECTION') private readonly wpDb: Sequelize,
    ) {}
 
@@ -186,16 +184,9 @@ export class WorkerService {
    private async addWorkerProfileImage(baseInfo: IWorkerAdvanced): Promise<void> {
       if (baseInfo.path) {
          try {
-            const imageUrl = `${process.env.WP_IMAGE_SERVER_URL}${baseInfo.path}`;
-            const response = await axios.get(imageUrl, {
-               responseType: 'arraybuffer',
-               httpsAgent: this.httpsAgent,
-            });
+            const workerBase64Image = await this.wpBackIntegration.getWorkerImage(baseInfo.path);
 
-            const base64Image = Buffer.from(response.data, 'binary').toString('base64');
-            const mimeType = response.headers['content-type'] || 'image/jpeg';
-
-            baseInfo.path = `data:${mimeType};base64,${base64Image}`;
+            baseInfo.path = workerBase64Image;
          } catch (error) {
             this.logger.error(`Failed to fetch image: ${error.message}`);
             baseInfo.path = null;

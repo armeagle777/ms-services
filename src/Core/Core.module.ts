@@ -6,13 +6,14 @@ import { WorkerService } from './Worker/Worker.service';
 import { RefugeeService } from './Refugee/Refugee.service';
 import { CountryService } from './Country/Country.service';
 import { WorkPermitService } from './WorkPermit/WorkPermit.service';
+import { IntegrationModule } from 'src/Infrustructure/Services/Integration.module';
 
 const services = [WorkerService, RefugeeService, AsylumService, WorkPermitService, CountryService];
 
 const helpers = [BuildWpQueries];
 
 @Module({
-   imports: [],
+   imports: [IntegrationModule],
    providers: [...services, ...helpers],
    exports: [WorkPermitService],
 })
