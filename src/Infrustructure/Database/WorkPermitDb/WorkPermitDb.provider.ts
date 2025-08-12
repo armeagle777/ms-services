@@ -13,6 +13,12 @@ export const WorkPermitDbProvider = {
          database: process.env.DATABASE_NAME_WP,
          username: process.env.DATABASE_USERNAME_WP,
          password: process.env.DATABASE_USER_PASSWORD_WP,
+         dialectOptions: {
+            connectTimeout: 10000,
+         },
+         retry: {
+            max: 5,
+         },
       };
       const sequelize = new Sequelize(config);
       await sequelize.authenticate();
