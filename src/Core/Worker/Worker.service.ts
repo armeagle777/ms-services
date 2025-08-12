@@ -182,15 +182,14 @@ export class WorkerService {
    }
 
    private async addWorkerProfileImage(baseInfo: IWorkerAdvanced): Promise<void> {
-      if (baseInfo.path) {
-         try {
-            const workerBase64Image = await this.wpBackIntegration.getWorkerImage(baseInfo.path);
+      try {
+         if (!baseInfo?.path) return;
+         const workerBase64Image = await this.wpBackIntegration.getWorkerImage(baseInfo.path);
 
-            baseInfo.path = workerBase64Image;
-         } catch (error) {
-            this.logger.error(`Failed to fetch image: ${error.message}`);
-            baseInfo.path = null;
-         }
+         baseInfo.path = workerBase64Image;
+      } catch (error) {
+         this.logger.error(`Failed to fetch image: ${error.message}`);
+         baseInfo.path = null;
       }
    }
 }
