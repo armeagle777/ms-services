@@ -1,5 +1,5 @@
-import axios, { AxiosInstance } from 'axios';
 import * as https from 'https';
+import axios, { AxiosInstance } from 'axios';
 
 export class WPBackendConnector {
    private readonly axiosInstance: AxiosInstance;
