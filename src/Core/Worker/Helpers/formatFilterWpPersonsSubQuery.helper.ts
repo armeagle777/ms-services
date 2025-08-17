@@ -1,7 +1,8 @@
+import { Filters } from 'src/API/Validators/Person/PersonFilterWpData.validator';
 import { FilterWorkersBaseQuery } from '../Queries';
 import { convertToMysqlDate } from './convertToMysqlDate.helper';
 
-export const formatFilterWpPersonsSubQuery = (filters) => {
+export const formatFilterWpPersonsSubQuery = (filters: Filters) => {
    const {
       psn,
       card_id,
@@ -106,7 +107,7 @@ export const formatFilterWpPersonsSubQuery = (filters) => {
       baseQuery += ` AND tablename = '${select_procedure}'`;
    }
 
-   if (select_country?.value && select_country.value != '0') {
+   if (select_country?.value && select_country.value != 0) {
       baseQuery += ` AND citizenship_id = ${select_country.value}`;
    }
 
