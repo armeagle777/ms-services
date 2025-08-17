@@ -1,1 +1,2 @@
-export * from './GetCountries.query';
+export * from './GetWorkerCountries.query';
+export * from './GetRefugeeCountries.query';

@@ -15,6 +15,6 @@ const helpers = [BuildWpQueries];
 @Module({
    imports: [IntegrationModule],
    providers: [...services, ...helpers],
-   exports: [WorkPermitService],
+   exports: [WorkPermitService, AsylumService],
 })
 export class CoreModule {}

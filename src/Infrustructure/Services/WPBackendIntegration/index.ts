@@ -1,2 +1,2 @@
-import { WPBackendIntegration } from './WPBackend.integration';
-import { WPBackendHttpClient } from './HttpClient/WPBackendHttpClient';
+export { WPBackendIntegration } from './WPBackend.integration';
+export { WPBackendHttpClient } from './HttpClient/WPBackendHttpClient';

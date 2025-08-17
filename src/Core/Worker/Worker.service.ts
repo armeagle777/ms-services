@@ -29,6 +29,7 @@ import { WorkerTbNamesEnum } from '../Shared/Enums';
 import { Filters } from 'src/API/Validators/Person/PersonFilterWpData.validator';
 import { SequelizeSelectOptions } from '../Shared/Constants/Sequielize.constants';
 import { WPBackendIntegration } from 'src/Infrustructure/Services/WPBackendIntegration/WPBackend.integration';
+import { IPagination } from '../Shared/Models';
 
 @Injectable()
 export class WorkerService {
@@ -41,7 +42,10 @@ export class WorkerService {
    ) {}
 
    // Filter paginated work permit data
-   async filterFullData(filters: Filters, { pagination }): Promise<IFilterFullDataResponse> {
+   async filterFullData(
+      filters: Filters,
+      { pagination }: { pagination: IPagination },
+   ): Promise<IFilterFullDataResponse> {
       const { page, pageSize } = pagination;
       const offset = (page - 1) * pageSize;
       const limit = pageSize;
