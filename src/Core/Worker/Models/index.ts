@@ -6,7 +6,7 @@ export * from './IWorkerFine.model';
 export * from './IWorkerAdvanced.model';
 export * from './ITableResultsMap.model';
 export * from './IGetFullDataByIdProps.model';
-export * from './IFilterFullDataResponse.model';
+export * from './IFilterLigthDataResponse.model';
 export * from './IGetFullDataByIdResponse.model';
 export * from './IGetFullDataByPnumResponse.model';
 export * from './IGetWpFamilyMemberResponse.model';
