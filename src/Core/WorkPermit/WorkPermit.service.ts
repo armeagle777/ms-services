@@ -24,7 +24,7 @@ export class WorkPermitService {
    async filterPersonWpData(filterData: PersonFilterWpDataValidator) {
       const { page = 1, pageSize = 10, filters } = filterData;
 
-      return this.workerService.filterLigthData(filters, {
+      return this.workerService.filterLightData(filters, {
          pagination: { page, pageSize },
       });
    }

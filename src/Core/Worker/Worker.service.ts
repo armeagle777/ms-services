@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { Sequelize } from 'sequelize-typescript';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 
@@ -29,6 +28,7 @@ import { WorkerTbNamesEnum } from '../Shared/Enums';
 import { Filters } from 'src/API/Validators/Person/PersonFilterWpData.validator';
 import { SequelizeSelectOptions } from '../Shared/Constants/Sequielize.constants';
 import { WPBackendIntegration } from 'src/Infrustructure/Services/WPBackendIntegration/WPBackend.integration';
+import { IWorkerLightDataModel } from './Models/WorkerLightData.model';
 
 @Injectable()
 export class WorkerService {
@@ -41,7 +41,7 @@ export class WorkerService {
    ) {}
 
    // Filter paginated work permit data
-   async filterLigthData(filters: Filters, { pagination }): Promise<IFilterLightDataResponse> {
+   async filterLightData(filters: Filters, { pagination }): Promise<IFilterLightDataResponse> {
       const { page, pageSize } = pagination;
       const offset = (page - 1) * pageSize;
       const limit = pageSize;
@@ -57,7 +57,11 @@ export class WorkerService {
       const persons = (await this.wpDb.query(query, {
          ...SequelizeSelectOptions,
          replacements: { limit, offset },
-      })) as IFilterLightDataResponse[];
+      })) as IWorkerLightDataModel[];
+
+      //Add base64 image string to all persons
+      const getImagesBase64Promises = persons?.map((p) => this.addWorkerProfileImage(p));
+      await Promise.allSettled(getImagesBase64Promises);
 
       // Calculate total pages
       const totalPages = Math.ceil(total / pageSize);
@@ -182,7 +186,9 @@ export class WorkerService {
       return results;
    }
 
-   private async addWorkerProfileImage(baseInfo: IWorkerAdvanced): Promise<void> {
+   private async addWorkerProfileImage(
+      baseInfo: IWorkerAdvanced | IWorkerLightDataModel,
+   ): Promise<void> {
       try {
          if (!baseInfo?.path) return;
          const workerBase64Image = await this.wpBackIntegration.getWorkerImage(baseInfo.path);
