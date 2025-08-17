@@ -20,7 +20,7 @@ import {
    IWorkerAdvanced,
    ITableResultsMap,
    IGetFullDataByIdProps,
-   IFilterFullDataResponse,
+   IFilterLightDataResponse,
    IGetFullDataByIdResponse,
    IGetWpFamilyMemberResponse,
    IGetFullDataByPnumResponse,
@@ -41,7 +41,7 @@ export class WorkerService {
    ) {}
 
    // Filter paginated work permit data
-   async filterFullData(filters: Filters, { pagination }): Promise<IFilterFullDataResponse> {
+   async filterLigthData(filters: Filters, { pagination }): Promise<IFilterLightDataResponse> {
       const { page, pageSize } = pagination;
       const offset = (page - 1) * pageSize;
       const limit = pageSize;
@@ -54,9 +54,10 @@ export class WorkerService {
       const total = countResult?.length || 0;
 
       // Get paginated records
-      const [persons] = await this.wpDb.query(query, {
+      const persons = (await this.wpDb.query(query, {
+         ...SequelizeSelectOptions,
          replacements: { limit, offset },
-      });
+      })) as IFilterLightDataResponse[];
 
       // Calculate total pages
       const totalPages = Math.ceil(total / pageSize);

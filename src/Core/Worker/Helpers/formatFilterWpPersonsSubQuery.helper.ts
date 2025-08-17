@@ -17,8 +17,6 @@ export const formatFilterWpPersonsSubQuery = (filters) => {
       birth_date_start,
       select_procedure,
       created_at_start,
-      select_card_status,
-      select_claim_status,
    } = { ...filters };
 
    let baseQuery = FilterWorkersBaseQuery;
@@ -63,10 +61,6 @@ export const formatFilterWpPersonsSubQuery = (filters) => {
     CONCAT(ALL_PERSON.birthday_year,'-', ALL_PERSON.birthday_month,'-', ALL_PERSON.birthday_day) <=  '${formatedBDayEnd}' `;
    }
 
-   if (select_claim_status) {
-      baseQuery += ` AND ALL_PERSON.claim_status = '${select_claim_status}' `;
-   }
-
    // if (created_at_start && created_at_end) {
    //   const createDateArr = created_at_start.split("/");
    //   const createDateDay = createDateArr[0];
@@ -94,10 +88,6 @@ export const formatFilterWpPersonsSubQuery = (filters) => {
 
    if (psn) {
       baseQuery += ` AND ssn = '${psn}'`;
-   }
-
-   if (select_card_status) {
-      baseQuery += ` AND card_status = '${select_card_status}'`;
    }
 
    if (card_id) {

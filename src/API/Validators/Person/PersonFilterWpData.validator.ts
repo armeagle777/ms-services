@@ -1,9 +1,9 @@
 import { Transform } from 'class-transformer';
 import { IsInt, Min } from 'class-validator';
 
-export class CountrySelect{
-   value:number;
-   label:string;
+export class CountrySelect {
+   value: number;
+   label: string;
 }
 
 export class Filters {
@@ -17,8 +17,6 @@ export class Filters {
    select_gender: string;
    select_country: CountrySelect;
    select_procedure: string;
-   select_card_status: string;
-   select_claim_status: string;
    created_at_start: string;
    created_at_end: string;
    birth_date_start: string;
