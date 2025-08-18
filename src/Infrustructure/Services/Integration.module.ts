@@ -6,6 +6,11 @@ import { AsylumBackendIntegration, AsylumBackendHttpClient } from './AsylumBacke
 @Module({
    imports: [],
    exports: [WPBackendIntegration, AsylumBackendIntegration],
-   providers: [WPBackendIntegration, WPBackendHttpClient, AsylumBackendHttpClient],
+   providers: [
+      WPBackendIntegration,
+      AsylumBackendIntegration,
+      WPBackendHttpClient,
+      AsylumBackendHttpClient,
+   ],
 })
 export class IntegrationModule {}

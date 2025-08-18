@@ -7,7 +7,7 @@ export class AsylumBackendIntegration {
    constructor(private asylumBackendHttpClient: AsylumBackendHttpClient) {}
 
    // Images
-   async getWorkerImage(path: string): Promise<string> {
+   async getRefugeeImage(path: string): Promise<string> {
       const refugeeImageResponse = await this.asylumBackendHttpClient.Image.getRefugeeImage(path);
 
       const base64Image = Buffer.from(refugeeImageResponse.data).toString('base64');
