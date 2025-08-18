@@ -1,11 +1,16 @@
 import { Module } from '@nestjs/common';
 
-import { WPBackendIntegration } from './WPBackendIntegration/WPBackend.integration';
-import { WPBackendHttpClient } from './WPBackendIntegration/HttpClient/WPBackendHttpClient';
+import { WPBackendIntegration, WPBackendHttpClient } from './WPBackendIntegration';
+import { AsylumBackendIntegration, AsylumBackendHttpClient } from './AsylumBackendIntegration';
 
 @Module({
    imports: [],
-   exports: [WPBackendIntegration],
-   providers: [WPBackendIntegration, WPBackendHttpClient],
+   exports: [WPBackendIntegration, AsylumBackendIntegration],
+   providers: [
+      WPBackendIntegration,
+      AsylumBackendIntegration,
+      WPBackendHttpClient,
+      AsylumBackendHttpClient,
+   ],
 })
 export class IntegrationModule {}
