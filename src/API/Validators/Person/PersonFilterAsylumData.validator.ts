@@ -1,7 +1,7 @@
 import { Transform } from 'class-transformer';
 import { IsInt, Min } from 'class-validator';
 
-export class CountrySelect {
+export class AsylumCountrySelect {
    value: number;
    label: string;
 }
@@ -14,7 +14,7 @@ export class RefugeeLightDataFilters {
    fisrt_name_lat: string;
    last_name_lat: string;
    select_gender: string;
-   select_country: CountrySelect;
+   select_country: AsylumCountrySelect;
    birth_date_start: string;
    birth_date_end: string;
 }
