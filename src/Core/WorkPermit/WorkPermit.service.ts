@@ -14,7 +14,7 @@ export class WorkPermitService {
    ) {}
 
    async getCountries(): Promise<Partial<Country>[]> {
-      return this.countryService.findAll();
+      return this.countryService.findAllWp();
    }
 
    async getPersonWpData(pnum: string) {

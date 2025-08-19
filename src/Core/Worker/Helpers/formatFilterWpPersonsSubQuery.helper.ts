@@ -99,7 +99,7 @@ export const formatFilterWpPersonsSubQuery = (filters: Filters) => {
       baseQuery += ` AND passport_number = '${document_number}'`;
    }
 
-   if (select_gender && select_gender != '0') {
+   if (select_gender) {
       baseQuery += ` AND gender_id = ${select_gender}`;
    }
 

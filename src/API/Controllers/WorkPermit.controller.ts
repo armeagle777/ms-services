@@ -8,6 +8,7 @@ import { PersonDetailWpData } from '../Validators/Person/PersonDetailWpData.vali
 @Controller('work-permit')
 export class WorkPermitController {
    constructor(private readonly wpService: WorkPermitService) {}
+
    @Get('countries')
    getCountries() {
       return this.wpService.getCountries();

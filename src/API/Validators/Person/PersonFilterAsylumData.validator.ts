@@ -1,6 +1,5 @@
 import { Transform } from 'class-transformer';
 import { IsInt, Min } from 'class-validator';
-import { GenderEnum } from 'src/Core/Shared/Enums/Gender.enum';
 
 export class CountrySelect {
    value: number;
@@ -8,20 +7,20 @@ export class CountrySelect {
 }
 
 export class Filters {
-   card_id: string;
-   document_number: string;
-   fisrt_name_arm: string;
-   last_name_arm: string;
-   psn: string;
-   fisrt_name_lat: string;
-   last_name_lat: string;
-   select_gender: GenderEnum;
-   select_country: CountrySelect;
-   select_procedure: string;
-   created_at_start: string;
-   created_at_end: string;
-   birth_date_start: string;
-   birth_date_end: string;
+   //    card_id: string;
+   //    document_number: string;
+   //    fisrt_name_arm: string;
+   //    last_name_arm: string;
+   //    psn: string;
+   //    fisrt_name_lat: string;
+   //    last_name_lat: string;
+   //    select_gender: string;
+   //    select_country: CountrySelect;
+   //    select_procedure: string;
+   //    created_at_start: string;
+   //    created_at_end: string;
+   //    birth_date_start: string;
+   //    birth_date_end: string;
 }
 
 export class PersonFilterWpDataValidator {
