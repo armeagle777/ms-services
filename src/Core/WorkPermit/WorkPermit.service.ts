@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { Country } from '../Country/Models';
+import { WorkerCountry } from '../Country/Models';
 import { WorkerService } from '../Worker/Worker.service';
 import { CountryService } from '../Country/Country.service';
 import { PersonFilterWpDataValidator } from 'src/API/Validators/Person/PersonFilterWpData.validator';
@@ -13,8 +13,8 @@ export class WorkPermitService {
       private readonly workerService: WorkerService,
    ) {}
 
-   async getCountries(): Promise<Partial<Country>[]> {
-      return this.countryService.findAllWp();
+   async getCountries(): Promise<Partial<WorkerCountry>[]> {
+      return this.countryService.findAllWorkerCountries();
    }
 
    async getPersonWpData(pnum: string) {

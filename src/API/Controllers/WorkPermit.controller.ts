@@ -1,8 +1,7 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 
-import { IdValidator, PersonWpDataValidator } from '../Validators';
+import { IdValidator, PersonWpDataValidator, PersonFilterWpDataValidator } from '../Validators';
 import { WorkPermitService } from 'src/Core/WorkPermit/WorkPermit.service';
-import { PersonFilterWpDataValidator } from '../Validators/Person/PersonFilterWpData.validator';
 import { PersonDetailWpData } from '../Validators/Person/PersonDetailWpData.validator';
 
 @Controller('work-permit')

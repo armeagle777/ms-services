@@ -1,8 +1,8 @@
 import { Sequelize } from 'sequelize-typescript';
 import { Inject, Injectable } from '@nestjs/common';
 
-import { AsylumCountry, Country } from './Models';
-import { GetWpCountriesQuery, GetAsylumCountriesQuery } from './Queries';
+import { RefugeeCountry, WorkerCountry } from './Models';
+import { GetRefugeeCountriesQuery, GetWorkerCountriesQuery } from './Queries';
 import { SequelizeSelectOptions } from '../Shared/Constants/Sequielize.constants';
 
 @Injectable()
@@ -12,17 +12,17 @@ export class CountryService {
       @Inject('ASYLUM_CONNECTION') private readonly asylumDb: Sequelize,
    ) {}
 
-   async findAllWp(): Promise<Partial<Country>[]> {
-      const results: Partial<Country>[] = await this.wpDb.query(
-         GetWpCountriesQuery,
+   async findAllWorkerCountries(): Promise<Partial<WorkerCountry>[]> {
+      const results: Partial<WorkerCountry>[] = await this.wpDb.query(
+         GetWorkerCountriesQuery,
          SequelizeSelectOptions,
       );
       return results;
    }
 
-   async findAllAsylum(): Promise<Partial<AsylumCountry>[]> {
-      const results: Partial<AsylumCountry>[] = await this.asylumDb.query(
-         GetAsylumCountriesQuery,
+   async findAllRefugeeCountries(): Promise<Partial<RefugeeCountry>[]> {
+      const results: Partial<RefugeeCountry>[] = await this.asylumDb.query(
+         GetRefugeeCountriesQuery,
          SequelizeSelectOptions,
       );
       return results;

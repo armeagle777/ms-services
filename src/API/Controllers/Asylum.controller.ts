@@ -1,5 +1,7 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+
 import { AsylumService } from 'src/Core/Asylum/Asylum.service';
+import { IdValidator, PersonFilterAsylumDataValidator } from '../Validators';
 
 @Controller('asylum')
 export class AsylumController {
@@ -11,12 +13,12 @@ export class AsylumController {
    }
 
    // @Post('persons/filter')
-   // filterPersonAsylumData(@Body() filterData: PersonFilterWpDataValidator) {
-   //    return this.asylumService.filterPersonWpData(filterData);
+   // filterPersonWpData(@Body() filterData: PersonFilterAsylumDataValidator) {
+   //    return this.asylumService.filterPersonData(filterData);
    // }
 
-   //    @Post('persons/detail/:id')
-   //    getPersonDetailData(@Param() params: IdValidator, @Body() body: PersonDetailWpData) {
-   //       return this.wpService.getPersonDetailData(params.id, body);
-   //    }
+   // @Post('persons/detail/:id')
+   // getPersonDetailData(@Param() params: IdValidator) {
+   //    return this.asylumService.getPersonDetailData(params.id);
+   // }
 }
