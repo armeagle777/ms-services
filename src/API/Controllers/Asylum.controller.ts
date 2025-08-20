@@ -17,8 +17,8 @@ export class AsylumController {
    //    return this.asylumService.filterPersonData(filterData);
    // }
 
-   // @Post('persons/detail/:id')
-   // getPersonDetailData(@Param() params: IdValidator) {
-   //    return this.asylumService.getPersonDetailData(params.id);
-   // }
+   @Post('persons/detail/:id')
+   getPersonDetailData(@Param() params: IdValidator) {
+      return this.asylumService.getRefugeeDetailData(params.id);
+   }
 }
