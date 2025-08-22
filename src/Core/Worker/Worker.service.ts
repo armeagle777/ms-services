@@ -23,6 +23,9 @@ import {
    IGetFullDataByIdResponse,
    IGetWpFamilyMemberResponse,
    IGetFullDataByPnumResponse,
+   IWorkPermitFamilyClaim,
+   IWorkPermitEmployeeClaim,
+   IWorkPermitEaeuClaim,
 } from './Models';
 import { WorkerTbNamesEnum } from '../Shared/Enums';
 import { Filters } from 'src/API/Validators/Person/PersonFilterWpData.validator';
@@ -95,9 +98,16 @@ export class WorkerService {
          ...(tableName === WorkerTbNamesEnum.EAEU
             ? [this.getWpFamilyMemberData(tableName, user_id)]
             : []),
+      ] as const;
+
+      const [baseInfo, fines, claims, cards, familyMembers] = (await Promise.all(promisess)) as [
+         IWorkerAdvanced[],
+         IWorkerFine[],
+         (IWorkPermitFamilyClaim | IWorkPermitEmployeeClaim | IWorkPermitEaeuClaim)[],
+         IWorkerCard[],
+         IGetWpFamilyMemberResponse[]?,
       ];
-      const [baseInfo, fines, claims, cards, familyMembers] = await Promise.all(promisess);
-      const formatedBaseInfo = await formatBaseInfoResult(baseInfo);
+      const formatedBaseInfo = formatBaseInfoResult(baseInfo);
       await this.addWorkerProfileImage(formatedBaseInfo);
       return {
          fines: fines,

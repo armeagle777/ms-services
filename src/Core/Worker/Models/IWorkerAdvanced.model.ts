@@ -23,6 +23,7 @@ export interface IWorkerAdvanced {
    ssn: string | null;
    telephone: string;
    gender_id: GenderEnum;
+   genderText: string;
    user_created: string;
    country_arm: string;
    country_eng: string;

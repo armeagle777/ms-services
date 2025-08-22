@@ -1,10 +1,10 @@
+import { IWorkerAdvanced } from '../Models';
+
 //TODO Create type for baseInfo
-export const formatBaseInfoResult = async (baseInfo: any) => {
+export const formatBaseInfoResult = (
+   baseInfo: IWorkerAdvanced[] | null | undefined,
+): IWorkerAdvanced | null => {
    if (!baseInfo) return null;
    const data = baseInfo[0];
-
-   if (data.gender_id) {
-      data.genderText = data.gender_id === 1 ? 'արական / male' : 'իգական / female';
-   }
    return data;
 };

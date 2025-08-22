@@ -14,6 +14,8 @@ export type IWorkerLightDataModel = Pick<
    | 'gender_id'
    | 'ssn'
    | 'path'
+   | 'first_name_am'
+   | 'last_name_am'
 > & {
    alpha_3: string;
    user_id: number;

@@ -27,6 +27,11 @@ export class BuildWpQueries {
         a.ssn,
         a.telephone,
         a.gender_id,
+        CASE 
+            WHEN a.gender_id = 1 THEN 'արական / male'
+            WHEN a.gender_id = 2 THEN 'իգական / female'
+            ELSE NULL
+        END AS genderText,
         a.created_at AS user_created,
         c.name_am AS country_arm,
         c.name_en AS country_eng, 
@@ -94,6 +99,11 @@ export class BuildWpQueries {
         b.email_verified_at,
         b.last_active_at,
         b.gender_id,
+        CASE 
+            WHEN b.gender_id = 1 THEN 'արական / male'
+            WHEN b.gender_id = 2 THEN 'իգական / female'
+            ELSE NULL
+        END AS genderText,
         b.created_at AS user_created,
         c.name_am AS country_arm,
         c.name_en AS country_eng, 
@@ -162,6 +172,11 @@ export class BuildWpQueries {
         b.email_verified_at,
         b.last_active_at,
         b.gender_id,
+        CASE 
+            WHEN b.gender_id = 1 THEN 'արական / male'
+            WHEN b.gender_id = 2 THEN 'իգական / female'
+            ELSE NULL
+        END AS genderText,
         b.created_at AS user_created,
         c.name_am AS country_arm,
         c.name_en AS country_eng, 

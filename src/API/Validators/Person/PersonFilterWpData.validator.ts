@@ -46,10 +46,6 @@ export class Filters {
 
    @IsOptional()
    @IsString()
-   select_procedure?: string;
-
-   @IsOptional()
-   @IsString()
    birth_date_start?: string;
 
    @IsOptional()
