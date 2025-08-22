@@ -3,7 +3,7 @@ export class RefugeeCardModel {
    serial: string;
    card_number: string;
    issued: string;
-   full_address: string;
+   full_address: string | null;
    valid: string;
    bar: string;
    printed: string;

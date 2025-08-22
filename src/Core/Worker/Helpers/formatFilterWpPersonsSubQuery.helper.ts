@@ -5,34 +5,19 @@ import { convertToMysqlDate } from './convertToMysqlDate.helper';
 export const formatFilterWpPersonsSubQuery = (filters: Filters) => {
    const {
       psn,
-      card_id,
       last_name_arm,
       select_gender,
       last_name_lat,
       fisrt_name_arm,
       fisrt_name_lat,
       select_country,
-      created_at_end,
       birth_date_end,
       document_number,
       birth_date_start,
       select_procedure,
-      created_at_start,
    } = { ...filters };
 
    let baseQuery = FilterWorkersBaseQuery;
-
-   if (created_at_start) {
-      const startDate = convertToMysqlDate(created_at_start);
-
-      baseQuery += `AND claim_date >= '${startDate}'  `;
-   }
-
-   if (created_at_end) {
-      const endDate = convertToMysqlDate(created_at_end);
-
-      baseQuery += ` AND claim_date <= '${endDate}' `;
-   }
 
    if (birth_date_start && !birth_date_end) {
       const bDayArray = birth_date_start.split('/');
@@ -62,15 +47,6 @@ export const formatFilterWpPersonsSubQuery = (filters: Filters) => {
     CONCAT(ALL_PERSON.birthday_year,'-', ALL_PERSON.birthday_month,'-', ALL_PERSON.birthday_day) <=  '${formatedBDayEnd}' `;
    }
 
-   // if (created_at_start && created_at_end) {
-   //   const createDateArr = created_at_start.split("/");
-   //   const createDateDay = createDateArr[0];
-   //   const createDateMonth = createDateArr[1];
-   //   const createDateYear = createDateArr[2];
-   //   const formatedCreateDate = `${createDateYear}-${createDateMonth}-${createDateDay}`;
-   //   baseQuery += `AND claim_date = '${formatedCreateDate}' `;
-   // }
-
    if (fisrt_name_lat) {
       baseQuery += ` AND first_name_en LIKE '%${fisrt_name_lat}%'`;
    }
@@ -91,20 +67,12 @@ export const formatFilterWpPersonsSubQuery = (filters: Filters) => {
       baseQuery += ` AND ssn = '${psn}'`;
    }
 
-   if (card_id) {
-      baseQuery += ` AND serial_number = '${card_id}'`;
-   }
-
    if (document_number) {
       baseQuery += ` AND passport_number = '${document_number}'`;
    }
 
    if (select_gender) {
       baseQuery += ` AND gender_id = ${select_gender}`;
-   }
-
-   if (select_procedure && select_procedure != '0') {
-      baseQuery += ` AND tablename = '${select_procedure}'`;
    }
 
    if (select_country?.value && select_country.value != 0) {

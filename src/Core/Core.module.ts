@@ -12,6 +12,7 @@ import { ReligionService } from './Religion/Religion.serrvice';
 import { MarzService } from './Marz/Marz.service';
 import { CommunityService } from './Community/Community.service';
 import { SettlementService } from './Settlement/Settlement.service';
+import { RefugeeCardService } from './RefugeeCard/RefugeeCard.service';
 
 const services = [
    WorkerService,
@@ -24,6 +25,7 @@ const services = [
    MarzService,
    CommunityService,
    SettlementService,
+   RefugeeCardService,
 ];
 
 const helpers = [BuildWpQueries];

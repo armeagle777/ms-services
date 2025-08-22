@@ -1,5 +1,5 @@
 export const enum WorkerTbNamesEnum {
-   FAMILY = 'FAMILY',
-   EMPLOYEE = 'Employee',
-   EAEU = 'EAEU',
+   FAMILY = 'eaeu_family',
+   EMPLOYEE = 'employee',
+   EAEU = 'eaeu_employee',
 }

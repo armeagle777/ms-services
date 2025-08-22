@@ -53,8 +53,8 @@ export const buildFindByIdQuery = (personalId: number) => {
     FROM tb_person P
         LEFT JOIN tb_country C ON C.country_id=P.citizenship
         LEFT JOIN tb_country R ON R.country_id=P.previous_residence
-        LEFT JOIN previous_residence ET ON ET.etnic_id = P.etnicity
-        LEFT JOIN tb_religions  REl ON REL.religion_id = P.religion
+        LEFT JOIN tb_etnics ET ON ET.etnic_id = P.etnicity
+        LEFT JOIN tb_religions  REL ON REL.religion_id = P.religion
         LEFT JOIN tb_role  ROL ON ROL.role_id = P.role
         LEFT JOIN tb_person_status  PS ON PS.person_status_id = P.person_status
         LEFT JOIN tb_case  CS ON CS.case_id=P.case_id
