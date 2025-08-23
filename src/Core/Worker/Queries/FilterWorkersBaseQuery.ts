@@ -1,5 +1,5 @@
 // export const FilterWorkersBaseQuery = `SELECT
-// 			ALL_PERSON.tablename,
+// 			ALL_PERSON.tableName,
 // 			ALL_PERSON.id,
 // 			ALL_PERSON.passport_number,
 // 			ALL_PERSON.citizenship_id,
@@ -34,7 +34,7 @@
 // 			b.first_name_en,
 // 			b.last_name_en,
 // 			b.ssn,
-// 			'Employee' as tablename,
+// 			'employee' as tableName,
 // 			b.gender_id,
 // 			a.user_id,
 // 			f.status as fine_status,
@@ -68,7 +68,7 @@
 // 			b.first_name_en,
 // 			b.last_name_en,
 // 			b.ssn,
-// 			'EAEU' as tablename,
+// 			'eaeu_employee' as tableName,
 // 			b.gender_id,
 // 			a.user_id,
 // 			f.status as fine_status,
@@ -100,7 +100,7 @@
 // 			a.first_name_en,
 // 			a.last_name_en,
 // 			a.ssn,
-// 			'FAMILY' as tablename,
+// 			'eaeu_family' as tableName,
 // 			a.gender_id,
 // 			a.user_id,
 // 			f.status as fine_status,
@@ -119,27 +119,45 @@
 // 			) AS ALL_PERSON
 // 			WHERE 1  `;
 
-export const FilterWorkersBaseQuery = ` SELECT ALL_PERSON.* FROM (
+export const FilterWorkersBaseQuery = ` SELECT 
+			ALL_PERSON.tableName,
+			ALL_PERSON.id,
+			ALL_PERSON.passport_number,
+			ALL_PERSON.citizenship_id,
+			ALL_PERSON.ssn,
+			ALL_PERSON.alpha_3,
+			ALL_PERSON.arm_short,
+			ALL_PERSON.first_name_en,
+			ALL_PERSON.first_name_am,
+			ALL_PERSON.last_name_en,
+			ALL_PERSON.last_name_am,
+			ALL_PERSON.gender_id,
+			ALL_PERSON.user_id,
+			ALL_PERSON.birthday_day,
+			ALL_PERSON.birthday_month,
+			ALL_PERSON.birthday_year,
+			ALL_PERSON.path
+ FROM (
 	SELECT
-		'employee' as tableName, 
-		a.id AS claim_id, 
-		c.ssn, 
-		c.first_name_am, 
-		c.last_name_am, 
-		c.first_name_en, 
-		c.last_name_en, 
+		'employee' as tableName,
+		a.id AS claim_id,
+		c.ssn,
+		c.first_name_am,
+		c.last_name_am,
+		c.first_name_en,
+		c.last_name_en,
 		c.gender_id,
 		b.id,
-		b.user_id,  
-		b.birthday_year, 
-		b.birthday_month, 
-		b.birthday_day, 
-		b.passport_number, 
-		d.id as citizenship_id, 
-		d.alpha_3, 
-		d.arm_short, 
-		d.name_am, 
-		d.name_en, 
+		b.user_id,
+		b.birthday_year,
+		b.birthday_month,
+		b.birthday_day,
+		b.passport_number,
+		d.id as citizenship_id,
+		d.alpha_3,
+		d.arm_short,
+		d.name_am,
+		d.name_en,
 		e.path
 	FROM claims a
 		INNER JOIN employees b ON a.employee_id = b.id
@@ -153,29 +171,29 @@ export const FilterWorkersBaseQuery = ` SELECT ALL_PERSON.* FROM (
 			WHERE t2.employee_id = a.employee_id
 				AND t2.employee_id IS NOT NULL
 		)
-	
+
 	UNION ALL
 
 	SELECT
-		'eaeu_employee' as tableName, 
-		a.id AS claim_id, 
-		c.ssn, 
-		c.first_name_am, 
-		c.last_name_am, 
-		c.first_name_en, 
-		c.last_name_en, 
+		'eaeu_employee' as tableName,
+		a.id AS claim_id,
+		c.ssn,
+		c.first_name_am,
+		c.last_name_am,
+		c.first_name_en,
+		c.last_name_en,
 		c.gender_id,
 		b.id,
-		b.user_id, 
-		b.birthday_year, 
-		b.birthday_month, 
-		b.birthday_day, 
-		b.passport_number, 
-		d.id as citizenship_id, 
-		d.alpha_3, 
-		d.arm_short, 
-		d.name_am, 
-		d.name_en, 
+		b.user_id,
+		b.birthday_year,
+		b.birthday_month,
+		b.birthday_day,
+		b.passport_number,
+		d.id as citizenship_id,
+		d.alpha_3,
+		d.arm_short,
+		d.name_am,
+		d.name_en,
 		e.path
 	FROM claims a
 		INNER JOIN eaeu_employees b ON a.eaeu_employee_id = b.id
@@ -193,25 +211,25 @@ export const FilterWorkersBaseQuery = ` SELECT ALL_PERSON.* FROM (
 	UNION ALL
 
 	SELECT
-		'eaeu_family' as tableName, 
-		a.id AS claim_id, 
+		'eaeu_family' as tableName,
+		a.id AS claim_id,
 		b.ssn,
+		b.first_name_am,
+		b.last_name_am,
+		b.first_name_en,
+		b.last_name_en,
+		b.gender_id,
 		b.id,
 		b.user_id,
-		b.first_name_am, 
-		b.last_name_am, 
-		b.first_name_en, 
-		b.last_name_en, 
-		b.gender_id, 
-		b.birthday_year, 
-		b.birthday_month, 
-		b.birthday_day, 
-		b.passport_number, 
-		d.id as citizenship_id, 
-		d.alpha_3, 
-		d.arm_short, 
-		d.name_am, 
-		d.name_en, 
+		b.birthday_year,
+		b.birthday_month,
+		b.birthday_day,
+		b.passport_number,
+		d.id as citizenship_id,
+		d.alpha_3,
+		d.arm_short,
+		d.name_am,
+		d.name_en,
 		e.path
 	FROM claims a
 		INNER JOIN eaeu_employee_family_members b ON a.eaeu_employee_family_member_id = b.id
@@ -223,5 +241,5 @@ export const FilterWorkersBaseQuery = ` SELECT ALL_PERSON.* FROM (
 			FROM claims t2
 			WHERE t2.eaeu_employee_family_member_id = a.eaeu_employee_family_member_id
 				AND t2.eaeu_employee_family_member_id IS NOT NULL
-		) 
+		)
 	) AS ALL_PERSON WHERE 1`;

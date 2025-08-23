@@ -18,32 +18,24 @@ export const formatFilterWpPersonsSubQuery = (filters: Filters) => {
 
    let baseQuery = FilterWorkersBaseQuery;
 
-   if (birth_date_start && !birth_date_end) {
-      const bDayArray = birth_date_start.split('/');
+   if (birth_date_start || birth_date_end) {
+      let conditions = [];
 
-      const birth_date_start_day = bDayArray[0];
-      const birth_date_start_month = bDayArray[1];
-      const birth_date_start_year = bDayArray[2];
-      baseQuery += ` AND birthday_day = '${birth_date_start_day}' AND birthday_month =  '${birth_date_start_month}' AND birthday_year = '${birth_date_start_year}' `;
-   }
+      if (birth_date_start) {
+         conditions.push(
+            `STR_TO_DATE(CONCAT(birthday_day,'/',birthday_month,'/',birthday_year),'%d/%m/%Y') >= STR_TO_DATE('${birth_date_start}','%d/%m/%Y')`,
+         );
+      }
 
-   if (birth_date_start && birth_date_end) {
-      const bDayStartArray = birth_date_start.split('/');
-      const bDayEndArray = birth_date_end.split('/');
+      if (birth_date_end) {
+         conditions.push(
+            `STR_TO_DATE(CONCAT(birthday_day,'/',birthday_month,'/',birthday_year),'%d/%m/%Y') <= STR_TO_DATE('${birth_date_end}','%d/%m/%Y')`,
+         );
+      }
 
-      const bDate_start_day = bDayStartArray[0];
-      const bDate_start_month = bDayStartArray[1];
-      const bDate_start_year = bDayStartArray[2];
-      const formatedBDayStart = `${bDate_start_year}-${bDate_start_month}-${bDate_start_day}`;
-      const birth_date_start_day = bDayStartArray[0];
-
-      const birth_date_end_day = bDayEndArray[0];
-      const birth_date_end_month = bDayEndArray[1];
-      const birth_date_end_year = bDayEndArray[2];
-      const formatedBDayEnd = `${birth_date_end_year}-${birth_date_end_month}-${birth_date_end_day}`;
-
-      baseQuery += ` AND CONCAT(birthday_year,'-', birthday_month,'-', birthday_day) >= '${formatedBDayStart}' and
-    CONCAT(ALL_PERSON.birthday_year,'-', ALL_PERSON.birthday_month,'-', ALL_PERSON.birthday_day) <=  '${formatedBDayEnd}' `;
+      if (conditions.length) {
+         baseQuery += ' AND ' + conditions.join(' AND ');
+      }
    }
 
    if (fisrt_name_lat) {
@@ -63,7 +55,7 @@ export const formatFilterWpPersonsSubQuery = (filters: Filters) => {
    }
 
    if (psn) {
-      baseQuery += ` AND ssn = '${psn}'`;
+      baseQuery += ` AND ALL_PERSON.ssn = '${psn}'`;
    }
 
    if (document_number) {
@@ -77,6 +69,5 @@ export const formatFilterWpPersonsSubQuery = (filters: Filters) => {
    if (select_country?.value && select_country.value != 0) {
       baseQuery += ` AND citizenship_id = ${select_country.value}`;
    }
-
    return baseQuery;
 };
