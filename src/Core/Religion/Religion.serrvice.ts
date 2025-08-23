@@ -8,7 +8,7 @@ import { SequelizeSelectOptions } from '../Shared/Constants/Sequielize.constants
 @Injectable()
 export class ReligionService {
    constructor(@Inject('ASYLUM_CONNECTION') private readonly asylumDb: Sequelize) {}
-   async findAll(): Promise<Partial<AsylumReligion>[]> {
+   async findAll(): Promise<AsylumReligion[]> {
       return this.asylumDb.query(FindAllReligionsQuery, SequelizeSelectOptions);
    }
 }

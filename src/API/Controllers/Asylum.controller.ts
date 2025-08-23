@@ -7,9 +7,9 @@ import { IdValidator, PersonFilterAsylumDataValidator } from '../Validators';
 export class AsylumController {
    constructor(private readonly asylumService: AsylumService) {}
 
-   @Get('countries')
+   @Get('filter/options')
    getCountries() {
-      return this.asylumService.getCountries();
+      return this.asylumService.getFilterOptions();
    }
 
    // @Post('persons/filter')

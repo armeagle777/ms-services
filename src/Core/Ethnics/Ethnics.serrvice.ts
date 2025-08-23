@@ -8,7 +8,7 @@ import { AsylumEthnics } from './Models';
 @Injectable()
 export class EthnicsService {
    constructor(@Inject('ASYLUM_CONNECTION') private readonly asylumDb: Sequelize) {}
-   async findAll(): Promise<Partial<AsylumEthnics>[]> {
+   async findAll(): Promise<AsylumEthnics[]> {
       return this.asylumDb.query(FindAllEthnicsQuery, SequelizeSelectOptions);
    }
 }

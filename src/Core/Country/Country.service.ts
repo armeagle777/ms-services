@@ -20,8 +20,8 @@ export class CountryService {
       return results;
    }
 
-   async findAllRefugeeCountries(): Promise<Partial<RefugeeCountry>[]> {
-      const results: Partial<RefugeeCountry>[] = await this.asylumDb.query(
+   async findAllRefugeeCountries(): Promise<RefugeeCountry[]> {
+      const results = await this.asylumDb.query<RefugeeCountry>(
          GetRefugeeCountriesQuery,
          SequelizeSelectOptions,
       );
