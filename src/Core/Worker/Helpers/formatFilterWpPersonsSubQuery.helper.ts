@@ -14,7 +14,6 @@ export const formatFilterWpPersonsSubQuery = (filters: Filters) => {
       birth_date_end,
       document_number,
       birth_date_start,
-      select_procedure,
    } = { ...filters };
 
    let baseQuery = FilterWorkersBaseQuery;
