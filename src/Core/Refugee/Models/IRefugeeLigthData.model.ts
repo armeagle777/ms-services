@@ -26,4 +26,6 @@ export interface IRefugeeLightDataModel {
    role: number;
    image: string | null;
    ROLE_NAME: string;
+   CITIZENSHIP_NAME_ENG: string;
+   CITIZENSHIP_NAME_ARM: string;
 }

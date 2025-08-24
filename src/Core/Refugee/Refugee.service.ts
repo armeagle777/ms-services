@@ -8,6 +8,7 @@ import {
    IRefugeeFamilyMemberModel,
    IGetDetailByIdResponseModel,
    IRefugeeLightDataModel,
+   IFilterRefugeeLightDataModel,
 } from './Models';
 import { RefugeeCardService } from '../RefugeeCard/RefugeeCard.service';
 import { buildFindByIdQuery, buildFindFamilyMembersQuery } from './Helpers';
@@ -29,7 +30,7 @@ export class RefugeeService {
    async filterLightData(
       filters: RefugeeLightDataFilters,
       { pagination }: { pagination: IPaginationParams },
-   ) {
+   ): Promise<IFilterRefugeeLightDataModel> {
       const { limit, offset, page, pageSize } = formatQueryPagination(pagination);
       const countSubQuery = buildFilterRefugeeLightDataQuery(filters);
       const query = `${countSubQuery} LIMIT :limit OFFSET :offset`;
@@ -99,12 +100,15 @@ export class RefugeeService {
       baseInfo: IRefugeeLightDataModel | IRefugeeDetail,
    ): Promise<void> {
       try {
-         if (!baseInfo?.image) return;
-         const refugeeBase64Image = await this.asylumBackend.getRefugeeImage(baseInfo.image);
+         if (!baseInfo?.image || !baseInfo.case_id || !baseInfo.personal_id) return;
+         const profileImageUrl = `/uploads/${baseInfo.case_id}/${baseInfo.personal_id}/${baseInfo.image}`;
+         const refugeeBase64Image = await this.asylumBackend.getRefugeeImage(profileImageUrl);
 
          baseInfo.image = refugeeBase64Image;
       } catch (error) {
-         this.logger.error(`Failed to fetch image: ${error.message}`);
+         this.logger.error(
+            `Failed to fetch image for Refugee ${baseInfo.personal_id}: ${error.message}`,
+         );
          baseInfo.image = null;
       }
    }

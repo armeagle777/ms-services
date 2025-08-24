@@ -69,5 +69,6 @@ export const buildFilterRefugeeLightDataQuery = (filters: RefugeeLightDataFilter
       baseQuery += ` AND P.etnicity = ${select_country.value}`;
    }
 
+   baseQuery += ' ORDER BY P.personal_id ASC ';
    return baseQuery;
 };

@@ -28,8 +28,9 @@ export class RefugeeLightDataFilters {
    @IsString()
    l_name_eng?: string;
 
+   @IsOptional()
    @IsInt()
-   select_gender: GenderEnum;
+   select_gender?: GenderEnum;
 
    @IsOptional()
    @ValidateNested()

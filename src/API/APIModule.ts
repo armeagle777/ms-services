@@ -13,8 +13,11 @@ export class APIModule implements NestModule {
    configure(consumer: MiddlewareConsumer) {
       consumer
          .apply(SignatureVerificationMiddleware)
-         .exclude({ path: 'work-permit/countries', method: RequestMethod.GET })
-         .forRoutes(WorkPermitController);
+         .exclude(
+            { path: 'work-permit/countries', method: RequestMethod.GET },
+            { path: 'asylum/filter/options', method: RequestMethod.GET },
+         )
+         .forRoutes(WorkPermitController, AsylumController);
    }
 }
 {

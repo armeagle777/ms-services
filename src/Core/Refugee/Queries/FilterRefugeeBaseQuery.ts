@@ -25,8 +25,11 @@ export const FilterRefugeeBaseQuery = `
         P.deport_prescurator, 
         P.prison, 
         P.role, 
-        P.image, 
+        P.image,
+        C.country_arm AS CITIZENSHIP_NAME_ARM,
+        C.country_eng AS CITIZENSHIP_NAME_ENG, 
         R.der AS ROLE_NAME
     FROM tb_person P
         LEFT JOIN tb_role  R ON R.role_id = P.role
+        LEFT JOIN tb_country C ON C.country_id = P.citizenship
     WHERE 1 `;
