@@ -12,10 +12,10 @@ export class AsylumController {
       return this.asylumService.getFilterOptions();
    }
 
-   // @Post('persons/filter')
-   // filterPersonWpData(@Body() filterData: PersonFilterAsylumDataValidator) {
-   //    return this.asylumService.filterPersonData(filterData);
-   // }
+   @Post('persons/filter')
+   filterPersonWpData(@Body() filterData: PersonFilterAsylumDataValidator) {
+      return this.asylumService.filterPersonData(filterData);
+   }
 
    @Post('persons/detail/:id')
    getPersonDetailData(@Param() params: IdValidator) {

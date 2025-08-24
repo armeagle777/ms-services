@@ -1,6 +1,5 @@
 import { Filters } from 'src/API/Validators/Person/PersonFilterWpData.validator';
 import { FilterWorkersBaseQuery } from '../Queries';
-import { convertToMysqlDate } from './convertToMysqlDate.helper';
 
 export const formatFilterWpPersonsSubQuery = (filters: Filters) => {
    const {

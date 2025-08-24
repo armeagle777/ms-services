@@ -32,6 +32,7 @@ import { Filters } from 'src/API/Validators/Person/PersonFilterWpData.validator'
 import { SequelizeSelectOptions } from '../Shared/Constants/Sequielize.constants';
 import { WPBackendIntegration } from 'src/Infrustructure/Services/WPBackendIntegration/WPBackend.integration';
 import { IWorkerLightDataModel } from './Models/WorkerLightData.model';
+import { formatQueryPagination } from '../Shared/Helpers';
 
 @Injectable()
 export class WorkerService {
@@ -45,10 +46,7 @@ export class WorkerService {
 
    // Filter paginated work permit data
    async filterLightData(filters: Filters, { pagination }): Promise<IFilterLightDataResponse> {
-      const { page, pageSize } = pagination;
-      const offset = (page - 1) * pageSize;
-      const limit = pageSize;
-
+      const { limit, offset, page, pageSize } = formatQueryPagination(pagination);
       const countSubQuery = formatFilterWpPersonsSubQuery(filters);
       const query = `${countSubQuery} LIMIT :limit OFFSET :offset`;
 

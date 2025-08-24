@@ -2,7 +2,7 @@ import { Transform, Type } from 'class-transformer';
 import { IsInt, Min, ValidateNested, IsOptional, IsEnum, IsString } from 'class-validator';
 import { GenderEnum } from 'src/Core/Shared/Enums/Gender.enum';
 
-export class CountrySelect {
+export class AutocompleteOption {
    @IsInt()
    value: number;
 
@@ -41,8 +41,8 @@ export class Filters {
 
    @IsOptional()
    @ValidateNested()
-   @Type(() => CountrySelect)
-   select_country?: CountrySelect;
+   @Type(() => AutocompleteOption)
+   select_country?: AutocompleteOption;
 
    @IsOptional()
    @IsString()

@@ -1,25 +1,70 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Sequelize } from 'sequelize-typescript';
 
 import { IPaginationParams } from '../Shared/Models';
 import { RefugeeLightDataFilters } from 'src/API/Validators';
-import { IRefugeeDetail, IRefugeeFamilyMemberModel } from './Models';
+import {
+   IRefugeeDetail,
+   IRefugeeFamilyMemberModel,
+   IGetDetailByIdResponseModel,
+   IRefugeeLightDataModel,
+} from './Models';
 import { RefugeeCardService } from '../RefugeeCard/RefugeeCard.service';
 import { buildFindByIdQuery, buildFindFamilyMembersQuery } from './Helpers';
 import { SequelizeSelectOptions } from '../Shared/Constants/Sequielize.constants';
-import { IGetDetailByIdResponseModel } from './Models/IGetDetailByIdResponse.model';
+import { formatQueryPagination } from '../Shared/Helpers';
+import { buildFilterRefugeeLightDataQuery } from './Helpers/buildFilterRefugeeLightData.helper';
+import { AsylumBackendIntegration } from 'src/Infrustructure/Services/AsylumBackendIntegration';
 
 @Injectable()
 export class RefugeeService {
+   private readonly logger = new Logger(RefugeeService.name);
+
    constructor(
       @Inject('ASYLUM_CONNECTION') private readonly asylumDb: Sequelize,
       private readonly refugeeCardService: RefugeeCardService,
+      private readonly asylumBackend: AsylumBackendIntegration,
    ) {}
 
-   filterLightData(
+   async filterLightData(
       filters: RefugeeLightDataFilters,
       { pagination }: { pagination: IPaginationParams },
-   ) {}
+   ) {
+      const { limit, offset, page, pageSize } = formatQueryPagination(pagination);
+      const countSubQuery = buildFilterRefugeeLightDataQuery(filters);
+      const query = `${countSubQuery} LIMIT :limit OFFSET :offset`;
+
+      // Get total count of records
+      const countResult = await this.asylumDb.query(countSubQuery, SequelizeSelectOptions);
+      const total = countResult?.length || 0;
+
+      // Get paginated records
+      const persons = (await this.asylumDb.query(query, {
+         ...SequelizeSelectOptions,
+         replacements: { limit, offset },
+      })) as IRefugeeLightDataModel[];
+
+      //Add base64 image string to all persons
+      const getImagesBase64Promises = persons?.map((p) => this.addRefugeeProfileImage(p));
+      await Promise.allSettled(getImagesBase64Promises);
+
+      // Calculate total pages
+      const totalPages = Math.ceil(total / pageSize);
+
+      const response = {
+         data: persons,
+         pagination: {
+            total,
+            page,
+            pageSize,
+            totalPages,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1,
+         },
+      };
+
+      return response;
+   }
 
    async getDetailById(personalId: number): Promise<IGetDetailByIdResponseModel | null> {
       const getByPersonalIdQuery = buildFindByIdQuery(personalId);
@@ -48,5 +93,19 @@ export class RefugeeService {
          SequelizeSelectOptions,
       );
       return result;
+   }
+
+   private async addRefugeeProfileImage(
+      baseInfo: IRefugeeLightDataModel | IRefugeeDetail,
+   ): Promise<void> {
+      try {
+         if (!baseInfo?.image) return;
+         const refugeeBase64Image = await this.asylumBackend.getRefugeeImage(baseInfo.image);
+
+         baseInfo.image = refugeeBase64Image;
+      } catch (error) {
+         this.logger.error(`Failed to fetch image: ${error.message}`);
+         baseInfo.image = null;
+      }
    }
 }
