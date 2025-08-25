@@ -75,9 +75,9 @@ export class RefugeeService {
          SequelizeSelectOptions,
       );
       const refugee = getRefugeeByIdResponse[0];
-
       if (!refugee) return null;
 
+      await this.addRefugeeProfileImage(refugee);
       const refugeeCards = await this.refugeeCardService.findByRefugeeId(personalId);
       const refugeeFamilyMembers = await this.getFamilyMembers(personalId);
       const refugeeDetailFullDatan: IGetDetailByIdResponseModel = Object.assign(refugee, {
