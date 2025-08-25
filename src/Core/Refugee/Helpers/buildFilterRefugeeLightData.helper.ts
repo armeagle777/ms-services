@@ -16,20 +16,24 @@ export const buildFilterRefugeeLightDataQuery = (filters: RefugeeLightDataFilter
    } = { ...filters };
 
    let baseQuery = FilterRefugeeBaseQuery;
+   const replacements: Record<string, any> = {};
 
+   // Birth date filtering
    if (birth_date_start || birth_date_end) {
-      let conditions = [];
+      const conditions: string[] = [];
 
       if (birth_date_start) {
          conditions.push(
-            `STR_TO_DATE(CONCAT(b_day,'/',b_month,'/',b_year),'%d/%m/%Y') >= STR_TO_DATE('${birth_date_start}','%d/%m/%Y')`,
+            `STR_TO_DATE(CONCAT(b_day,'/',b_month,'/',b_year),'%d/%m/%Y') >= STR_TO_DATE(:birth_date_start,'%d/%m/%Y')`,
          );
+         replacements.birth_date_start = birth_date_start;
       }
 
       if (birth_date_end) {
          conditions.push(
-            `STR_TO_DATE(CONCAT(b_day,'/',b_month,'/',b_year),'%d/%m/%Y') <= STR_TO_DATE('${birth_date_end}','%d/%m/%Y')`,
+            `STR_TO_DATE(CONCAT(b_day,'/',b_month,'/',b_year),'%d/%m/%Y') <= STR_TO_DATE(:birth_date_end,'%d/%m/%Y')`,
          );
+         replacements.birth_date_end = birth_date_end;
       }
 
       if (conditions.length) {
@@ -38,37 +42,46 @@ export const buildFilterRefugeeLightDataQuery = (filters: RefugeeLightDataFilter
    }
 
    if (f_name_eng) {
-      baseQuery += ` AND P.f_name_eng LIKE '%${f_name_eng}%'`;
+      baseQuery += ` AND P.f_name_eng LIKE :f_name_eng`;
+      replacements.f_name_eng = `%${f_name_eng}%`;
    }
 
    if (l_name_eng) {
-      baseQuery += ` AND P.l_name_eng LIKE '%${l_name_eng}%'`;
+      baseQuery += ` AND P.l_name_eng LIKE :l_name_eng`;
+      replacements.l_name_eng = `%${l_name_eng}%`;
    }
 
    if (f_name_arm) {
-      baseQuery += ` AND P.f_name_arm LIKE '%${f_name_arm}%'`;
+      baseQuery += ` AND P.f_name_arm LIKE :f_name_arm`;
+      replacements.f_name_arm = `%${f_name_arm}%`;
    }
 
    if (l_name_arm) {
-      baseQuery += ` AND P.l_name_arm LIKE '%${l_name_arm}%'`;
+      baseQuery += ` AND P.l_name_arm LIKE :l_name_arm`;
+      replacements.l_name_arm = `%${l_name_arm}%`;
    }
 
    if (doc_num) {
-      baseQuery += ` AND P.doc_num = '${doc_num}'`;
+      baseQuery += ` AND P.doc_num = :doc_num`;
+      replacements.doc_num = doc_num;
    }
 
    if (select_gender) {
-      baseQuery += ` AND P.sex = ${select_gender}`;
+      baseQuery += ` AND P.sex = :select_gender`;
+      replacements.select_gender = select_gender;
    }
 
    if (select_country?.value && select_country.value != 0) {
-      baseQuery += ` AND P.citizenship = ${select_country.value}`;
+      baseQuery += ` AND P.citizenship = :select_country`;
+      replacements.select_country = select_country.value;
    }
 
    if (select_etnicity?.value && select_etnicity.value != 0) {
-      baseQuery += ` AND P.etnicity = ${select_country.value}`;
+      baseQuery += ` AND P.etnicity = :select_etnicity`;
+      replacements.select_etnicity = select_etnicity.value;
    }
 
    baseQuery += ' ORDER BY P.personal_id ASC ';
-   return baseQuery;
+
+   return { query: baseQuery, replacements };
 };

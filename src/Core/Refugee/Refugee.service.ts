@@ -32,17 +32,18 @@ export class RefugeeService {
       { pagination }: { pagination: IPaginationParams },
    ): Promise<IFilterRefugeeLightDataModel> {
       const { limit, offset, page, pageSize } = formatQueryPagination(pagination);
-      const countSubQuery = buildFilterRefugeeLightDataQuery(filters);
-      const query = `${countSubQuery} LIMIT :limit OFFSET :offset`;
+      const { query, replacements } = buildFilterRefugeeLightDataQuery(filters);
+
+      const finalQuery = `${query} LIMIT :limit OFFSET :offset`;
 
       // Get total count of records
-      const countResult = await this.asylumDb.query(countSubQuery, SequelizeSelectOptions);
+      const countResult = await this.asylumDb.query(query, SequelizeSelectOptions);
       const total = countResult?.length || 0;
 
       // Get paginated records
-      const persons = (await this.asylumDb.query(query, {
+      const persons = (await this.asylumDb.query(finalQuery, {
          ...SequelizeSelectOptions,
-         replacements: { limit, offset },
+         replacements: { ...replacements, limit, offset },
       })) as IRefugeeLightDataModel[];
 
       //Add base64 image string to all persons

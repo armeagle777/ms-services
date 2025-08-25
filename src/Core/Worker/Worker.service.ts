@@ -47,17 +47,18 @@ export class WorkerService {
    // Filter paginated work permit data
    async filterLightData(filters: Filters, { pagination }): Promise<IFilterLightDataResponse> {
       const { limit, offset, page, pageSize } = formatQueryPagination(pagination);
-      const countSubQuery = formatFilterWpPersonsSubQuery(filters);
-      const query = `${countSubQuery} LIMIT :limit OFFSET :offset`;
+      const { query, replacements } = formatFilterWpPersonsSubQuery(filters);
+
+      const finalQuery = `${query} LIMIT :limit OFFSET :offset`;
 
       // Get total count of records
-      const countResult = await this.wpDb.query(countSubQuery, SequelizeSelectOptions);
+      const countResult = await this.wpDb.query(query, SequelizeSelectOptions);
       const total = countResult?.length || 0;
 
       // Get paginated records
-      const persons = (await this.wpDb.query(query, {
+      const persons = (await this.wpDb.query(finalQuery, {
          ...SequelizeSelectOptions,
-         replacements: { limit, offset },
+         replacements: { ...replacements, limit, offset },
       })) as IWorkerLightDataModel[];
 
       //Add base64 image string to all persons
