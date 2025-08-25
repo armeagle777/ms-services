@@ -52,7 +52,10 @@ export class WorkerService {
       const finalQuery = `${query} LIMIT :limit OFFSET :offset`;
 
       // Get total count of records
-      const countResult = await this.wpDb.query(query, SequelizeSelectOptions);
+      const countResult = await this.wpDb.query(query, {
+         ...SequelizeSelectOptions,
+         replacements: { ...replacements },
+      });
       const total = countResult?.length || 0;
 
       // Get paginated records

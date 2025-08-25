@@ -6,12 +6,13 @@ import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
    const PORT = process.env.PORT || 3000;
-   const HOST = process.env.host || '0.0.0.0';
    const app = await NestFactory.create(AppModule);
    app.setGlobalPrefix('api');
    app.useGlobalPipes(new ValidationPipe({}));
    app.use(morgan('combined'));
 
-   await app.listen(PORT, HOST);
+   await app.listen(PORT, () => {
+      console.log('Application started on PORT:', PORT);
+   });
 }
 bootstrap();
