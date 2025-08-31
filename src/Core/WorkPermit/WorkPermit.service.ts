@@ -5,6 +5,7 @@ import { WorkerService } from '../Worker/Worker.service';
 import { CountryService } from '../Country/Country.service';
 import { PersonFilterWpDataValidator } from 'src/API/Validators/Person/PersonFilterWpData.validator';
 import { PersonDetailWpData } from 'src/API/Validators/Person/PersonDetailWpData.validator';
+import { GetDiagnosis } from 'src/API/Validators/Person/GetDiagnosis.validator';
 
 @Injectable()
 export class WorkPermitService {
@@ -33,5 +34,9 @@ export class WorkPermitService {
       const { tableName, user_id } = body;
 
       return this.workerService.getFullDataById({ id, tableName, user_id });
+   }
+
+   async getPersonDiagnosis({ ssn, cardSerial }: GetDiagnosis) {
+      return this.workerService.getCardDiagnosis({ ssn, cardSerial });
    }
 }

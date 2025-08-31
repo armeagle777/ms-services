@@ -15,6 +15,7 @@ export class APIModule implements NestModule {
          .apply(SignatureVerificationMiddleware)
          .exclude(
             { path: 'work-permit/countries', method: RequestMethod.GET },
+            { path: 'work-permit/diagnosis', method: RequestMethod.GET },
             { path: 'asylum/filter/options', method: RequestMethod.GET },
          )
          .forRoutes(WorkPermitController, AsylumController);

@@ -33,6 +33,7 @@ import { SequelizeSelectOptions } from '../Shared/Constants/Sequielize.constants
 import { WPBackendIntegration } from 'src/Infrustructure/Services/WPBackendIntegration/WPBackend.integration';
 import { IWorkerLightDataModel } from './Models/WorkerLightData.model';
 import { formatQueryPagination } from '../Shared/Helpers';
+import { formatGetDiagnosisQuery } from './Helpers/formatGetDiagnosisQuery.helper';
 
 @Injectable()
 export class WorkerService {
@@ -137,6 +138,16 @@ export class WorkerService {
          eatmFamilyData,
          cards: [...wpCards, ...eatmCards, ...eatmFamilyCards],
       };
+   }
+
+   async getCardDiagnosis({ ssn, cardSerial }): Promise<any> {
+      const { query, replacements } = formatGetDiagnosisQuery({ ssn, cardSerial });
+
+      const data = await this.wpDb.query(query, {
+         ...SequelizeSelectOptions,
+         replacements,
+      });
+      return data;
    }
 
    private async getWpAdvancedData(
