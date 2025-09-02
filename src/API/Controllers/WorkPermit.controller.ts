@@ -29,6 +29,7 @@ export class WorkPermitController {
       return this.wpService.getPersonDetailData(params.id, body);
    }
 
+   // Endpoint for Ekeng to diagnose cardholders' issues
    @Get('diagnosis')
    getDiagnosis(@Query() query: GetDiagnosis) {
       return this.wpService.getPersonDiagnosis(query);
