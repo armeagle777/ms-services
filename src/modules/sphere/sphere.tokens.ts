@@ -1,0 +1,2 @@
+export const SPHERE_SEQUELIZE = 'SPHERE_SEQUELIZE';
+export const SPHERE_MODEL = 'SPHERE_MODEL';

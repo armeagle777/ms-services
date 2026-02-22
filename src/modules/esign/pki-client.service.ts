@@ -1,6 +1,7 @@
-import fs from 'fs';
-import https from 'https';
-import crypto from 'crypto';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as https from 'https';
+import * as crypto from 'crypto';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
@@ -8,22 +9,25 @@ import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class PkiClientService {
-  private readonly privateKey: string;
-  private readonly certificate: string;
-  private readonly agent: https.Agent;
+  private privateKey?: string;
+  private certificate?: string;
+  private agent?: https.Agent;
+  private readonly keyPath: string;
+  private readonly certPath: string;
 
   constructor(
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
   ) {
-    // TODO: confirm certificate locations for Nest app deployment
-    this.privateKey = fs.readFileSync('./src/certificates/pki-request.key', 'utf8');
-    this.certificate = fs.readFileSync('./src/certificates/pki-request.pem', 'utf8');
-    this.agent = new https.Agent({
-      key: this.privateKey,
-      cert: this.certificate,
-      rejectUnauthorized: false,
-    });
+    const keyPath =
+      this.configService.get<string>('ESIGN_PKI_KEY_PATH') ||
+      './src/certificates/pki-request.key';
+    const certPath =
+      this.configService.get<string>('ESIGN_PKI_CERT_PATH') ||
+      './src/certificates/pki-request.pem';
+
+    this.keyPath = this.resolveCertPath(keyPath);
+    this.certPath = this.resolveCertPath(certPath);
   }
 
   async editUser(userData: Record<string, unknown>, options: { isRaCitizen?: boolean } = {}) {
@@ -36,7 +40,7 @@ export class PkiClientService {
           'Content-Type': 'text/xml;charset=UTF-8',
           Accept: 'text/xml',
         },
-        httpsAgent: this.agent,
+        httpsAgent: this.ensureAgent(),
       }),
     );
 
@@ -53,7 +57,7 @@ export class PkiClientService {
           'Content-Type': 'text/xml;charset=UTF-8',
           Accept: 'text/xml',
         },
-        httpsAgent: this.agent,
+        httpsAgent: this.ensureAgent(),
       }),
     );
 
@@ -71,7 +75,7 @@ export class PkiClientService {
           'Content-Type': 'text/xml;charset=UTF-8',
           Accept: 'text/xml',
         },
-        httpsAgent: this.agent,
+        httpsAgent: this.ensureAgent(),
       }),
     );
 
@@ -82,6 +86,26 @@ export class PkiClientService {
     const baseUrl = this.configService.get<string>('ESIGN_PKI_API_URL');
     if (!baseUrl) throw new InternalServerErrorException('ESIGN_PKI_API_URL is not configured');
     return baseUrl;
+  }
+
+  private ensureAgent() {
+    if (this.agent) return this.agent;
+
+    if (!fs.existsSync(this.keyPath) || !fs.existsSync(this.certPath)) {
+      throw new InternalServerErrorException(
+        'ESIGN certificates not found. Configure ESIGN_PKI_KEY_PATH and ESIGN_PKI_CERT_PATH.',
+      );
+    }
+
+    this.privateKey = fs.readFileSync(this.keyPath, 'utf8');
+    this.certificate = fs.readFileSync(this.certPath, 'utf8');
+    this.agent = new https.Agent({
+      key: this.privateKey,
+      cert: this.certificate,
+      rejectUnauthorized: false,
+    });
+
+    return this.agent;
   }
 
   private buildFindUserSoap(matchValue: string) {
@@ -175,5 +199,13 @@ export class PkiClientService {
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&apos;');
+  }
+
+  private resolveCertPath(filePath: string) {
+    const direct = path.resolve(process.cwd(), filePath);
+    if (fs.existsSync(direct)) return direct;
+
+    const fallback = path.resolve(process.cwd(), '..', filePath.replace(/^\.\//, ''));
+    return fallback;
   }
 }

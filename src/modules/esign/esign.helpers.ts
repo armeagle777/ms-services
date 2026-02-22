@@ -40,7 +40,7 @@ export const parseFindUserResponse = (xml) => {
   const extendedInfoArray = Array.isArray(result.extendedInformation)   ? result.extendedInformation   : result.extendedInformation     ? [result.extendedInformation]     : [];
 
   /** Key → value map (normalized access) */
-  const extendedMap = {};
+  const extendedMap: Record<string, any> = {};
   for (const item of extendedInfoArray) {
     if (item?.name) {
       extendedMap[item.name] = item.value ?? null;

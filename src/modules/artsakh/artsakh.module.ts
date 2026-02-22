@@ -4,8 +4,7 @@ import { Sequelize,  QueryTypes} from 'sequelize';
 
 import { ArtsakhController } from './artsakh.controller';
 import { ArtsakhService } from './artsakh.service';
-
-export const ARTSAKH_SEQUELIZE = 'ARTSAKH_SEQUELIZE';
+import { ARTSAKH_SEQUELIZE } from './artsakh.tokens';
 
 @Module({
   imports: [ConfigModule],

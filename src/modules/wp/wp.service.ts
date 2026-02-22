@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Sequelize,  QueryTypes} from 'sequelize';
 
-import { WP_SEQUELIZE } from './wp.module';
+import { WP_SEQUELIZE } from './wp.tokens';
 import {
   getWpQuery,
   getEatmQuery,

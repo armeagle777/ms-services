@@ -4,8 +4,7 @@ import { Sequelize,  QueryTypes} from 'sequelize';
 
 import { WpController } from './wp.controller';
 import { WpService } from './wp.service';
-
-export const WP_SEQUELIZE = 'WP_SEQUELIZE';
+import { WP_SEQUELIZE } from './wp.tokens';
 
 @Module({
   imports: [ConfigModule],

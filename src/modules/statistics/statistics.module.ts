@@ -4,10 +4,7 @@ import { Sequelize,  QueryTypes} from 'sequelize';
 
 import { StatisticsController } from './statistics.controller';
 import { StatisticsService } from './statistics.service';
-
-export const STATISTICS_SEQUELIZE = 'STATISTICS_SEQUELIZE';
-export const SAHMANAHATUM_SEQUELIZE = 'SAHMANAHATUM_SEQUELIZE';
-export const WP_SEQUELIZE = 'STATISTICS_WP_SEQUELIZE';
+import { SAHMANAHATUM_SEQUELIZE, STATISTICS_SEQUELIZE, WP_SEQUELIZE } from './statistics.tokens';
 
 @Module({
   imports: [ConfigModule],

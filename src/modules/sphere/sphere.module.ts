@@ -4,9 +4,7 @@ import { DataTypes, Sequelize } from 'sequelize';
 
 import { SphereController } from './sphere.controller';
 import { SphereService } from './sphere.service';
-
-export const SPHERE_SEQUELIZE = 'SPHERE_SEQUELIZE';
-export const SPHERE_MODEL = 'SPHERE_MODEL';
+import { SPHERE_MODEL, SPHERE_SEQUELIZE } from './sphere.tokens';
 
 @Module({
   imports: [ConfigModule],

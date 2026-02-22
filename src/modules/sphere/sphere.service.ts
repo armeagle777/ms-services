@@ -1,7 +1,7 @@
 import { Inject, Injectable, NotImplementedException } from '@nestjs/common';
 import { Model, ModelStatic } from 'sequelize';
 
-import { SPHERE_MODEL } from './sphere.module';
+import { SPHERE_MODEL } from './sphere.tokens';
 import { SphereRecord } from './interfaces/sphere.interfaces';
 import { SphereUploadRequestDto } from './dto/sphere.dto';
 

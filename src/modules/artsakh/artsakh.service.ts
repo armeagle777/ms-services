@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Sequelize ,QueryTypes} from 'sequelize';
 
-import { ARTSAKH_SEQUELIZE } from './artsakh.module';
+import { ARTSAKH_SEQUELIZE } from './artsakh.tokens';
 import { getDisplacementCasesQuery, getDisplacementCertsQuery } from './artsakh.queries';
 import { DisplacementResponse } from './interfaces/artsakh.interfaces';
 

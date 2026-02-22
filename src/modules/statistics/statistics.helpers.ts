@@ -740,7 +740,14 @@ const formatEaeuEmployeeApplicationsQuery = ({ year, month, period, claim_type ,
     ORDER BY grand_total DESC`;
 };
 
-const formatEaeuEmployeeDecisionsQuery = ({ year, month, period, claim_type, decType }) => {
+const formatEaeuEmployeeDecisionsQuery = ({
+  year,
+  month,
+  period,
+  claim_type,
+  decType,
+  report_type,
+}) => {
   let period_where_condition = "";
   const claim_type_where_condion = claim_type == "all" ? "" : ` AND a.type = '${claim_type}'`;
 
@@ -752,7 +759,6 @@ const formatEaeuEmployeeDecisionsQuery = ({ year, month, period, claim_type, dec
     period_where_condition = `   AND  QUARTER(g.created_at) IN (3,4)  `;
   } else if (period == periodsMap.ANNUAL) {
     period_where_condition = ` `;
-    nestedPeriodWhereCondition = ` `;
   } else if (period == periodsMap.Q1) {
     period_where_condition = `   AND  QUARTER(g.created_at) =1  `;
   } else if (period == periodsMap.Q2) {
@@ -888,7 +894,14 @@ const formatEaeuEmployeeFamApplicationsQuery = ({ year, month, period, claim_typ
     GROUP BY sd.name_am
     ORDER BY grand_total DESC`;
 };
-const formatEaeuEmployeeFamDecisionsQuery = ({ year, month, period, claim_type, decType,report_type }) => {
+const formatEaeuEmployeeFamDecisionsQuery = ({
+  year,
+  month,
+  period,
+  claim_type,
+  decType,
+  report_type,
+}) => {
   let period_where_condition = "";
   const claim_type_where_condion = claim_type == "all" ? "" : ` AND a.type = '${claim_type}'`;
 
@@ -900,7 +913,6 @@ const formatEaeuEmployeeFamDecisionsQuery = ({ year, month, period, claim_type, 
     period_where_condition = `   AND  QUARTER(g.created_at) IN (3,4)  `;
   } else if (period == periodsMap.ANNUAL) {
     period_where_condition = ` `;
-    nestedPeriodWhereCondition = ` `;
   } else if (period == periodsMap.Q1) {
     period_where_condition = `   AND  QUARTER(g.created_at) =1  `;
   } else if (period == periodsMap.Q2) {
@@ -1242,7 +1254,6 @@ const formatVolunteerDecisionsQuery = ({ year, month, period, claim_type, decTyp
     period_where_condition = `   AND  QUARTER(g.created_at) IN (3,4)  `;
   } else if (period == periodsMap.ANNUAL) {
     period_where_condition = ` `;
-    nestedPeriodWhereCondition = ` `;
   } else if (period == periodsMap.Q1) {
     period_where_condition = `   AND  QUARTER(g.created_at) =1  `;
   } else if (period == periodsMap.Q2) {
@@ -1673,10 +1684,13 @@ const mapWpData = (data) => {
     const rowData = data.reduce((acc, country) => {
       acc[country.name_en] = country[combination.field];
       return acc;
-    }, {});
+    }, {} as Record<string, any>);
 
     // Calculate the total of the row
-    const total = Object.values(rowData).reduce((sum, value) => sum + value, 0);
+    const total = (Object.values(rowData) as Array<number>).reduce(
+      (sum, value) => sum + Number(value || 0),
+      0,
+    );
     rowData.total = total;
 
     return {
@@ -1732,10 +1746,13 @@ const mapEaeuFamData = (data) => {
     const rowData = data.reduce((acc, country) => {
       acc[country.name_am] = country[combination.field];
       return acc;
-    }, {});
+    }, {} as Record<string, any>);
 
     // Calculate the total of the row
-    const total = Object.values(rowData).reduce((sum, value) => sum + value, 0);
+    const total = (Object.values(rowData) as Array<number>).reduce(
+      (sum, value) => sum + Number(value || 0),
+      0,
+    );
     rowData.total = total;
 
     return {

@@ -1,6 +1,6 @@
 import { Inject, Injectable, NotImplementedException } from '@nestjs/common';
 import { Sequelize,  QueryTypes} from 'sequelize';
-import crypto from 'crypto';
+import * as crypto from 'crypto';
 
 import { decTypeTableNameMap, statByYearQuery } from './statistics.constants';
 import {
@@ -28,11 +28,7 @@ import {
   ExportStatsRequestDto,
   WpSimpleStatsRequestDto,
 } from './dto/statistics.dto';
-import {
-  SAHMANAHATUM_SEQUELIZE,
-  STATISTICS_SEQUELIZE,
-  WP_SEQUELIZE,
-} from './statistics.module';
+import { SAHMANAHATUM_SEQUELIZE, STATISTICS_SEQUELIZE, WP_SEQUELIZE } from './statistics.tokens';
 import { StatisticsPeriodOption, StatisticsRow } from './interfaces/statistics.interfaces';
 
 @Injectable()
