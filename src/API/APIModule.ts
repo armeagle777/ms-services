@@ -1,12 +1,40 @@
 import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 
-import { AsylumController, WorkPermitController } from './Controllers';
+import {
+   ArtsakhController,
+   AsylumController,
+   EsignController,
+   KadastrController,
+   McsController,
+   MojCesController,
+   PersonsController,
+   PetregistrController,
+   SphereController,
+   StatisticsController,
+   TaxController,
+   WorkPermitController,
+   WpController,
+} from './Controllers';
 import { CoreModule } from 'src/Core/Core.module';
 import { SignatureVerificationMiddleware } from './Middlewares';
 
 @Module({
    imports: [CoreModule],
-   controllers: [AsylumController, WorkPermitController],
+   controllers: [
+      AsylumController,
+      WorkPermitController,
+      PersonsController,
+      PetregistrController,
+      KadastrController,
+      ArtsakhController,
+      WpController,
+      MojCesController,
+      TaxController,
+      SphereController,
+      McsController,
+      EsignController,
+      StatisticsController,
+   ],
    providers: [],
 })
 export class APIModule implements NestModule {

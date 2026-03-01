@@ -1,2 +1,13 @@
 export { AsylumController } from './Asylum.controller';
 export { WorkPermitController } from './WorkPermit.controller';
+export { ArtsakhController } from './Artsakh.controller';
+export { EsignController } from './Esign.controller';
+export { KadastrController } from './Kadastr.controller';
+export { McsController } from './Mcs.controller';
+export { MojCesController } from './MojCes.controller';
+export { PersonsController } from './Persons.controller';
+export { PetregistrController } from './Petregistr.controller';
+export { SphereController } from './Sphere.controller';
+export { StatisticsController } from './Statistics.controller';
+export { TaxController } from './Tax.controller';
+export { WpController } from './Wp.controller';
