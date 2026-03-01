@@ -1,18 +1,40 @@
+import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { DataTypes, Sequelize } from 'sequelize';
 
-import { BuildWpQueries } from './Worker/Helpers';
 import { AsylumService } from './Asylum/Asylum.service';
-import { WorkerService } from './Worker/Worker.service';
-import { RefugeeService } from './Refugee/Refugee.service';
-import { CountryService } from './Country/Country.service';
-import { WorkPermitService } from './WorkPermit/WorkPermit.service';
-import { IntegrationModule } from 'src/Infrustructure/Services/Integration.module';
-import { EthnicsService } from './Ethnics/Ethnics.serrvice';
-import { ReligionService } from './Religion/Religion.serrvice';
-import { MarzService } from './Marz/Marz.service';
+import { ArtsakhService } from './Artsakh/Artsakh.service';
 import { CommunityService } from './Community/Community.service';
-import { SettlementService } from './Settlement/Settlement.service';
+import { CountryService } from './Country/Country.service';
+import { EsignService } from './Esign/Esign.service';
+import { EthnicsService } from './Ethnics/Ethnics.serrvice';
+import { KadastrService } from './Kadastr/Kadastr.service';
+import { MarzService } from './Marz/Marz.service';
+import { McsService } from './Mcs/Mcs.service';
+import { MojCesService } from './MojCes/MojCes.service';
+import { PersonsService } from './Persons/Persons.service';
+import { PetregistrService } from './Petregistr/Petregistr.service';
+import { RefugeeService } from './Refugee/Refugee.service';
 import { RefugeeCardService } from './RefugeeCard/RefugeeCard.service';
+import { ReligionService } from './Religion/Religion.serrvice';
+import { SettlementService } from './Settlement/Settlement.service';
+import { SphereService } from './Sphere/Sphere.service';
+import { StatisticsService } from './Statistics/Statistics.service';
+import { TaxService } from './Tax/Tax.service';
+import { WorkPermitService } from './WorkPermit/WorkPermit.service';
+import { WpService } from './Wp/Wp.service';
+import { WorkerService } from './Worker/Worker.service';
+import { BuildWpQueries } from './Worker/Helpers';
+import { IntegrationModule } from 'src/Infrustructure/Services/Integration.module';
+import { ARTSAKH_SEQUELIZE } from 'src/Core/Artsakh/artsakh.tokens';
+import { SPHERE_MODEL, SPHERE_SEQUELIZE } from 'src/Core/Sphere/sphere.tokens';
+import {
+   SAHMANAHATUM_SEQUELIZE,
+   STATISTICS_SEQUELIZE,
+   WP_SEQUELIZE as STATISTICS_WP_SEQUELIZE,
+} from 'src/Core/Statistics/statistics.tokens';
+import { WP_SEQUELIZE } from 'src/Core/Wp/wp.tokens';
 
 const services = [
    WorkerService,
@@ -26,13 +48,155 @@ const services = [
    CommunityService,
    SettlementService,
    RefugeeCardService,
+   PersonsService,
+   PetregistrService,
+   KadastrService,
+   ArtsakhService,
+   WpService,
+   MojCesService,
+   TaxService,
+   SphereService,
+   McsService,
+   EsignService,
+   StatisticsService,
 ];
 
 const helpers = [BuildWpQueries];
 
+const databaseProviders = [
+   {
+      provide: ARTSAKH_SEQUELIZE,
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+         const host = configService.get<string>('DATABASE_HOST');
+         const db = configService.get<string>('ARTSAKH_DATABASE_NAME');
+         const username = configService.get<string>('DATABASE_USERNAME');
+         const password = configService.get<string>('DATABASE_PASSWORD');
+
+         return new Sequelize(db || '', username || '', password || '', {
+            host,
+            dialect: 'mysql',
+            logging: false,
+         });
+      },
+   },
+   {
+      provide: SPHERE_SEQUELIZE,
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+         const host = configService.get<string>('DATABASE_HOST');
+         const db = configService.get<string>('DATABASE_NAME');
+         const username = configService.get<string>('DATABASE_USERNAME');
+         const password = configService.get<string>('DATABASE_PASSWORD');
+
+         return new Sequelize(db || '', username || '', password || '', {
+            host,
+            dialect: 'mysql',
+            logging: false,
+         });
+      },
+   },
+   {
+      provide: SPHERE_MODEL,
+      inject: [SPHERE_SEQUELIZE],
+      useFactory: (sequelize: Sequelize) =>
+         sequelize.define(
+            'Sphere',
+            {
+               name: { type: DataTypes.STRING, validate: { len: [0, 255] } },
+               tin: {
+                  type: DataTypes.STRING,
+                  allowNull: false,
+                  validate: { args: [7, 8] },
+               },
+               sphere_code: { type: DataTypes.STRING },
+               sphere_text: { type: DataTypes.TEXT('long') },
+               is_inactive: { type: DataTypes.BOOLEAN, defaultValue: false },
+               is_blocked: { type: DataTypes.BOOLEAN, defaultValue: false },
+               is_checked: { type: DataTypes.BOOLEAN, defaultValue: false },
+               createdAt: {
+                  type: 'TIMESTAMP',
+                  defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
+                  allowNull: false,
+               },
+               updatedAt: {
+                  type: 'TIMESTAMP',
+                  defaultValue: sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
+                  allowNull: false,
+               },
+            },
+            { timestamps: false },
+         ),
+   },
+   {
+      provide: STATISTICS_SEQUELIZE,
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+         const host = configService.get<string>('DATABASE_HOST');
+         const db = configService.get<string>('STATISTICS_DATABASE_NAME');
+         const username = configService.get<string>('DATABASE_USERNAME');
+         const password = configService.get<string>('DATABASE_PASSWORD');
+
+         return new Sequelize(db || '', username || '', password || '', {
+            host,
+            dialect: 'mysql',
+            logging: false,
+         });
+      },
+   },
+   {
+      provide: SAHMANAHATUM_SEQUELIZE,
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+         const host = configService.get<string>('DATABASE_HOST');
+         const db = configService.get<string>('SAHMANAHATUM_DATABASE_NAME');
+         const username = configService.get<string>('DATABASE_USERNAME');
+         const password = configService.get<string>('DATABASE_PASSWORD');
+
+         return new Sequelize(db || '', username || '', password || '', {
+            host,
+            dialect: 'mysql',
+            logging: false,
+         });
+      },
+   },
+   {
+      provide: STATISTICS_WP_SEQUELIZE,
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+         const host = configService.get<string>('WP_DATABASE_HOST');
+         const db = configService.get<string>('WP_DATABASE_NAME');
+         const username = configService.get<string>('WP_DATABASE_USERNAME');
+         const password = configService.get<string>('WP_DATABASE_PASSWORD');
+
+         return new Sequelize(db || '', username || '', password || '', {
+            host,
+            dialect: 'mysql',
+            logging: false,
+         });
+      },
+   },
+   {
+      provide: WP_SEQUELIZE,
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+         const host = configService.get<string>('WP_DATABASE_HOST');
+         const db = configService.get<string>('WP_DATABASE_NAME');
+         const username = configService.get<string>('WP_DATABASE_USERNAME');
+         const password = configService.get<string>('WP_DATABASE_PASSWORD');
+
+         return new Sequelize(db || '', username || '', password || '', {
+            host,
+            dialect: 'mysql',
+            logging: false,
+         });
+      },
+   },
+];
+
 @Module({
-   imports: [IntegrationModule],
-   providers: [...services, ...helpers],
-   exports: [WorkPermitService, AsylumService],
+   imports: [ConfigModule, HttpModule, IntegrationModule],
+   providers: [...services, ...helpers, ...databaseProviders],
+   exports: [...services],
 })
 export class CoreModule {}
