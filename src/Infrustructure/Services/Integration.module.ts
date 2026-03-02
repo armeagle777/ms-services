@@ -5,10 +5,17 @@ import { WPBackendIntegration, WPBackendHttpClient } from './WPBackendIntegratio
 import { AsylumBackendIntegration, AsylumBackendHttpClient } from './AsylumBackendIntegration';
 import { EkengIntegration } from './EkengIntegration/Ekeng.integration';
 import { PkiClientService } from './ESignIntegration/PkiClient.service';
+import { InterpolIntegration } from './InterpolIntegration';
 
 @Module({
    imports: [HttpModule],
-   exports: [WPBackendIntegration, AsylumBackendIntegration, EkengIntegration, PkiClientService],
+   exports: [
+      WPBackendIntegration,
+      AsylumBackendIntegration,
+      EkengIntegration,
+      PkiClientService,
+      InterpolIntegration,
+   ],
    providers: [
       WPBackendIntegration,
       AsylumBackendIntegration,
@@ -16,6 +23,7 @@ import { PkiClientService } from './ESignIntegration/PkiClient.service';
       AsylumBackendHttpClient,
       EkengIntegration,
       PkiClientService,
+      InterpolIntegration,
    ],
 })
 export class IntegrationModule {}
