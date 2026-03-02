@@ -13,6 +13,7 @@ import { KadastrService } from './Kadastr/Kadastr.service';
 import { MarzService } from './Marz/Marz.service';
 import { McsService } from './Mcs/Mcs.service';
 import { MojCesService } from './MojCes/MojCes.service';
+import { InterpolService } from './Interpol/Interpol.service';
 import { PersonsService } from './Persons/Persons.service';
 import { PetregistrService } from './Petregistr/Petregistr.service';
 import { RefugeeService } from './Refugee/Refugee.service';
@@ -57,6 +58,7 @@ const services = [
    TaxService,
    SphereService,
    McsService,
+   InterpolService,
    EsignService,
    StatisticsService,
 ];
