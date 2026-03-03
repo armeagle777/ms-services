@@ -463,7 +463,9 @@ ${bodyXml}
 
    private buildSltdEnvelope(bodyXml: string, includeAdminToken: boolean) {
       const wsUserInfoUsername = (
-         this.configService.get<string>('INTERPOL_SLTD_WS_USERINFO_USERNAME') || ''
+         this.configService.get<string>('INTERPOL_SLTD_WS_USERINFO_USERNAME') ||
+         this.configService.get<string>('INTERPOL_SLTD_USERNAME') ||
+         ''
       ).trim();
       const referenceInCountry = (
          this.configService.get<string>('INTERPOL_SLTD_REFERENCE_IN_COUNTRY') || 'YEREVAN'
