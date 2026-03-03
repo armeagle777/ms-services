@@ -454,31 +454,24 @@ ${bodyXml}
 
    private buildSltdEnvelope(bodyXml: string, includeAdminToken: boolean) {
       const wsUserInfoUsername =
-         (this.configService.get<string>('INTERPOL_SLTD_WS_USERINFO_USERNAME') ||
-            this.configService.get<string>('WS_USERINFO_USERNAME') ||
-            '')
-            .trim();
+         (this.configService.get<string>('INTERPOL_SLTD_WS_USERINFO_USERNAME') || '').trim();
       const referenceInCountry = (
          this.configService.get<string>('INTERPOL_SLTD_REFERENCE_IN_COUNTRY') || 'YEREVAN'
       ).trim();
       const wsUsernameVersion = (
-         this.configService.get<string>('INTERPOL_SLTD_WS_USERNAME_VERSION') ||
-         this.configService.get<string>('WS_USERNAME_VERSION') ||
-         '1.0'
+         this.configService.get<string>('INTERPOL_SLTD_WS_USERNAME_VERSION') || '1.0'
       ).trim();
-      const username =
-         (this.configService.get<string>('INTERPOL_SLTD_USERNAME') ||
-            this.configService.get<string>('FIND_USERNAME') ||
-            '')
-            .trim();
-      const password =
-         (this.configService.get<string>('INTERPOL_SLTD_PASSWORD') ||
-            this.configService.get<string>('FIND_PASSWORD') ||
-            '')
-            .trim();
+      const username = (this.configService.get<string>('INTERPOL_SLTD_USERNAME') || '').trim();
+      const password = (this.configService.get<string>('INTERPOL_SLTD_PASSWORD') || '').trim();
       const enquiriesReference = (
          this.configService.get<string>('INTERPOL_SLTD_ENQUIRIES_REFERENCE') || 'POSTMAN-001'
       ).trim();
+
+      if (!wsUserInfoUsername || !username || !password) {
+         throw new InternalServerErrorException(
+            'INTERPOL_SLTD_WS_USERINFO_USERNAME, INTERPOL_SLTD_USERNAME and INTERPOL_SLTD_PASSWORD are required for SLTD requests',
+         );
+      }
 
       const adminBlock = includeAdminToken
          ? `\n        <tns:AdministrativeToken>\n            <tns:EnquiriesReference>${this.xmlEscape(enquiriesReference)}</tns:EnquiriesReference>\n        </tns:AdministrativeToken>`
