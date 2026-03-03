@@ -419,18 +419,22 @@ export class InterpolIntegration {
 
    private buildEnvelope(bodyXml: string, includeAdminToken: boolean) {
       const wsUserInfoUsername = (
-         this.configService.get<string>('WS_USERINFO_USERNAME') || ''
+         this.configService.get<string>('INTERPOL_WS_USERINFO_USERNAME') || ''
       ).trim();
       const referenceInCountry = (
-         this.configService.get<string>('REFERENCE_IN_COUNTRY') || 'ARM-TEST-001'
+         this.configService.get<string>('INTERPOL_REFERENCE_IN_COUNTRY') || 'ARM-TEST-001'
       ).trim();
       const wsUsernameVersion = (
-         this.configService.get<string>('WS_USERNAME_VERSION') || '1.0'
+         this.configService.get<string>('INTERPOL_WS_USERNAME_VERSION') || '1.0'
       ).trim();
-      const findUsername = (this.configService.get<string>('FIND_USERNAME') || '').trim();
-      const findPassword = (this.configService.get<string>('FIND_PASSWORD') || '').trim();
+      const findUsername = (
+         this.configService.get<string>('INTERPOL_NOMINAL_USERNAME') || ''
+      ).trim();
+      const findPassword = (
+         this.configService.get<string>('INTERPOL_NOMINAL_PASSWORD') || ''
+      ).trim();
       const enquiriesReference = (
-         this.configService.get<string>('ENQUIRIES_REFERENCE') || ''
+         this.configService.get<string>('INTERPOL_ENQUIRIES_REFERENCE') || ''
       ).trim();
 
       const adminBlock = includeAdminToken
