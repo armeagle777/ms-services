@@ -17,3 +17,10 @@ export class InterpolDownloadImageQueryDto {
    item_id!: string;
    path!: string;
 }
+
+export class InterpolSltdSearchRequestDto {
+   din!: string;
+   countryOfRegistration!: string;
+   typeOfDocument!: string;
+   nb?: number;
+}

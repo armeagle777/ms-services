@@ -4,9 +4,13 @@ import {
    InterpolDetailsResponse,
    InterpolFileResponse,
    InterpolIntegration,
+   InterpolSltdSearchResponse,
    InterpolSearchResponse,
 } from 'src/Infrustructure/Services/InterpolIntegration/Interpol.integration';
-import { InterpolSearchRequestDto } from 'src/API/DTO/Interpol/interpol.dto';
+import {
+   InterpolSearchRequestDto,
+   InterpolSltdSearchRequestDto,
+} from 'src/API/DTO/Interpol/interpol.dto';
 
 @Injectable()
 export class InterpolService {
@@ -28,6 +32,27 @@ export class InterpolService {
          name,
          forename,
          dobDdMmYyyy: dob,
+         nbRecord: safeNb,
+      });
+   }
+
+   async sltdSearch(body: InterpolSltdSearchRequestDto): Promise<InterpolSltdSearchResponse> {
+      const din = (body?.din || '').trim();
+      const countryOfRegistration = (body?.countryOfRegistration || '').trim();
+      const typeOfDocument = (body?.typeOfDocument || '').trim();
+
+      if (!din || !countryOfRegistration || !typeOfDocument) {
+         throw new BadRequestException(
+            'din, countryOfRegistration and typeOfDocument are required',
+         );
+      }
+
+      const safeNb = this.parseNbRecord(body?.nb);
+
+      return this.interpolIntegration.sltdSearch({
+         din,
+         countryOfRegistration,
+         typeOfDocument,
          nbRecord: safeNb,
       });
    }

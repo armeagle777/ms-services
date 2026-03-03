@@ -6,6 +6,7 @@ import {
    InterpolDownloadImageQueryDto,
    InterpolDownloadNoticeQueryDto,
    InterpolSearchRequestDto,
+   InterpolSltdSearchRequestDto,
 } from 'src/API/DTO/Interpol/interpol.dto';
 
 @Controller('interpol')
@@ -15,6 +16,11 @@ export class InterpolController {
    @Post('search')
    search(@Body() body: InterpolSearchRequestDto) {
       return this.interpolService.search(body);
+   }
+
+   @Post('sltd/search')
+   sltdSearch(@Body() body: InterpolSltdSearchRequestDto) {
+      return this.interpolService.sltdSearch(body);
    }
 
    @Get('details')

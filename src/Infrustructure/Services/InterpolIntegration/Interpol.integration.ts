@@ -7,6 +7,7 @@ const SOAP_NS = 'http://schemas.xmlsoap.org/soap/envelope/';
 const XSI_NS = 'http://www.w3.org/2001/XMLSchema-instance';
 const XSD_NS = 'http://www.w3.org/2001/XMLSchema';
 const TNS_NS = 'urn:interpol:ws:find:nominal';
+const SLTD_TNS_NS = 'urn:interpol:ws:wsp:sltd';
 
 type SoapCallResult = {
    status: number;
@@ -79,6 +80,10 @@ export type InterpolFile = {
 
 export type InterpolFileResponse = BaseResponse & {
    files: InterpolFile[];
+};
+
+export type InterpolSltdSearchResponse = BaseResponse & {
+   xmlData: string;
 };
 
 @Injectable()
@@ -157,6 +162,75 @@ export class InterpolIntegration {
          raw: xml,
          request: requestXml,
          hits: this.parseSearchHits(xml),
+      };
+   }
+
+   async sltdSearch({
+      din,
+      countryOfRegistration,
+      typeOfDocument,
+      nbRecord,
+   }: {
+      din: string;
+      countryOfRegistration: string;
+      typeOfDocument: string;
+      nbRecord: number;
+   }): Promise<InterpolSltdSearchResponse> {
+      const body = `        <tns:Search>
+            <tns:DIN>${this.xmlEscape(din)}</tns:DIN>
+            <tns:CountryOfRegistration>${this.xmlEscape(countryOfRegistration)}</tns:CountryOfRegistration>
+            <tns:TypeOfDocument>${this.xmlEscape(typeOfDocument)}</tns:TypeOfDocument>
+            <tns:NbRecord>${Number(nbRecord)}</tns:NbRecord>
+        </tns:Search>`;
+
+      const { status, xml, requestXml } = await this.soapCallSltd('Search', body, true, 60000);
+      const fault = this.extractSoapFault(xml);
+      const basicFields = this.parseBasicFields(xml);
+
+      if (status >= 400 || fault) {
+         return {
+            ok: false,
+            httpStatus: status,
+            fault,
+            ...basicFields,
+            raw: xml,
+            request: requestXml,
+            xmlData: this.extractXmlDataInner(xml),
+         };
+      }
+
+      if (basicFields.resultCode === 'NO_ANSWER') {
+         return {
+            ok: true,
+            httpStatus: status,
+            fault: null,
+            ...basicFields,
+            raw: xml,
+            request: requestXml,
+            xmlData: '',
+         };
+      }
+
+      if (basicFields.resultCode !== 'NO_ERROR') {
+         return {
+            ok: false,
+            httpStatus: status,
+            fault: null,
+            ...basicFields,
+            raw: xml,
+            request: requestXml,
+            xmlData: this.extractXmlDataInner(xml),
+         };
+      }
+
+      return {
+         ok: true,
+         httpStatus: status,
+         fault: null,
+         ...basicFields,
+         raw: xml,
+         request: requestXml,
+         xmlData: this.extractXmlDataInner(xml),
       };
    }
 
@@ -293,6 +367,55 @@ export class InterpolIntegration {
       }
    }
 
+   private async soapCallSltd(
+      action: string,
+      bodyXml: string,
+      includeAdminToken: boolean,
+      timeoutMs: number,
+   ): Promise<SoapCallResult> {
+      const endpoint =
+         this.configService.get<string>('INTERPOL_SLTD_ENDPOINT') ||
+         this.configService.get<string>('SLTD_ENDPOINT') ||
+         'http://102.28.110.3:9248/WSP/1.1/AD/sltd.asmx';
+
+      if (!endpoint?.trim()) {
+         throw new InternalServerErrorException(
+            'INTERPOL_SLTD_ENDPOINT (or SLTD_ENDPOINT) is missing in environment variables',
+         );
+      }
+
+      const envelope = this.buildSltdEnvelope(bodyXml, includeAdminToken);
+      const headers = {
+         'Content-Type': 'text/xml; charset=utf-8',
+         Accept: 'text/xml; charset=utf-8',
+         SOAPAction: `"${SLTD_TNS_NS}/${action}"`,
+      };
+
+      try {
+         const response = await firstValueFrom(
+            this.httpService.post(endpoint.trim(), envelope, {
+               headers,
+               timeout: timeoutMs,
+               validateStatus: () => true,
+            }),
+         );
+
+         const xml =
+            typeof response.data === 'string'
+               ? response.data
+               : JSON.stringify(response.data || {});
+
+         return { status: response.status, xml, requestXml: envelope };
+      } catch (err) {
+         const message = err instanceof Error ? err.message : String(err);
+         return {
+            status: 599,
+            xml: `<faultstring>${this.xmlEscape(message)}</faultstring>`,
+            requestXml: envelope,
+         };
+      }
+   }
+
    private buildEnvelope(bodyXml: string, includeAdminToken: boolean) {
       const wsUserInfoUsername = (this.configService.get<string>('WS_USERINFO_USERNAME') || '').trim();
       const referenceInCountry = (this.configService.get<string>('REFERENCE_IN_COUNTRY') || 'ARM-TEST-001').trim();
@@ -320,6 +443,62 @@ export class InterpolIntegration {
             <tns:Username>${this.xmlEscape(findUsername)}</tns:Username>
             <tns:Password>${this.xmlEscape(findPassword)}</tns:Password>
         </tns:UsernameToken>${adminBlock}
+    </soap:Header>
+
+    <soap:Body>
+${bodyXml}
+    </soap:Body>
+</soap:Envelope>
+`;
+   }
+
+   private buildSltdEnvelope(bodyXml: string, includeAdminToken: boolean) {
+      const wsUserInfoUsername =
+         (this.configService.get<string>('INTERPOL_SLTD_WS_USERINFO_USERNAME') ||
+            this.configService.get<string>('WS_USERINFO_USERNAME') ||
+            '')
+            .trim();
+      const referenceInCountry = (
+         this.configService.get<string>('INTERPOL_SLTD_REFERENCE_IN_COUNTRY') || 'YEREVAN'
+      ).trim();
+      const wsUsernameVersion = (
+         this.configService.get<string>('INTERPOL_SLTD_WS_USERNAME_VERSION') ||
+         this.configService.get<string>('WS_USERNAME_VERSION') ||
+         '1.0'
+      ).trim();
+      const username =
+         (this.configService.get<string>('INTERPOL_SLTD_USERNAME') ||
+            this.configService.get<string>('FIND_USERNAME') ||
+            '')
+            .trim();
+      const password =
+         (this.configService.get<string>('INTERPOL_SLTD_PASSWORD') ||
+            this.configService.get<string>('FIND_PASSWORD') ||
+            '')
+            .trim();
+      const enquiriesReference = (
+         this.configService.get<string>('INTERPOL_SLTD_ENQUIRIES_REFERENCE') || 'POSTMAN-001'
+      ).trim();
+
+      const adminBlock = includeAdminToken
+         ? `\n        <tns:AdministrativeToken>\n            <tns:EnquiriesReference>${this.xmlEscape(enquiriesReference)}</tns:EnquiriesReference>\n        </tns:AdministrativeToken>`
+         : '';
+
+      return `<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="${SOAP_NS}"
+               xmlns:xsi="${XSI_NS}"
+               xmlns:xsd="${XSD_NS}"
+               xmlns:tns="${SLTD_TNS_NS}">
+    <soap:Header>${adminBlock}
+        <tns:UserInformation>
+            <tns:Username>${this.xmlEscape(wsUserInfoUsername)}</tns:Username>
+            <tns:ReferenceInCountry>${this.xmlEscape(referenceInCountry)}</tns:ReferenceInCountry>
+        </tns:UserInformation>
+
+        <tns:UsernameToken Version="${this.xmlEscape(wsUsernameVersion)}">
+            <tns:Username>${this.xmlEscape(username)}</tns:Username>
+            <tns:Password>${this.xmlEscape(password)}</tns:Password>
+        </tns:UsernameToken>
     </soap:Header>
 
     <soap:Body>
