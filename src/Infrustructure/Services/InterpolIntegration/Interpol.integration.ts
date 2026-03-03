@@ -2,112 +2,28 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
+import type {
+   BasicFields,
+   DetailFields,
+   DetailRef,
+   DetailsPayload,
+   InterpolDetailsResponse,
+   InterpolFile,
+   InterpolFileResponse,
+   InterpolSearchResponse,
+   InterpolSltdSearchResponse,
+   KnownResultCodeKey,
+   ResultCodeKey,
+   ResultCodeMeta,
+   SearchHit,
+   SoapCallResult,
+} from './interpol.types';
 
 const SOAP_NS = 'http://schemas.xmlsoap.org/soap/envelope/';
 const XSI_NS = 'http://www.w3.org/2001/XMLSchema-instance';
 const XSD_NS = 'http://www.w3.org/2001/XMLSchema';
 const TNS_NS = 'urn:interpol:ws:find:nominal';
 const SLTD_TNS_NS = 'urn:interpol:ws:wsp:sltd';
-
-type SoapCallResult = {
-   status: number;
-   xml: string;
-   requestXml: string;
-};
-
-type BasicFields = {
-   resultCode: string | null;
-   resultOtherCode: string | null;
-   requestId: string | null;
-};
-
-type KnownResultCodeKey =
-   | 'NO_ERROR'
-   | 'NO_ANSWER'
-   | 'INVALID_SEARCH_ERROR'
-   | 'UNEXPECTED_ERROR'
-   | 'TOO_MANY_ANSWER'
-   | 'ACCESS_DENIED'
-   | 'OTHER_ERROR_CODE'
-   | 'TIME_OUT';
-
-type ResultCodeKey = KnownResultCodeKey | 'UNKNOWN';
-
-type ResultCodeMeta = {
-   key: ResultCodeKey;
-   numericValue: number | null;
-   description: string;
-   retryable: boolean;
-   requiresQueryRefinement: boolean;
-   accessDenied: boolean;
-   isKnown: boolean;
-};
-
-type BaseResponse = {
-   ok: boolean;
-   httpStatus: number;
-   fault: string | null;
-   resultCode: string | null;
-   resultOtherCode: string | null;
-   requestId: string | null;
-   resultCodeMeta: ResultCodeMeta;
-   raw: string;
-   request: string;
-};
-
-type SearchHit = {
-   item_id: string;
-   name: string;
-   forename: string;
-   dob: string;
-   caution: string;
-   score: string;
-   owner_office_id: string;
-};
-
-type DetailFields = {
-   item_id_short: string;
-   name: string;
-   forename: string;
-   dob: string;
-   sex_id: string;
-   owner_office_id: string;
-   db_last_updated_on: string;
-   caution_id: string;
-};
-
-type DetailRef = {
-   type_id: string;
-   ref: string;
-   language_id: string;
-};
-
-export type DetailsPayload = {
-   fields: Partial<DetailFields>;
-   refs: DetailRef[];
-};
-
-export type InterpolSearchResponse = BaseResponse & {
-   hits: SearchHit[];
-};
-
-export type InterpolDetailsResponse = BaseResponse & {
-   details: DetailsPayload | null;
-};
-
-export type InterpolFile = {
-   fileName: string;
-   type: string;
-   binData: string;
-};
-
-export type InterpolFileResponse = BaseResponse & {
-   files: InterpolFile[];
-};
-
-export type InterpolSltdSearchResponse = BaseResponse & {
-   xmlData: string;
-};
 
 @Injectable()
 export class InterpolIntegration {
@@ -402,7 +318,10 @@ export class InterpolIntegration {
             : undefined;
       const keyFromString = normalized as KnownResultCodeKey;
       const key: ResultCodeKey =
-         keyFromNumber || (Object.prototype.hasOwnProperty.call(byString, keyFromString) ? keyFromString : 'UNKNOWN');
+         keyFromNumber ||
+         (Object.prototype.hasOwnProperty.call(byString, keyFromString)
+            ? keyFromString
+            : 'UNKNOWN');
 
       const numericValue = key === 'UNKNOWN' ? null : byString[key];
 
@@ -463,7 +382,8 @@ export class InterpolIntegration {
             return {
                key,
                numericValue,
-               description: 'Access denied for this web service or data. Verify credentials and permissions.',
+               description:
+                  'Access denied for this web service or data. Verify credentials and permissions.',
                retryable: false,
                requiresQueryRefinement: false,
                accessDenied: true,
