@@ -107,7 +107,8 @@ export class InterpolIntegration {
       const parts = [];
       if (name) parts.push(`<tns:Name>${this.xmlEscape(name)}</tns:Name>`);
       if (forename) parts.push(`<tns:Forename>${this.xmlEscape(forename)}</tns:Forename>`);
-      if (dobDdMmYyyy) parts.push(`<tns:DateOfBirth>${this.xmlEscape(dobDdMmYyyy)}</tns:DateOfBirth>`);
+      if (dobDdMmYyyy)
+         parts.push(`<tns:DateOfBirth>${this.xmlEscape(dobDdMmYyyy)}</tns:DateOfBirth>`);
       parts.push(`<tns:NbRecord>${Number(nbRecord)}</tns:NbRecord>`);
 
       const body = `        <tns:Search>
@@ -283,7 +284,12 @@ export class InterpolIntegration {
             <tns:PathToNotice>${this.xmlEscape(pathToNotice)}</tns:PathToNotice>
         </tns:GetNoticePDFFile>`;
 
-      const { status, xml, requestXml } = await this.soapCall('GetNoticePDFFile', body, false, 120000);
+      const { status, xml, requestXml } = await this.soapCall(
+         'GetNoticePDFFile',
+         body,
+         false,
+         120000,
+      );
       return this.mapFileResponse(status, xml, requestXml);
    }
 
@@ -330,9 +336,11 @@ export class InterpolIntegration {
       includeAdminToken: boolean,
       timeoutMs: number,
    ): Promise<SoapCallResult> {
-      const endpoint = this.configService.get<string>('FIND_ENDPOINT');
+      const endpoint = this.configService.get<string>('INTERPOL_NOMINALS_ENDPOINT');
       if (!endpoint?.trim()) {
-         throw new InternalServerErrorException('FIND_ENDPOINT is missing in environment variables');
+         throw new InternalServerErrorException(
+            'INTERPOL_NOMINALS_ENDPOINT is missing in environment variables',
+         );
       }
 
       const envelope = this.buildEnvelope(bodyXml, includeAdminToken);
@@ -352,9 +360,7 @@ export class InterpolIntegration {
          );
 
          const xml =
-            typeof response.data === 'string'
-               ? response.data
-               : JSON.stringify(response.data || {});
+            typeof response.data === 'string' ? response.data : JSON.stringify(response.data || {});
 
          return { status: response.status, xml, requestXml: envelope };
       } catch (err) {
@@ -373,10 +379,7 @@ export class InterpolIntegration {
       includeAdminToken: boolean,
       timeoutMs: number,
    ): Promise<SoapCallResult> {
-      const endpoint =
-         this.configService.get<string>('INTERPOL_SLTD_ENDPOINT') ||
-         this.configService.get<string>('SLTD_ENDPOINT') ||
-         'http://102.28.110.3:9248/WSP/1.1/AD/sltd.asmx';
+      const endpoint = this.configService.get<string>('INTERPOL_SLTD_ENDPOINT');
 
       if (!endpoint?.trim()) {
          throw new InternalServerErrorException(
@@ -401,9 +404,7 @@ export class InterpolIntegration {
          );
 
          const xml =
-            typeof response.data === 'string'
-               ? response.data
-               : JSON.stringify(response.data || {});
+            typeof response.data === 'string' ? response.data : JSON.stringify(response.data || {});
 
          return { status: response.status, xml, requestXml: envelope };
       } catch (err) {
@@ -417,12 +418,20 @@ export class InterpolIntegration {
    }
 
    private buildEnvelope(bodyXml: string, includeAdminToken: boolean) {
-      const wsUserInfoUsername = (this.configService.get<string>('WS_USERINFO_USERNAME') || '').trim();
-      const referenceInCountry = (this.configService.get<string>('REFERENCE_IN_COUNTRY') || 'ARM-TEST-001').trim();
-      const wsUsernameVersion = (this.configService.get<string>('WS_USERNAME_VERSION') || '1.0').trim();
+      const wsUserInfoUsername = (
+         this.configService.get<string>('WS_USERINFO_USERNAME') || ''
+      ).trim();
+      const referenceInCountry = (
+         this.configService.get<string>('REFERENCE_IN_COUNTRY') || 'ARM-TEST-001'
+      ).trim();
+      const wsUsernameVersion = (
+         this.configService.get<string>('WS_USERNAME_VERSION') || '1.0'
+      ).trim();
       const findUsername = (this.configService.get<string>('FIND_USERNAME') || '').trim();
       const findPassword = (this.configService.get<string>('FIND_PASSWORD') || '').trim();
-      const enquiriesReference = (this.configService.get<string>('ENQUIRIES_REFERENCE') || '').trim();
+      const enquiriesReference = (
+         this.configService.get<string>('ENQUIRIES_REFERENCE') || ''
+      ).trim();
 
       const adminBlock = includeAdminToken
          ? `\n        <tns:AdministrativeToken>\n            <tns:EnquiriesReference>${this.xmlEscape(enquiriesReference)}</tns:EnquiriesReference>\n        </tns:AdministrativeToken>`
@@ -453,11 +462,11 @@ ${bodyXml}
    }
 
    private buildSltdEnvelope(bodyXml: string, includeAdminToken: boolean) {
-      const wsUserInfoUsername =
-         (this.configService.get<string>('INTERPOL_SLTD_WS_USERINFO_USERNAME') ||
-            this.configService.get<string>('WS_USERINFO_USERNAME') ||
-            '')
-            .trim();
+      const wsUserInfoUsername = (
+         this.configService.get<string>('INTERPOL_SLTD_WS_USERINFO_USERNAME') ||
+         this.configService.get<string>('WS_USERINFO_USERNAME') ||
+         ''
+      ).trim();
       const referenceInCountry = (
          this.configService.get<string>('INTERPOL_SLTD_REFERENCE_IN_COUNTRY') || 'YEREVAN'
       ).trim();
@@ -466,16 +475,16 @@ ${bodyXml}
          this.configService.get<string>('WS_USERNAME_VERSION') ||
          '1.0'
       ).trim();
-      const username =
-         (this.configService.get<string>('INTERPOL_SLTD_USERNAME') ||
-            this.configService.get<string>('FIND_USERNAME') ||
-            '')
-            .trim();
-      const password =
-         (this.configService.get<string>('INTERPOL_SLTD_PASSWORD') ||
-            this.configService.get<string>('FIND_PASSWORD') ||
-            '')
-            .trim();
+      const username = (
+         this.configService.get<string>('INTERPOL_SLTD_USERNAME') ||
+         this.configService.get<string>('FIND_USERNAME') ||
+         ''
+      ).trim();
+      const password = (
+         this.configService.get<string>('INTERPOL_SLTD_PASSWORD') ||
+         this.configService.get<string>('FIND_PASSWORD') ||
+         ''
+      ).trim();
       const enquiriesReference = (
          this.configService.get<string>('INTERPOL_SLTD_ENQUIRIES_REFERENCE') || 'POSTMAN-001'
       ).trim();
