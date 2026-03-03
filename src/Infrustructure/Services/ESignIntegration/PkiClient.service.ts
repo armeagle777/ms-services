@@ -9,107 +9,103 @@ import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class PkiClientService {
-  private privateKey?: string;
-  private certificate?: string;
-  private agent?: https.Agent;
-  private readonly keyPath: string;
-  private readonly certPath: string;
+   private privateKey?: string;
+   private certificate?: string;
+   private agent?: https.Agent;
+   private readonly keyPath: string;
+   private readonly certPath: string;
 
-  constructor(
-    private readonly configService: ConfigService,
-    private readonly httpService: HttpService,
-  ) {
-    const keyPath =
-      this.configService.get<string>('ESIGN_PKI_KEY_PATH') ||
-      './src/certificates/pki-request.key';
-    const certPath =
-      this.configService.get<string>('ESIGN_PKI_CERT_PATH') ||
-      './src/certificates/pki-request.pem';
+   constructor(
+      private readonly configService: ConfigService,
+      private readonly httpService: HttpService,
+   ) {
+      const keyPath = './src/API/Certificates/pki-request.key';
+      const certPath = './src/API/Certificates/pki-request.pem';
 
-    this.keyPath = this.resolveCertPath(keyPath);
-    this.certPath = this.resolveCertPath(certPath);
-  }
+      this.keyPath = this.resolveCertPath(keyPath);
+      this.certPath = this.resolveCertPath(certPath);
+   }
 
-  async editUser(userData: Record<string, unknown>, options: { isRaCitizen?: boolean } = {}) {
-    const baseUrl = this.getBaseUrl();
-    const { soapBody, password } = this.buildEditUserSoap(userData, options);
+   async editUser(userData: Record<string, unknown>, options: { isRaCitizen?: boolean } = {}) {
+      const baseUrl = this.getBaseUrl();
+      const { soapBody, password } = this.buildEditUserSoap(userData, options);
 
-    const response = await firstValueFrom(
-      this.httpService.post(baseUrl, soapBody, {
-        headers: {
-          'Content-Type': 'text/xml;charset=UTF-8',
-          Accept: 'text/xml',
-        },
-        httpsAgent: this.ensureAgent(),
-      }),
-    );
-
-    return { password, data: response.data };
-  }
-
-  async findUser(matchValue: string) {
-    const baseUrl = this.getBaseUrl();
-    const soapBody = this.buildFindUserSoap(matchValue);
-
-    const response = await firstValueFrom(
-      this.httpService.post(baseUrl, soapBody, {
-        headers: {
-          'Content-Type': 'text/xml;charset=UTF-8',
-          Accept: 'text/xml',
-        },
-        httpsAgent: this.ensureAgent(),
-      }),
-    );
-
-    return response.data;
-  }
-
-  async revokeUser(ssn: string, options: { reasonCode?: number; deleteUser?: number } = {}) {
-    const baseUrl = this.getBaseUrl();
-    const { reasonCode = 0, deleteUser = 1 } = options;
-    const soapBody = this.buildRevokeUserSoap(ssn, reasonCode, deleteUser);
-
-    const response = await firstValueFrom(
-      this.httpService.post(baseUrl, soapBody, {
-        headers: {
-          'Content-Type': 'text/xml;charset=UTF-8',
-          Accept: 'text/xml',
-        },
-        httpsAgent: this.ensureAgent(),
-      }),
-    );
-
-    return response.data;
-  }
-
-  private getBaseUrl() {
-    const baseUrl = this.configService.get<string>('ESIGN_PKI_API_URL');
-    if (!baseUrl) throw new InternalServerErrorException('ESIGN_PKI_API_URL is not configured');
-    return baseUrl;
-  }
-
-  private ensureAgent() {
-    if (this.agent) return this.agent;
-
-    if (!fs.existsSync(this.keyPath) || !fs.existsSync(this.certPath)) {
-      throw new InternalServerErrorException(
-        'ESIGN certificates not found. Configure ESIGN_PKI_KEY_PATH and ESIGN_PKI_CERT_PATH.',
+      const response = await firstValueFrom(
+         this.httpService.post(baseUrl, soapBody, {
+            headers: {
+               'Content-Type': 'text/xml;charset=UTF-8',
+               Accept: 'text/xml',
+            },
+            httpsAgent: this.ensureAgent(),
+         }),
       );
-    }
 
-    this.privateKey = fs.readFileSync(this.keyPath, 'utf8');
-    this.certificate = fs.readFileSync(this.certPath, 'utf8');
-    this.agent = new https.Agent({
-      key: this.privateKey,
-      cert: this.certificate,
-      rejectUnauthorized: false,
-    });
+      return { password, data: response.data };
+   }
 
-    return this.agent;
-  }
+   async findUser(matchValue: string) {
+      const baseUrl = this.getBaseUrl();
+      const soapBody = this.buildFindUserSoap(matchValue);
 
-  private buildFindUserSoap(matchValue: string) {
-    return `
+      const response = await firstValueFrom(
+         this.httpService.post(baseUrl, soapBody, {
+            headers: {
+               'Content-Type': 'text/xml;charset=UTF-8',
+               Accept: 'text/xml',
+            },
+            httpsAgent: this.ensureAgent(),
+         }),
+      );
+
+      return response.data;
+   }
+
+   async revokeUser(ssn: string, options: { reasonCode?: number; deleteUser?: number } = {}) {
+      const baseUrl = this.getBaseUrl();
+      const { reasonCode = 0, deleteUser = 1 } = options;
+      const soapBody = this.buildRevokeUserSoap(ssn, reasonCode, deleteUser);
+
+      const response = await firstValueFrom(
+         this.httpService.post(baseUrl, soapBody, {
+            headers: {
+               'Content-Type': 'text/xml;charset=UTF-8',
+               Accept: 'text/xml',
+            },
+            httpsAgent: this.ensureAgent(),
+         }),
+      );
+
+      return response.data;
+   }
+
+   private getBaseUrl() {
+      const baseUrl = this.configService.get<string>('ESIGN_PKI_API_URL');
+      if (!baseUrl) throw new InternalServerErrorException('ESIGN_PKI_API_URL is not configured');
+      return baseUrl;
+   }
+
+   private ensureAgent() {
+      if (this.agent) return this.agent;
+
+      if (!fs.existsSync(this.keyPath) || !fs.existsSync(this.certPath)) {
+         throw new InternalServerErrorException(
+            'ESIGN certificates not found. Configure ESIGN_PKI_KEY_PATH and ESIGN_PKI_CERT_PATH.',
+         );
+      }
+
+      this.privateKey = fs.readFileSync(this.keyPath, 'utf8');
+      this.certificate = fs.readFileSync(this.certPath, 'utf8');
+      this.agent = new https.Agent({
+         key: this.privateKey,
+         cert: this.certificate,
+         rejectUnauthorized: false,
+      });
+
+      return this.agent;
+   }
+
+   private buildFindUserSoap(matchValue: string) {
+      return `
       <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
                   xmlns:ws="http://ws.protocol.core.ejbca.org/">
         <soapenv:Header/>
@@ -124,20 +120,23 @@ export class PkiClientService {
         </soapenv:Body>
       </soapenv:Envelope>
           `.trim();
-  }
+   }
 
-  private buildEditUserSoap(userData: Record<string, any>, { isRaCitizen }: { isRaCitizen?: boolean }) {
-    const password = this.generatePassword();
-    const cn = `${userData.first_name_en} ${userData.last_name_en} ${userData.ssn}`;
-    const sn = userData.ssn;
-    const givenName = userData.first_name_am;
-    const surname = userData.last_name_am;
-    const certificateProfileName = isRaCitizen ? 'CITIZEN_SIGN' : 'FOREIGN_CITIZEN_SIGN';
-    const subjectDN = `CN=${cn},SN=${sn},GIVENNAME=${givenName},SURNAME=${surname},C=AM`;
+   private buildEditUserSoap(
+      userData: Record<string, any>,
+      { isRaCitizen }: { isRaCitizen?: boolean },
+   ) {
+      const password = this.generatePassword();
+      const cn = `${userData.first_name_en} ${userData.last_name_en} ${userData.ssn}`;
+      const sn = userData.ssn;
+      const givenName = userData.first_name_am;
+      const surname = userData.last_name_am;
+      const certificateProfileName = isRaCitizen ? 'CITIZEN_SIGN' : 'FOREIGN_CITIZEN_SIGN';
+      const subjectDN = `CN=${cn},SN=${sn},GIVENNAME=${givenName},SURNAME=${surname},C=AM`;
 
-    return {
-      password,
-      soapBody: `
+      return {
+         password,
+         soapBody: `
         <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
                     xmlns:ws="http://ws.protocol.core.ejbca.org/">
           <soapenv:Header/>
@@ -168,11 +167,11 @@ export class PkiClientService {
           </soapenv:Body>
         </soapenv:Envelope>
             `.trim(),
-    };
-  }
+      };
+   }
 
-  private buildRevokeUserSoap(ssn: string, reasonCode = 0, deleteUser = 1) {
-    return `
+   private buildRevokeUserSoap(ssn: string, reasonCode = 0, deleteUser = 1) {
+      return `
       <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
                   xmlns:ws="http://ws.protocol.core.ejbca.org/">
         <soapenv:Header/>
@@ -185,27 +184,27 @@ export class PkiClientService {
         </soapenv:Body>
       </soapenv:Envelope>
           `.trim();
-  }
+   }
 
-  private generatePassword() {
-    const raw = crypto.randomBytes(24).toString('base64');
-    return raw.replace(/[^a-zA-Z0-9]/g, '').slice(0, 15);
-  }
+   private generatePassword() {
+      const raw = crypto.randomBytes(24).toString('base64');
+      return raw.replace(/[^a-zA-Z0-9]/g, '').slice(0, 15);
+   }
 
-  private escapeXml(value: string) {
-    return String(value)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&apos;');
-  }
+   private escapeXml(value: string) {
+      return String(value)
+         .replace(/&/g, '&amp;')
+         .replace(/</g, '&lt;')
+         .replace(/>/g, '&gt;')
+         .replace(/"/g, '&quot;')
+         .replace(/'/g, '&apos;');
+   }
 
-  private resolveCertPath(filePath: string) {
-    const direct = path.resolve(process.cwd(), filePath);
-    if (fs.existsSync(direct)) return direct;
+   private resolveCertPath(filePath: string) {
+      const direct = path.resolve(process.cwd(), filePath);
+      if (fs.existsSync(direct)) return direct;
 
-    const fallback = path.resolve(process.cwd(), '..', filePath.replace(/^\.\//, ''));
-    return fallback;
-  }
+      const fallback = path.resolve(process.cwd(), '..', filePath.replace(/^\.\//, ''));
+      return fallback;
+   }
 }

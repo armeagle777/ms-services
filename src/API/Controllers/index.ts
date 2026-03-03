@@ -11,4 +11,3 @@ export { PetregistrController } from './Petregistr.controller';
 export { SphereController } from './Sphere.controller';
 export { StatisticsController } from './Statistics.controller';
 export { TaxController } from './Tax.controller';
-export { WpController } from './Wp.controller';

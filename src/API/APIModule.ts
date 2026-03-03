@@ -14,7 +14,6 @@ import {
    StatisticsController,
    TaxController,
    WorkPermitController,
-   WpController,
 } from './Controllers';
 import { CoreModule } from 'src/Core/Core.module';
 import { SignatureVerificationMiddleware } from './Middlewares';
@@ -28,7 +27,6 @@ import { SignatureVerificationMiddleware } from './Middlewares';
       PetregistrController,
       KadastrController,
       ArtsakhController,
-      WpController,
       MojCesController,
       TaxController,
       SphereController,
