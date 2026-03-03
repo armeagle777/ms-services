@@ -1,12 +1,12 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-
-import {
+import type {
    InterpolDetailsResponse,
    InterpolFileResponse,
-   InterpolIntegration,
-   InterpolSltdSearchResponse,
    InterpolSearchResponse,
-} from 'src/Infrustructure/Services/InterpolIntegration/Interpol.integration';
+   InterpolSltdSearchResponse,
+} from 'src/Infrustructure/Services/InterpolIntegration/interpol.types';
+
+import { InterpolIntegration } from 'src/Infrustructure/Services/InterpolIntegration/Interpol.integration';
 import {
    InterpolSearchRequestDto,
    InterpolSltdSearchRequestDto,

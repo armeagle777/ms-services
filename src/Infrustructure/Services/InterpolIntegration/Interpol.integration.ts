@@ -2,89 +2,28 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
+import type {
+   BasicFields,
+   DetailFields,
+   DetailRef,
+   DetailsPayload,
+   InterpolDetailsResponse,
+   InterpolFile,
+   InterpolFileResponse,
+   InterpolSearchResponse,
+   InterpolSltdSearchResponse,
+   KnownResultCodeKey,
+   ResultCodeKey,
+   ResultCodeMeta,
+   SearchHit,
+   SoapCallResult,
+} from './interpol.types';
 
 const SOAP_NS = 'http://schemas.xmlsoap.org/soap/envelope/';
 const XSI_NS = 'http://www.w3.org/2001/XMLSchema-instance';
 const XSD_NS = 'http://www.w3.org/2001/XMLSchema';
 const TNS_NS = 'urn:interpol:ws:find:nominal';
 const SLTD_TNS_NS = 'urn:interpol:ws:wsp:sltd';
-
-type SoapCallResult = {
-   status: number;
-   xml: string;
-   requestXml: string;
-};
-
-type BasicFields = {
-   resultCode: string | null;
-   resultOtherCode: string | null;
-   requestId: string | null;
-};
-
-type BaseResponse = {
-   ok: boolean;
-   httpStatus: number;
-   fault: string | null;
-   resultCode: string | null;
-   resultOtherCode: string | null;
-   requestId: string | null;
-   raw: string;
-   request: string;
-};
-
-type SearchHit = {
-   item_id: string;
-   name: string;
-   forename: string;
-   dob: string;
-   caution: string;
-   score: string;
-   owner_office_id: string;
-};
-
-type DetailFields = {
-   item_id_short: string;
-   name: string;
-   forename: string;
-   dob: string;
-   sex_id: string;
-   owner_office_id: string;
-   db_last_updated_on: string;
-   caution_id: string;
-};
-
-type DetailRef = {
-   type_id: string;
-   ref: string;
-   language_id: string;
-};
-
-export type DetailsPayload = {
-   fields: Partial<DetailFields>;
-   refs: DetailRef[];
-};
-
-export type InterpolSearchResponse = BaseResponse & {
-   hits: SearchHit[];
-};
-
-export type InterpolDetailsResponse = BaseResponse & {
-   details: DetailsPayload | null;
-};
-
-export type InterpolFile = {
-   fileName: string;
-   type: string;
-   binData: string;
-};
-
-export type InterpolFileResponse = BaseResponse & {
-   files: InterpolFile[];
-};
-
-export type InterpolSltdSearchResponse = BaseResponse & {
-   xmlData: string;
-};
 
 @Injectable()
 export class InterpolIntegration {
@@ -118,6 +57,7 @@ export class InterpolIntegration {
       const { status, xml, requestXml } = await this.soapCall('Search', body, true, 60000);
       const fault = this.extractSoapFault(xml);
       const basicFields = this.parseBasicFields(xml);
+      const resultCodeMeta = this.evaluateResultCode(basicFields.resultCode);
 
       if (status >= 400 || fault) {
          return {
@@ -125,30 +65,33 @@ export class InterpolIntegration {
             httpStatus: status,
             fault,
             ...basicFields,
+            resultCodeMeta,
             raw: xml,
             request: requestXml,
             hits: [],
          };
       }
 
-      if (basicFields.resultCode === 'NO_ANSWER') {
+      if (resultCodeMeta.key === 'NO_ANSWER') {
          return {
             ok: true,
             httpStatus: status,
             fault: null,
             ...basicFields,
+            resultCodeMeta,
             raw: xml,
             request: requestXml,
             hits: [],
          };
       }
 
-      if (basicFields.resultCode !== 'NO_ERROR') {
+      if (resultCodeMeta.key !== 'NO_ERROR') {
          return {
             ok: false,
             httpStatus: status,
             fault: null,
             ...basicFields,
+            resultCodeMeta,
             raw: xml,
             request: requestXml,
             hits: [],
@@ -160,6 +103,7 @@ export class InterpolIntegration {
          httpStatus: status,
          fault: null,
          ...basicFields,
+         resultCodeMeta,
          raw: xml,
          request: requestXml,
          hits: this.parseSearchHits(xml),
@@ -187,6 +131,7 @@ export class InterpolIntegration {
       const { status, xml, requestXml } = await this.soapCallSltd('Search', body, true, 60000);
       const fault = this.extractSoapFault(xml);
       const basicFields = this.parseBasicFields(xml);
+      const resultCodeMeta = this.evaluateResultCode(basicFields.resultCode);
 
       if (status >= 400 || fault) {
          return {
@@ -194,30 +139,33 @@ export class InterpolIntegration {
             httpStatus: status,
             fault,
             ...basicFields,
+            resultCodeMeta,
             raw: xml,
             request: requestXml,
             xmlData: this.extractXmlDataInner(xml),
          };
       }
 
-      if (basicFields.resultCode === 'NO_ANSWER') {
+      if (resultCodeMeta.key === 'NO_ANSWER') {
          return {
             ok: true,
             httpStatus: status,
             fault: null,
             ...basicFields,
+            resultCodeMeta,
             raw: xml,
             request: requestXml,
             xmlData: '',
          };
       }
 
-      if (basicFields.resultCode !== 'NO_ERROR') {
+      if (resultCodeMeta.key !== 'NO_ERROR') {
          return {
             ok: false,
             httpStatus: status,
             fault: null,
             ...basicFields,
+            resultCodeMeta,
             raw: xml,
             request: requestXml,
             xmlData: this.extractXmlDataInner(xml),
@@ -229,6 +177,7 @@ export class InterpolIntegration {
          httpStatus: status,
          fault: null,
          ...basicFields,
+         resultCodeMeta,
          raw: xml,
          request: requestXml,
          xmlData: this.extractXmlDataInner(xml),
@@ -243,6 +192,7 @@ export class InterpolIntegration {
       const { status, xml, requestXml } = await this.soapCall('Details', body, true, 60000);
       const fault = this.extractSoapFault(xml);
       const basicFields = this.parseBasicFields(xml);
+      const resultCodeMeta = this.evaluateResultCode(basicFields.resultCode);
 
       if (status >= 400 || fault) {
          return {
@@ -250,18 +200,20 @@ export class InterpolIntegration {
             httpStatus: status,
             fault,
             ...basicFields,
+            resultCodeMeta,
             raw: xml,
             request: requestXml,
             details: null,
          };
       }
 
-      if (basicFields.resultCode !== 'NO_ERROR') {
+      if (resultCodeMeta.key !== 'NO_ERROR') {
          return {
             ok: false,
             httpStatus: status,
             fault: null,
             ...basicFields,
+            resultCodeMeta,
             raw: xml,
             request: requestXml,
             details: null,
@@ -273,6 +225,7 @@ export class InterpolIntegration {
          httpStatus: status,
          fault: null,
          ...basicFields,
+         resultCodeMeta,
          raw: xml,
          request: requestXml,
          details: this.parseDetails(xml),
@@ -306,13 +259,15 @@ export class InterpolIntegration {
    private mapFileResponse(status: number, xml: string, requestXml: string): InterpolFileResponse {
       const fault = this.extractSoapFault(xml);
       const basicFields = this.parseBasicFields(xml);
+      const resultCodeMeta = this.evaluateResultCode(basicFields.resultCode);
 
-      if (status >= 400 || fault || basicFields.resultCode !== 'NO_ERROR') {
+      if (status >= 400 || fault || resultCodeMeta.key !== 'NO_ERROR') {
          return {
             ok: false,
             httpStatus: status,
             fault,
             ...basicFields,
+            resultCodeMeta,
             raw: xml,
             request: requestXml,
             files: [],
@@ -324,10 +279,148 @@ export class InterpolIntegration {
          httpStatus: status,
          fault: null,
          ...basicFields,
+         resultCodeMeta,
          raw: xml,
          request: requestXml,
          files: this.extractBinFilesFromAnswer(xml),
       };
+   }
+
+   private evaluateResultCode(resultCode: string | null): ResultCodeMeta {
+      const normalized = (resultCode || '').trim().toUpperCase();
+
+      const byString: Record<KnownResultCodeKey, number> = {
+         NO_ERROR: 0,
+         NO_ANSWER: 1,
+         INVALID_SEARCH_ERROR: 2,
+         UNEXPECTED_ERROR: 3,
+         TOO_MANY_ANSWER: 4,
+         ACCESS_DENIED: 5,
+         OTHER_ERROR_CODE: 6,
+         TIME_OUT: 7,
+      };
+
+      const byNumber: Record<number, KnownResultCodeKey> = {
+         0: 'NO_ERROR',
+         1: 'NO_ANSWER',
+         2: 'INVALID_SEARCH_ERROR',
+         3: 'UNEXPECTED_ERROR',
+         4: 'TOO_MANY_ANSWER',
+         5: 'ACCESS_DENIED',
+         6: 'OTHER_ERROR_CODE',
+         7: 'TIME_OUT',
+      };
+
+      const numericCandidate = Number(normalized);
+      const keyFromNumber =
+         normalized !== '' && Number.isFinite(numericCandidate)
+            ? byNumber[numericCandidate]
+            : undefined;
+      const keyFromString = normalized as KnownResultCodeKey;
+      const key: ResultCodeKey =
+         keyFromNumber ||
+         (Object.prototype.hasOwnProperty.call(byString, keyFromString)
+            ? keyFromString
+            : 'UNKNOWN');
+
+      const numericValue = key === 'UNKNOWN' ? null : byString[key];
+
+      switch (key) {
+         case 'NO_ERROR':
+            return {
+               key,
+               numericValue,
+               description: 'No error, request succeeded and result is not empty.',
+               retryable: false,
+               requiresQueryRefinement: false,
+               accessDenied: false,
+               isKnown: true,
+            };
+         case 'NO_ANSWER':
+            return {
+               key,
+               numericValue,
+               description: 'No error, request succeeded and result is empty.',
+               retryable: false,
+               requiresQueryRefinement: false,
+               accessDenied: false,
+               isKnown: true,
+            };
+         case 'INVALID_SEARCH_ERROR':
+            return {
+               key,
+               numericValue,
+               description:
+                  'Invalid search parameters were provided. Use requestId and timestamp for IPSG traceability.',
+               retryable: false,
+               requiresQueryRefinement: true,
+               accessDenied: false,
+               isKnown: true,
+            };
+         case 'UNEXPECTED_ERROR':
+            return {
+               key,
+               numericValue,
+               description:
+                  'Unexpected server-side error. Use requestId and timestamp to investigate with IPSG.',
+               retryable: true,
+               requiresQueryRefinement: false,
+               accessDenied: false,
+               isKnown: true,
+            };
+         case 'TOO_MANY_ANSWER':
+            return {
+               key,
+               numericValue,
+               description: 'Too many answers. Narrow search parameters to reduce result size.',
+               retryable: false,
+               requiresQueryRefinement: true,
+               accessDenied: false,
+               isKnown: true,
+            };
+         case 'ACCESS_DENIED':
+            return {
+               key,
+               numericValue,
+               description:
+                  'Access denied for this web service or data. Verify credentials and permissions.',
+               retryable: false,
+               requiresQueryRefinement: false,
+               accessDenied: true,
+               isKnown: true,
+            };
+         case 'OTHER_ERROR_CODE':
+            return {
+               key,
+               numericValue,
+               description:
+                  'Source database returned an error. Inspect resultOtherCode for additional details.',
+               retryable: false,
+               requiresQueryRefinement: false,
+               accessDenied: false,
+               isKnown: true,
+            };
+         case 'TIME_OUT':
+            return {
+               key,
+               numericValue,
+               description: 'Execution timed out while processing the request.',
+               retryable: true,
+               requiresQueryRefinement: false,
+               accessDenied: false,
+               isKnown: true,
+            };
+         default:
+            return {
+               key: 'UNKNOWN',
+               numericValue: null,
+               description: 'Unknown resultCode returned by upstream service.',
+               retryable: false,
+               requiresQueryRefinement: false,
+               accessDenied: false,
+               isKnown: false,
+            };
+      }
    }
 
    private async soapCall(
@@ -383,7 +476,7 @@ export class InterpolIntegration {
 
       if (!endpoint?.trim()) {
          throw new InternalServerErrorException(
-            'INTERPOL_SLTD_ENDPOINT (or SLTD_ENDPOINT) is missing in environment variables',
+            'INTERPOL_SLTD_ENDPOINT is missing in environment variables',
          );
       }
 
