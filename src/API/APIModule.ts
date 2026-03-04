@@ -2,7 +2,6 @@ import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/c
 
 import {
    ArtsakhController,
-   AsylumController,
    EsignController,
    InterpolController,
    KadastrController,
@@ -13,7 +12,6 @@ import {
    SphereController,
    StatisticsController,
    TaxController,
-   WorkPermitController,
 } from './Controllers';
 import { CoreModule } from 'src/Core/Core.module';
 import { SignatureVerificationMiddleware } from './Middlewares';
@@ -21,8 +19,6 @@ import { SignatureVerificationMiddleware } from './Middlewares';
 @Module({
    imports: [CoreModule],
    controllers: [
-      AsylumController,
-      WorkPermitController,
       PersonsController,
       PetregistrController,
       KadastrController,
@@ -37,17 +33,16 @@ import { SignatureVerificationMiddleware } from './Middlewares';
    ],
    providers: [],
 })
-export class APIModule implements NestModule {
-   configure(consumer: MiddlewareConsumer) {
-      consumer
-         .apply(SignatureVerificationMiddleware)
-         .exclude(
-            { path: 'work-permit/countries', method: RequestMethod.GET },
-            { path: 'work-permit/diagnosis', method: RequestMethod.GET },
-            { path: 'asylum/filter/options', method: RequestMethod.GET },
-         )
-         .forRoutes(WorkPermitController, AsylumController);
-   }
+export class APIModule {
+   // configure(consumer: MiddlewareConsumer) {
+   //    consumer
+   //       .apply(SignatureVerificationMiddleware)
+   //       .exclude(
+   //          { path: 'work-permit/countries', method: RequestMethod.GET },
+   //          { path: 'work-permit/diagnosis', method: RequestMethod.GET },
+   //          { path: 'asylum/filter/options', method: RequestMethod.GET },
+   //       )
+   //       .forRoutes(WorkPermitController, AsylumController);
+   // }
 }
-{
-}
+// {}

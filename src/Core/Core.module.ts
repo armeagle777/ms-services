@@ -3,30 +3,17 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DataTypes, Sequelize } from 'sequelize';
 
-import { AsylumService } from './Asylum/Asylum.service';
 import { ArtsakhService } from './Artsakh/Artsakh.service';
-import { CommunityService } from './Community/Community.service';
-import { CountryService } from './Country/Country.service';
 import { EsignService } from './Esign/Esign.service';
-import { EthnicsService } from './Ethnics/Ethnics.serrvice';
 import { KadastrService } from './Kadastr/Kadastr.service';
-import { MarzService } from './Marz/Marz.service';
 import { McsService } from './Mcs/Mcs.service';
 import { MojCesService } from './MojCes/MojCes.service';
 import { InterpolService } from './Interpol/Interpol.service';
 import { PersonsService } from './Persons/Persons.service';
 import { PetregistrService } from './Petregistr/Petregistr.service';
-import { RefugeeService } from './Refugee/Refugee.service';
-import { RefugeeCardService } from './RefugeeCard/RefugeeCard.service';
-import { ReligionService } from './Religion/Religion.serrvice';
-import { SettlementService } from './Settlement/Settlement.service';
 import { SphereService } from './Sphere/Sphere.service';
 import { StatisticsService } from './Statistics/Statistics.service';
 import { TaxService } from './Tax/Tax.service';
-import { WorkPermitService } from './WorkPermit/WorkPermit.service';
-import { WpService } from './Wp/Wp.service';
-import { WorkerService } from './Worker/Worker.service';
-import { BuildWpQueries } from './Worker/Helpers';
 import { IntegrationModule } from 'src/Infrustructure/Services/Integration.module';
 import { ARTSAKH_SEQUELIZE } from 'src/Core/Artsakh/artsakh.tokens';
 import { SPHERE_MODEL, SPHERE_SEQUELIZE } from 'src/Core/Sphere/sphere.tokens';
@@ -35,25 +22,12 @@ import {
    STATISTICS_SEQUELIZE,
    WP_SEQUELIZE as STATISTICS_WP_SEQUELIZE,
 } from 'src/Core/Statistics/statistics.tokens';
-import { WP_SEQUELIZE } from 'src/Core/Wp/wp.tokens';
 
 const services = [
-   WorkerService,
-   RefugeeService,
-   AsylumService,
-   WorkPermitService,
-   CountryService,
-   EthnicsService,
-   ReligionService,
-   MarzService,
-   CommunityService,
-   SettlementService,
-   RefugeeCardService,
    PersonsService,
    PetregistrService,
    KadastrService,
    ArtsakhService,
-   WpService,
    MojCesService,
    TaxService,
    SphereService,
@@ -63,7 +37,7 @@ const services = [
    StatisticsService,
 ];
 
-const helpers = [BuildWpQueries];
+const helpers = [];
 
 const databaseProviders = [
    {
@@ -164,22 +138,6 @@ const databaseProviders = [
    },
    {
       provide: STATISTICS_WP_SEQUELIZE,
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
-         const host = configService.get<string>('WP_DATABASE_HOST');
-         const db = configService.get<string>('WP_DATABASE_NAME');
-         const username = configService.get<string>('WP_DATABASE_USERNAME');
-         const password = configService.get<string>('WP_DATABASE_PASSWORD');
-
-         return new Sequelize(db || '', username || '', password || '', {
-            host,
-            dialect: 'mysql',
-            logging: false,
-         });
-      },
-   },
-   {
-      provide: WP_SEQUELIZE,
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
          const host = configService.get<string>('WP_DATABASE_HOST');

@@ -1,5 +1,3 @@
-export { AsylumController } from './Asylum.controller';
-export { WorkPermitController } from './WorkPermit.controller';
 export { ArtsakhController } from './Artsakh.controller';
 export { EsignController } from './Esign.controller';
 export { KadastrController } from './Kadastr.controller';
