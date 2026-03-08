@@ -1,4 +1,4 @@
 export class BordercrossRequestDto {
-  passportNumber!: string;
-  citizenship!: string;
+   passportNumber!: string;
+   citizenship!: string;
 }

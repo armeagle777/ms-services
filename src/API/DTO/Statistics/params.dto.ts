@@ -1,3 +1,3 @@
 export class StatisticsTypeParamDto {
-  statisticsType!: string;
+   statisticsType!: string;
 }

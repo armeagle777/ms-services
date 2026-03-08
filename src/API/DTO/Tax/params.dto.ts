@@ -1,7 +1,7 @@
 export class TinParamDto {
-  tin!: string;
+   tin!: string;
 }
 
 export class SsnParamDto {
-  ssn!: string;
+   ssn!: string;
 }

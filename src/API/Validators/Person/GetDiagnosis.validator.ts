@@ -2,7 +2,7 @@ import {
    Matches,
    Validate,
    ValidateIf,
-   IsOptional,
+   // IsOptional,
    ValidationArguments,
    ValidatorConstraint,
    ValidatorConstraintInterface,
@@ -16,7 +16,8 @@ export class AtLeastOneField implements ValidatorConstraintInterface {
       return !!(obj.ssn || obj.cardSerial);
    }
 
-   defaultMessage(args: ValidationArguments) {
+   defaultMessage() {
+      // args: ValidationArguments
       return 'Provide at least one parameter: ssn or cardSerial';
    }
 }

@@ -1,3 +1,3 @@
 export class MojCesDebtorRequestDto {
-  [key: string]: unknown;
+   [key: string]: unknown;
 }

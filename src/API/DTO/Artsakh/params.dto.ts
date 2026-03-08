@@ -1,3 +1,3 @@
 export class PnumParamDto {
-  pnum!: string;
+   pnum!: string;
 }

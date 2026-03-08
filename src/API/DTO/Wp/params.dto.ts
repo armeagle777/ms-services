@@ -1,7 +1,7 @@
 export class PnumParamDto {
-  pnum!: string;
+   pnum!: string;
 }
 
 export class IdParamDto {
-  id!: string;
+   id!: string;
 }

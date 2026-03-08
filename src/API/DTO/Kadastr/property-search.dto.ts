@@ -1,3 +1,3 @@
 export class PropertySearchQueryDto {
-  searchBase?: string;
+   searchBase?: string;
 }

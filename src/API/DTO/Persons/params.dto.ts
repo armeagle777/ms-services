@@ -1,15 +1,15 @@
 export class SsnParamDto {
-  ssn!: string;
+   ssn!: string;
 }
 
 export class PnumParamDto {
-  pnum!: string;
+   pnum!: string;
 }
 
 export class HvhhParamDto {
-  hvhh!: string;
+   hvhh!: string;
 }
 
 export class VehicleParamDto {
-  paramValue!: string;
+   paramValue!: string;
 }

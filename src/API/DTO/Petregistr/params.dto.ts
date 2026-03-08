@@ -1,3 +1,3 @@
 export class SsnParamDto {
-  ssn!: string;
+   ssn!: string;
 }

@@ -1,7 +1,7 @@
 export class SsnParamDto {
-  ssn!: string;
+   ssn!: string;
 }
 
 export class CertificateParamDto {
-  certificateNumber!: string;
+   certificateNumber!: string;
 }

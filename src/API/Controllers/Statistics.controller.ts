@@ -4,7 +4,7 @@ import { StatisticsService } from 'src/Core/Statistics/Statistics.service';
 import {
    AsylumStatsRequestDto,
    BorderCrossStatsRequestDto,
-   ExportStatsRequestDto,
+   // ExportStatsRequestDto,
    WpSimpleStatsRequestDto,
 } from 'src/API/DTO/Statistics/statistics.dto';
 import { StatisticsTypeParamDto } from 'src/API/DTO/Statistics/params.dto';
@@ -34,8 +34,12 @@ export class StatisticsController {
    }
 
    @Post('sahmanahatum/upload')
-   uploadBorderCrossFile(@Body() body: Record<string, unknown>) {
-      return this.statisticsService.uploadBorderCrossFile(body);
+   uploadBorderCrossFile() {
+      // @Body() body: Record<string, unknown>
+      return this.statisticsService
+         .uploadBorderCrossFile
+         // body
+         ();
    }
 
    @Post('sahmanahatum/total')
@@ -59,13 +63,21 @@ export class StatisticsController {
    }
 
    @Post('export/excel')
-   exportExcel(@Body() body: ExportStatsRequestDto) {
-      return this.statisticsService.exportExcel(body);
+   exportExcel() {
+      // @Body() body: ExportStatsRequestDto
+      return this.statisticsService
+         .exportExcel
+         // body
+         ();
    }
 
    @Post('export/pdf')
-   exportPdf(@Body() body: ExportStatsRequestDto) {
-      return this.statisticsService.exportPdf(body);
+   exportPdf() {
+      // @Body() body: ExportStatsRequestDto
+      return this.statisticsService
+         .exportPdf
+         // body
+         ();
    }
 
    @Get('periods/:statisticsType')

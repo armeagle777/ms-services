@@ -24,8 +24,12 @@ export class PersonsController {
    }
 
    @Post('download')
-   downloadBprInfo(@Body() body: Record<string, unknown>) {
-      return this.personsService.downloadBprInfo(body);
+   downloadBprInfo() {
+      // @Body() body: Record<string, unknown>
+      return this.personsService
+         .downloadBprInfo
+         // body
+         ();
    }
 
    @Post('bpr')

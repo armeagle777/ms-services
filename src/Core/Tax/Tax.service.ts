@@ -1,14 +1,17 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+   Injectable,
+   // InternalServerErrorException
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { firstValueFrom } from 'rxjs';
+// import { firstValueFrom } from 'rxjs';
 import { XMLParser } from 'fast-xml-parser';
 
-import { CompanyObligationsQueryDto } from 'src/API/DTO/Tax/tax.dto';
-import {
-   TaxObligationsResponse,
-   TaxPersonObligationsResponse,
-} from 'src/Core/Tax/interfaces/tax.interfaces';
+// import { CompanyObligationsQueryDto } from 'src/API/DTO/Tax/tax.dto';
+// import {
+//    TaxObligationsResponse,
+//    TaxPersonObligationsResponse,
+// } from 'src/Core/Tax/interfaces/tax.interfaces';
 // import { EkengIntegration } from 'src/Infrustructure/Services/EkengIntegration/Ekeng.integration';
 
 @Injectable()

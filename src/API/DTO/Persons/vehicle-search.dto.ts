@@ -1,3 +1,3 @@
 export class VehicleSearchQueryDto {
-  searchBase!: string;
+   searchBase!: string;
 }

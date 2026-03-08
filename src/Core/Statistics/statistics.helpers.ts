@@ -1,342 +1,345 @@
 import {
-  statisticsBaseQuery,
-  periodsMap,
-  STATISTICS_TYPE_MAPS,
-  ASYLUM_STAT_PAGES_BASE_TITLES_MAP,
-  MOCK_MONTHS,
-  BORDER_CROSS_STAT_PAGES_BASE_TITLES_MAP,
-  WP_SIMPLE_STAT_PAGES_BASE_TITLES_MAP,
+   statisticsBaseQuery,
+   periodsMap,
+   STATISTICS_TYPE_MAPS,
+   ASYLUM_STAT_PAGES_BASE_TITLES_MAP,
+   MOCK_MONTHS,
+   BORDER_CROSS_STAT_PAGES_BASE_TITLES_MAP,
+   WP_SIMPLE_STAT_PAGES_BASE_TITLES_MAP,
 } from './statistics.constants';
 
 const sanitizeData = (data) => {
-  return data.map(({ key, ...rowData }) => rowData);
+   return data.map((row) => {
+      delete row.key;
+      return row;
+   });
 };
 
-const formatExcelMetaData = (statisticsType, filters) => {
-  const headerRows = {
-    [STATISTICS_TYPE_MAPS.B_CROSS_TOTAL]: [
-      "",
-      "ՀՀ քաղաքացիներ",
-      "",
-      "",
-      "Օտարերկրացիներ",
-      "",
-      "",
-      "Ընդամենը",
-      "",
-      "",
-    ],
-    [STATISTICS_TYPE_MAPS.B_CROSS_COUNTRIES]: [
-      "Քաղաքացիություն",
-      "Air",
-      "",
-      "",
-      "Land",
-      "",
-      "",
-      "Railway",
-      "",
-      "",
-      "Total",
-      "",
-      "",
-    ],
-    [STATISTICS_TYPE_MAPS.B_CROSS_PERIOD]: [
-      "...",
-      "ՀՀ քաղաքացիներ",
-      "",
-      "",
-      "Օտարերկրացիներ",
-      "",
-      "",
-      "Ընդամենը",
-      "",
-      "",
-    ],
-    [STATISTICS_TYPE_MAPS.ASYLUM_TOTAL]: [
-      "Քաղաքացիություն",
-      "Հայցել է ապաստան",
-      "Ճանաչվել է փախստական",
-      "Մերժվել է",
-      "Կարճվել է",
-    ],
-    [STATISTICS_TYPE_MAPS.ASYLUM_APPLICATIONS]: [
-      "Քաղաքացիություն",
-      "0-13 տարեկան",
-      "",
-      "",
-      "14-17 տարեկան",
-      "",
-      "",
-      "18-34 տարեկան",
-      "",
-      "",
-      "35-64 տարեկան",
-      "",
-      "",
-      "65-ից ավել",
-      "",
-      "",
-      "անհայտ",
-      "",
-      "",
-      "ԸՆԴԱՄԵՆԸ",
-      "",
-      "",
-    ],
-    [STATISTICS_TYPE_MAPS.ASYLUM_DECISIONS]: [
-      "Քաղաքացիություն",
-      "0-13 տարեկան",
-      "",
-      "",
-      "14-17 տարեկան",
-      "",
-      "",
-      "18-34 տարեկան",
-      "",
-      "",
-      "35-64 տարեկան",
-      "",
-      "",
-      "65-ից ավել",
-      "",
-      "",
-      "անհայտ",
-      "",
-      "",
-      "ԸՆԴԱՄԵՆԸ",
-      "",
-      "",
-    ],
-    [STATISTICS_TYPE_MAPS.ASYLUM_YEARS]: [
-      "Տարեթիվ",
-      "Հայցել է ապաստան",
-      "Ճանաչվել է փախստական",
-      "Մերժվել է",
-      "Կարճվել է",
-    ],
-    [STATISTICS_TYPE_MAPS.WP_SIMPLE]: [
-      "Քաղաքացիություն",
-      "0-34 տարեկան",
-      "",
-      "",
-      "35-64 տարեկան",
-      "",
-      "",
-      "65-ից ավել",
-      "",
-      "",
-      "ԸՆԴԱՄԵՆԸ",
-      "",
-      "",
-    ],
-  };
-  const subHeaderRows = {
-    [STATISTICS_TYPE_MAPS.B_CROSS_TOTAL]: [
-      "",
-      "In",
-      "Out",
-      "Net",
-      "In",
-      "Out",
-      "Net",
-      "In",
-      "Out",
-      "Net",
-    ],
-    [STATISTICS_TYPE_MAPS.B_CROSS_COUNTRIES]: [
-      "",
-      "In",
-      "Out",
-      "Net",
-      "In",
-      "Out",
-      "Net",
-      "In",
-      "Out",
-      "Net",
-      "In",
-      "Out",
-      "Net",
-    ],
-    [STATISTICS_TYPE_MAPS.B_CROSS_PERIOD]: [
-      "",
-      "In",
-      "Out",
-      "Net",
-      "In",
-      "Out",
-      "Net",
-      "In",
-      "Out",
-      "Net",
-    ],
-    [STATISTICS_TYPE_MAPS.ASYLUM_TOTAL]: null,
-    [STATISTICS_TYPE_MAPS.ASYLUM_APPLICATIONS]: [
-      "",
-      "Ի",
-      "Ա",
-      "Ընդ․",
-      "Ի",
-      "Ա",
-      "Ընդ․",
-      "Ի",
-      "Ա",
-      "Ընդ․",
-      "Ի",
-      "Ա",
-      "Ընդ․",
-      "Ի",
-      "Ա",
-      "Ընդ․",
-      "Ի",
-      "Ա",
-      "Ընդ․",
-      "Ի",
-      "Ա",
-      "Ընդ․",
-    ],
-    [STATISTICS_TYPE_MAPS.ASYLUM_DECISIONS]: [
-      "",
-      "Ի",
-      "Ա",
-      "Ընդ․",
-      "Ի",
-      "Ա",
-      "Ընդ․",
-      "Ի",
-      "Ա",
-      "Ընդ․",
-      "Ի",
-      "Ա",
-      "Ընդ․",
-      "Ի",
-      "Ա",
-      "Ընդ․",
-      "Ի",
-      "Ա",
-      "Ընդ․",
-      "Ի",
-      "Ա",
-      "Ընդ․",
-    ],
-    [STATISTICS_TYPE_MAPS.ASYLUM_YEARS]: null,
-    [STATISTICS_TYPE_MAPS.WP_SIMPLE]: [
-      "",
-      "Ի",
-      "Ա",
-      "Ընդ․",
-      "Ի",
-      "Ա",
-      "Ընդ․",
-      "Ի",
-      "Ա",
-      "Ընդ․",
-      "Ի",
-      "Ա",
-      "Ընդ․",
-    ],
-  };
-  const mergeCellRanges = {
-    [STATISTICS_TYPE_MAPS.B_CROSS_TOTAL]: ["A1:J1", "B2:D2", "E2:G2", "H2:J2", "A2:A3"],
-    [STATISTICS_TYPE_MAPS.B_CROSS_COUNTRIES]: [
-      "A1:M1",
-      "B2:D2",
-      "E2:G2",
-      "H2:J2",
-      "K2:M2",
-      "A2:A3",
-    ],
-    [STATISTICS_TYPE_MAPS.B_CROSS_PERIOD]: ["A1:J1", "B2:D2", "E2:G2", "H2:J2", "A2:A3"],
-    [STATISTICS_TYPE_MAPS.ASYLUM_TOTAL]: ["A1:E1"],
-    [STATISTICS_TYPE_MAPS.ASYLUM_APPLICATIONS]: [
-      "A1:V1",
-      "B2:D2",
-      "E2:G2",
-      "H2:J2",
-      "K2:M2",
-      "N2:P2",
-      "Q2:S2",
-      "T2:V2",
-      "A2:A3",
-    ],
-    [STATISTICS_TYPE_MAPS.ASYLUM_DECISIONS]: [
-      "A1:V1",
-      "B2:D2",
-      "E2:G2",
-      "H2:J2",
-      "K2:M2",
-      "N2:P2",
-      "Q2:S2",
-      "T2:V2",
-      "A2:A3",
-    ],
-    [STATISTICS_TYPE_MAPS.ASYLUM_YEARS]: ["A1:E1"],
-    [STATISTICS_TYPE_MAPS.WP_SIMPLE]: [
-      "A1:M1",
-      "B2:D2",
-      "E2:G2",
-      "H2:J2",
-      "K2:M2",
-      "N2:P2",
-      "A2:A3",
-    ],
-  };
+const formatExcelMetaData = (statisticsType) => {
+   const headerRows = {
+      [STATISTICS_TYPE_MAPS.B_CROSS_TOTAL]: [
+         '',
+         'ՀՀ քաղաքացիներ',
+         '',
+         '',
+         'Օտարերկրացիներ',
+         '',
+         '',
+         'Ընդամենը',
+         '',
+         '',
+      ],
+      [STATISTICS_TYPE_MAPS.B_CROSS_COUNTRIES]: [
+         'Քաղաքացիություն',
+         'Air',
+         '',
+         '',
+         'Land',
+         '',
+         '',
+         'Railway',
+         '',
+         '',
+         'Total',
+         '',
+         '',
+      ],
+      [STATISTICS_TYPE_MAPS.B_CROSS_PERIOD]: [
+         '...',
+         'ՀՀ քաղաքացիներ',
+         '',
+         '',
+         'Օտարերկրացիներ',
+         '',
+         '',
+         'Ընդամենը',
+         '',
+         '',
+      ],
+      [STATISTICS_TYPE_MAPS.ASYLUM_TOTAL]: [
+         'Քաղաքացիություն',
+         'Հայցել է ապաստան',
+         'Ճանաչվել է փախստական',
+         'Մերժվել է',
+         'Կարճվել է',
+      ],
+      [STATISTICS_TYPE_MAPS.ASYLUM_APPLICATIONS]: [
+         'Քաղաքացիություն',
+         '0-13 տարեկան',
+         '',
+         '',
+         '14-17 տարեկան',
+         '',
+         '',
+         '18-34 տարեկան',
+         '',
+         '',
+         '35-64 տարեկան',
+         '',
+         '',
+         '65-ից ավել',
+         '',
+         '',
+         'անհայտ',
+         '',
+         '',
+         'ԸՆԴԱՄԵՆԸ',
+         '',
+         '',
+      ],
+      [STATISTICS_TYPE_MAPS.ASYLUM_DECISIONS]: [
+         'Քաղաքացիություն',
+         '0-13 տարեկան',
+         '',
+         '',
+         '14-17 տարեկան',
+         '',
+         '',
+         '18-34 տարեկան',
+         '',
+         '',
+         '35-64 տարեկան',
+         '',
+         '',
+         '65-ից ավել',
+         '',
+         '',
+         'անհայտ',
+         '',
+         '',
+         'ԸՆԴԱՄԵՆԸ',
+         '',
+         '',
+      ],
+      [STATISTICS_TYPE_MAPS.ASYLUM_YEARS]: [
+         'Տարեթիվ',
+         'Հայցել է ապաստան',
+         'Ճանաչվել է փախստական',
+         'Մերժվել է',
+         'Կարճվել է',
+      ],
+      [STATISTICS_TYPE_MAPS.WP_SIMPLE]: [
+         'Քաղաքացիություն',
+         '0-34 տարեկան',
+         '',
+         '',
+         '35-64 տարեկան',
+         '',
+         '',
+         '65-ից ավել',
+         '',
+         '',
+         'ԸՆԴԱՄԵՆԸ',
+         '',
+         '',
+      ],
+   };
+   const subHeaderRows = {
+      [STATISTICS_TYPE_MAPS.B_CROSS_TOTAL]: [
+         '',
+         'In',
+         'Out',
+         'Net',
+         'In',
+         'Out',
+         'Net',
+         'In',
+         'Out',
+         'Net',
+      ],
+      [STATISTICS_TYPE_MAPS.B_CROSS_COUNTRIES]: [
+         '',
+         'In',
+         'Out',
+         'Net',
+         'In',
+         'Out',
+         'Net',
+         'In',
+         'Out',
+         'Net',
+         'In',
+         'Out',
+         'Net',
+      ],
+      [STATISTICS_TYPE_MAPS.B_CROSS_PERIOD]: [
+         '',
+         'In',
+         'Out',
+         'Net',
+         'In',
+         'Out',
+         'Net',
+         'In',
+         'Out',
+         'Net',
+      ],
+      [STATISTICS_TYPE_MAPS.ASYLUM_TOTAL]: null,
+      [STATISTICS_TYPE_MAPS.ASYLUM_APPLICATIONS]: [
+         '',
+         'Ի',
+         'Ա',
+         'Ընդ․',
+         'Ի',
+         'Ա',
+         'Ընդ․',
+         'Ի',
+         'Ա',
+         'Ընդ․',
+         'Ի',
+         'Ա',
+         'Ընդ․',
+         'Ի',
+         'Ա',
+         'Ընդ․',
+         'Ի',
+         'Ա',
+         'Ընդ․',
+         'Ի',
+         'Ա',
+         'Ընդ․',
+      ],
+      [STATISTICS_TYPE_MAPS.ASYLUM_DECISIONS]: [
+         '',
+         'Ի',
+         'Ա',
+         'Ընդ․',
+         'Ի',
+         'Ա',
+         'Ընդ․',
+         'Ի',
+         'Ա',
+         'Ընդ․',
+         'Ի',
+         'Ա',
+         'Ընդ․',
+         'Ի',
+         'Ա',
+         'Ընդ․',
+         'Ի',
+         'Ա',
+         'Ընդ․',
+         'Ի',
+         'Ա',
+         'Ընդ․',
+      ],
+      [STATISTICS_TYPE_MAPS.ASYLUM_YEARS]: null,
+      [STATISTICS_TYPE_MAPS.WP_SIMPLE]: [
+         '',
+         'Ի',
+         'Ա',
+         'Ընդ․',
+         'Ի',
+         'Ա',
+         'Ընդ․',
+         'Ի',
+         'Ա',
+         'Ընդ․',
+         'Ի',
+         'Ա',
+         'Ընդ․',
+      ],
+   };
+   const mergeCellRanges = {
+      [STATISTICS_TYPE_MAPS.B_CROSS_TOTAL]: ['A1:J1', 'B2:D2', 'E2:G2', 'H2:J2', 'A2:A3'],
+      [STATISTICS_TYPE_MAPS.B_CROSS_COUNTRIES]: [
+         'A1:M1',
+         'B2:D2',
+         'E2:G2',
+         'H2:J2',
+         'K2:M2',
+         'A2:A3',
+      ],
+      [STATISTICS_TYPE_MAPS.B_CROSS_PERIOD]: ['A1:J1', 'B2:D2', 'E2:G2', 'H2:J2', 'A2:A3'],
+      [STATISTICS_TYPE_MAPS.ASYLUM_TOTAL]: ['A1:E1'],
+      [STATISTICS_TYPE_MAPS.ASYLUM_APPLICATIONS]: [
+         'A1:V1',
+         'B2:D2',
+         'E2:G2',
+         'H2:J2',
+         'K2:M2',
+         'N2:P2',
+         'Q2:S2',
+         'T2:V2',
+         'A2:A3',
+      ],
+      [STATISTICS_TYPE_MAPS.ASYLUM_DECISIONS]: [
+         'A1:V1',
+         'B2:D2',
+         'E2:G2',
+         'H2:J2',
+         'K2:M2',
+         'N2:P2',
+         'Q2:S2',
+         'T2:V2',
+         'A2:A3',
+      ],
+      [STATISTICS_TYPE_MAPS.ASYLUM_YEARS]: ['A1:E1'],
+      [STATISTICS_TYPE_MAPS.WP_SIMPLE]: [
+         'A1:M1',
+         'B2:D2',
+         'E2:G2',
+         'H2:J2',
+         'K2:M2',
+         'N2:P2',
+         'A2:A3',
+      ],
+   };
 
-  return {
-    headerRows: headerRows[statisticsType],
-    subHeaderRows: subHeaderRows[statisticsType],
-    mergeCellRanges: mergeCellRanges[statisticsType],
-  };
+   return {
+      headerRows: headerRows[statisticsType],
+      subHeaderRows: subHeaderRows[statisticsType],
+      mergeCellRanges: mergeCellRanges[statisticsType],
+   };
 };
 
 const mergeAndAlignCells = (workSheet, mergedCellsRange) => {
-  if (!mergedCellsRange) return;
-  mergedCellsRange.forEach((range) => {
-    workSheet.mergeCells(range);
-    const cell = workSheet.getCell(range.split(":")[0]);
-    cell.alignment = { horizontal: "center", vertical: "middle" };
-  });
+   if (!mergedCellsRange) return;
+   mergedCellsRange.forEach((range) => {
+      workSheet.mergeCells(range);
+      const cell = workSheet.getCell(range.split(':')[0]);
+      cell.alignment = { horizontal: 'center', vertical: 'middle' };
+   });
 };
 
 const formatAsylumQuery = ({ table_name, year, month, period }) => {
-  let quarter_where_condition = ` YEAR(d.decison_date) = ${year} AND`;
-  let applications_quarter_where_condition = ` YEAR(cs.mul_date) = ${year}  `;
+   let quarter_where_condition = ` YEAR(d.decison_date) = ${year} AND`;
+   let applications_quarter_where_condition = ` YEAR(cs.mul_date) = ${year}  `;
 
-  if (period == periodsMap.H1) {
-    quarter_where_condition += ` QUARTER(d.decison_date) IN (1,2) AND `;
-    applications_quarter_where_condition += ` AND QUARTER(cs.mul_date) IN (1,2) `;
-  } else if (period == periodsMap.H2) {
-    quarter_where_condition += ` QUARTER(d.decison_date) IN (3,4)  AND `;
-    applications_quarter_where_condition += ` AND QUARTER(cs.mul_date) IN (3,4)  `;
-  } else if (period == periodsMap.Q1) {
-    quarter_where_condition += ` QUARTER(d.decison_date) =1  AND `;
-    applications_quarter_where_condition += ` AND QUARTER(cs.mul_date) =1  `;
-  } else if (period == periodsMap.Q2) {
-    quarter_where_condition += ` QUARTER(d.decison_date) =2  AND `;
-    applications_quarter_where_condition += ` AND QUARTER(cs.mul_date) =2  `;
-  } else if (period == periodsMap.Q3) {
-    quarter_where_condition += ` QUARTER(d.decison_date) =3  AND `;
-    applications_quarter_where_condition += ` AND QUARTER(cs.mul_date) =3  `;
-  } else if (period == periodsMap.Q4) {
-    quarter_where_condition += ` QUARTER(d.decison_date) =4  AND `;
-    applications_quarter_where_condition += ` AND QUARTER(cs.mul_date) =4  `;
-  } else if (period == periodsMap["9MONTHLY"]) {
-    quarter_where_condition += ` QUARTER(d.decison_date) IN(1,2,3)  AND `;
-    applications_quarter_where_condition += ` AND QUARTER(cs.mul_date) IN(1,2,3) `;
-  } else if (period == periodsMap.MONTHLY && month) {
-    quarter_where_condition += ` MONTH(d.decison_date) = ${month}  AND `;
-    applications_quarter_where_condition += ` AND MONTH(cs.mul_date) =${month} `;
-  }
+   if (period == periodsMap.H1) {
+      quarter_where_condition += ` QUARTER(d.decison_date) IN (1,2) AND `;
+      applications_quarter_where_condition += ` AND QUARTER(cs.mul_date) IN (1,2) `;
+   } else if (period == periodsMap.H2) {
+      quarter_where_condition += ` QUARTER(d.decison_date) IN (3,4)  AND `;
+      applications_quarter_where_condition += ` AND QUARTER(cs.mul_date) IN (3,4)  `;
+   } else if (period == periodsMap.Q1) {
+      quarter_where_condition += ` QUARTER(d.decison_date) =1  AND `;
+      applications_quarter_where_condition += ` AND QUARTER(cs.mul_date) =1  `;
+   } else if (period == periodsMap.Q2) {
+      quarter_where_condition += ` QUARTER(d.decison_date) =2  AND `;
+      applications_quarter_where_condition += ` AND QUARTER(cs.mul_date) =2  `;
+   } else if (period == periodsMap.Q3) {
+      quarter_where_condition += ` QUARTER(d.decison_date) =3  AND `;
+      applications_quarter_where_condition += ` AND QUARTER(cs.mul_date) =3  `;
+   } else if (period == periodsMap.Q4) {
+      quarter_where_condition += ` QUARTER(d.decison_date) =4  AND `;
+      applications_quarter_where_condition += ` AND QUARTER(cs.mul_date) =4  `;
+   } else if (period == periodsMap['9MONTHLY']) {
+      quarter_where_condition += ` QUARTER(d.decison_date) IN(1,2,3)  AND `;
+      applications_quarter_where_condition += ` AND QUARTER(cs.mul_date) IN(1,2,3) `;
+   } else if (period == periodsMap.MONTHLY && month) {
+      quarter_where_condition += ` MONTH(d.decison_date) = ${month}  AND `;
+      applications_quarter_where_condition += ` AND MONTH(cs.mul_date) =${month} `;
+   }
 
-  const statisticsQueriesFrom = {
-    applied_for_asylum: ` FROM (
+   const statisticsQueriesFrom = {
+      applied_for_asylum: ` FROM (
           SELECT    a.personal_id,    c.country_arm,    YEAR(cs.mul_date) - a.b_year AS age,    a.sex FROM    tb_person a 
           INNER JOIN tb_case cs ON cs.case_id = a.case_id 
           INNER JOIN tb_country c ON    a.citizenship = c.country_id 
           WHERE ${applications_quarter_where_condition}  ) EAEU_STAT    
       group by EAEU_STAT.country_arm`,
-    refugees: ` FROM (
+      refugees: ` FROM (
           SELECT    
           a.personal_id,    
           c.country_arm,    
@@ -351,25 +354,25 @@ const formatAsylumQuery = ({ table_name, year, month, period }) => {
               AND d.decision_status=5 
               AND d.actual=1) EAEU_STAT    
       group by EAEU_STAT.country_arm`,
-    refugees_withdrawn: ` FROM (
+      refugees_withdrawn: ` FROM (
           SELECT    a.personal_id,    c.country_arm,    YEAR(d.decison_date) - a.b_year AS age,    a.sex FROM    tb_person a 
           INNER JOIN tb_decisions d ON d.case_id = a.case_id 
           INNER JOIN tb_country c ON    a.citizenship = c.country_id 
           WHERE ${quarter_where_condition}  d.decision_type IN(11,13) AND d.actual=1 ) EAEU_STAT    
       group by EAEU_STAT.country_arm`,
-    terminate: ` FROM (
+      terminate: ` FROM (
           SELECT    a.personal_id,    c.country_arm,    YEAR(d.decison_date) - a.b_year AS age,    a.sex FROM    tb_person a 
           INNER JOIN tb_decisions d ON d.case_id = a.case_id 
           INNER JOIN tb_country c ON    a.citizenship = c.country_id 
           WHERE ${quarter_where_condition}  d.decision_type IN(11,12) AND d.actual=1 AND d.decision_status=5) EAEU_STAT    
       group by EAEU_STAT.country_arm`,
-    denied_refugees: ` FROM (
+      denied_refugees: ` FROM (
           SELECT    a.personal_id,    c.country_arm,    YEAR(d.decison_date) - a.b_year AS age,    a.sex FROM    tb_person a 
           INNER JOIN tb_decisions d ON d.case_id = a.case_id 
           INNER JOIN tb_country c ON    a.citizenship = c.country_id 
           WHERE ${quarter_where_condition}  d.decision_type=4 AND d.actual=1 AND d.decision_status=5) EAEU_STAT    
       group by EAEU_STAT.country_arm`,
-    asylum_closed: `  
+      asylum_closed: `  
     FROM (
           SELECT    a.personal_id,    c.country_arm,    YEAR(d.decison_date) - a.b_year AS age,    a.sex FROM    tb_person a 
           INNER JOIN tb_decisions d ON d.case_id = a.case_id 
@@ -393,32 +396,32 @@ const formatAsylumQuery = ({ table_name, year, month, period }) => {
               c.country_arm
           ) APP_STATS ON EAEU_STAT.country_arm = APP_STATS.country_arm    
       group by EAEU_STAT.country_arm`,
-  };
-  return statisticsBaseQuery + statisticsQueriesFrom[table_name];
+   };
+   return statisticsBaseQuery + statisticsQueriesFrom[table_name];
 };
 
 const formatTotalAsylumQuery = ({ year, month, period }) => {
-  let periodWhereCondition = "";
-  if (period == periodsMap.H1) {
-    periodWhereCondition += ` AND QUARTER(asylum_general_stats.period) IN (1,2) `;
-  } else if (period == periodsMap.H2) {
-    periodWhereCondition += ` AND QUARTER(asylum_general_stats.period) IN (3,4)  `;
-  } else if (period == periodsMap.Q1) {
-    periodWhereCondition += ` AND QUARTER(asylum_general_stats.period) =1 `;
-  } else if (period == periodsMap.Q2) {
-    periodWhereCondition += ` AND QUARTER(asylum_general_stats.period) =2 `;
-  } else if (period == periodsMap.Q3) {
-    periodWhereCondition += ` AND QUARTER(asylum_general_stats.period) =3  `;
-  } else if (period == periodsMap.Q4) {
-    periodWhereCondition += ` AND QUARTER(asylum_general_stats.period) =4  `;
-  } else if (period == periodsMap["9MONTHLY"]) {
-    periodWhereCondition += ` AND QUARTER(asylum_general_stats.period) IN(1,2,3) `;
-  }
-  const whereCondition = month
-    ? ` YEAR(asylum_general_stats.period) = '${year}' and MONTH(asylum_general_stats.period) = ${month} `
-    : ` YEAR(asylum_general_stats.period) = '${year}'  ${periodWhereCondition} `;
+   let periodWhereCondition = '';
+   if (period == periodsMap.H1) {
+      periodWhereCondition += ` AND QUARTER(asylum_general_stats.period) IN (1,2) `;
+   } else if (period == periodsMap.H2) {
+      periodWhereCondition += ` AND QUARTER(asylum_general_stats.period) IN (3,4)  `;
+   } else if (period == periodsMap.Q1) {
+      periodWhereCondition += ` AND QUARTER(asylum_general_stats.period) =1 `;
+   } else if (period == periodsMap.Q2) {
+      periodWhereCondition += ` AND QUARTER(asylum_general_stats.period) =2 `;
+   } else if (period == periodsMap.Q3) {
+      periodWhereCondition += ` AND QUARTER(asylum_general_stats.period) =3  `;
+   } else if (period == periodsMap.Q4) {
+      periodWhereCondition += ` AND QUARTER(asylum_general_stats.period) =4  `;
+   } else if (period == periodsMap['9MONTHLY']) {
+      periodWhereCondition += ` AND QUARTER(asylum_general_stats.period) IN(1,2,3) `;
+   }
+   const whereCondition = month
+      ? ` YEAR(asylum_general_stats.period) = '${year}' and MONTH(asylum_general_stats.period) = ${month} `
+      : ` YEAR(asylum_general_stats.period) = '${year}'  ${periodWhereCondition} `;
 
-  const query = `SELECT
+   const query = `SELECT
   asylum_general_stats.country_id AS 'key',
   asylum_general_stats.country_arm,
 
@@ -483,25 +486,24 @@ WHERE ${whereCondition}
 GROUP BY asylum_general_stats.country_id, asylum_general_stats.country_arm
 `;
 
-  return query;
+   return query;
 };
 
 const formatTotalBorderCrossQuery = ({ year, month, period, borderCross }) => {
-  borderCross === "type" ? "" : "";
-  const mainColumnNames = { type: "cross_type", point: "cross_point" };
-  const periodConditions = {
-    h1: "  AND month IN (1,2,3,4,5,6)",
-    h2: "  AND month IN (7,8,9,10,11,12)",
-    annual: "",
-    q1: "  AND month IN (1,2,3)",
-    q2: "  AND month IN (4,5,6)",
-    q3: "  AND month IN (7,8,9)",
-    q4: "  AND month IN (10,11,12)",
-    "9monthly": "  AND month IN (1,2,3,4,5,6,7,8,9)",
-    monthly: ` AND month = ${month}`,
-  };
+   const mainColumnNames = { type: 'cross_type', point: 'cross_point' };
+   const periodConditions = {
+      h1: '  AND month IN (1,2,3,4,5,6)',
+      h2: '  AND month IN (7,8,9,10,11,12)',
+      annual: '',
+      q1: '  AND month IN (1,2,3)',
+      q2: '  AND month IN (4,5,6)',
+      q3: '  AND month IN (7,8,9)',
+      q4: '  AND month IN (10,11,12)',
+      '9monthly': '  AND month IN (1,2,3,4,5,6,7,8,9)',
+      monthly: ` AND month = ${month}`,
+   };
 
-  const baseQuery = `SELECT 
+   const baseQuery = `SELECT 
         ${mainColumnNames[borderCross]} AS main_column, 
           SUM(CASE WHEN country = 'ARMENIA' THEN in_count ELSE 0 END) AS arm_in,
           SUM(CASE WHEN country = 'ARMENIA' THEN out_count ELSE 0 END) AS arm_out,
@@ -519,23 +521,23 @@ const formatTotalBorderCrossQuery = ({ year, month, period, borderCross }) => {
       GROUP BY 
           ${mainColumnNames[borderCross]};`;
 
-  return baseQuery;
+   return baseQuery;
 };
 
 const formatCountryBorderCrossQuery = ({ year, month, period }) => {
-  const periodConditions = {
-    h1: "  AND month IN (1,2,3,4,5,6)",
-    h2: "  AND month IN (7,8,9,10,11,12)",
-    annual: "",
-    q1: "  AND month IN (1,2,3)",
-    q2: "  AND month IN (4,5,6)",
-    q3: "  AND month IN (7,8,9)",
-    q4: "  AND month IN (10,11,12)",
-    "9monthly": "  AND month IN (1,2,3,4,5,6,7,8,9)",
-    monthly: ` AND month = ${month}`,
-  };
+   const periodConditions = {
+      h1: '  AND month IN (1,2,3,4,5,6)',
+      h2: '  AND month IN (7,8,9,10,11,12)',
+      annual: '',
+      q1: '  AND month IN (1,2,3)',
+      q2: '  AND month IN (4,5,6)',
+      q3: '  AND month IN (7,8,9)',
+      q4: '  AND month IN (10,11,12)',
+      '9monthly': '  AND month IN (1,2,3,4,5,6,7,8,9)',
+      monthly: ` AND month = ${month}`,
+   };
 
-  const baseQuery = `SELECT 
+   const baseQuery = `SELECT 
         country, 
           SUM(CASE WHEN cross_type = 'AIR' THEN in_count ELSE 0 END) AS air_in,
           SUM(CASE WHEN cross_type = 'AIR' THEN out_count ELSE 0 END) AS air_out,
@@ -556,13 +558,13 @@ const formatCountryBorderCrossQuery = ({ year, month, period }) => {
       GROUP BY 
           country;`;
 
-  return baseQuery;
+   return baseQuery;
 };
 
 const formatPeriodBorderCrossQuery = ({ year, month, period }) => {
-  switch (period) {
-    case periodsMap.ANNUAL:
-      return `SELECT 
+   switch (period) {
+      case periodsMap.ANNUAL:
+         return `SELECT 
             year AS main_column,
             year AS 'key',
             SUM(CASE WHEN country = 'ARMENIA' THEN in_count ELSE 0 END) AS arm_in,
@@ -582,20 +584,20 @@ const formatPeriodBorderCrossQuery = ({ year, month, period }) => {
             year
         ORDER BY 
             year DESC;`;
-    case periodsMap.Q1:
-      return quarterlyQueryBuilder(year, 1);
-    case periodsMap.Q2:
-      return quarterlyQueryBuilder(year, 2);
-    case periodsMap.Q3:
-      return quarterlyQueryBuilder(year, 3);
-    case periodsMap.Q4:
-      return quarterlyQueryBuilder(year, 4);
-    case periodsMap.H1:
-      return halfyearQueryBuilder(year, 1);
-    case periodsMap.H2:
-      return halfyearQueryBuilder(year, 2);
-    case periodsMap.MONTHLY:
-      return `SELECT 
+      case periodsMap.Q1:
+         return quarterlyQueryBuilder(year, 1);
+      case periodsMap.Q2:
+         return quarterlyQueryBuilder(year, 2);
+      case periodsMap.Q3:
+         return quarterlyQueryBuilder(year, 3);
+      case periodsMap.Q4:
+         return quarterlyQueryBuilder(year, 4);
+      case periodsMap.H1:
+         return halfyearQueryBuilder(year, 1);
+      case periodsMap.H2:
+         return halfyearQueryBuilder(year, 2);
+      case periodsMap.MONTHLY:
+         return `SELECT 
           CONCAT(year, '-', LPAD(month, 2, '0')) AS main_column,
           CONCAT(year, '-', LPAD(month, 2, '0')) AS 'key',
           SUM(CASE WHEN country = 'ARMENIA' THEN in_count ELSE 0 END) AS arm_in,
@@ -616,13 +618,13 @@ const formatPeriodBorderCrossQuery = ({ year, month, period }) => {
           year, month
       ORDER BY 
           year DESC, month DESC;`;
-    default:
-      throw new Error("Invalid period specified");
-  }
+      default:
+         throw new Error('Invalid period specified');
+   }
 };
 
 function quarterlyQueryBuilder(years, quarter) {
-  return `SELECT 
+   return `SELECT 
   CONCAT(year, ' Q', ${quarter}) AS main_column,
   CONCAT(year, ' Q', ${quarter}) AS 'key',
   SUM(CASE WHEN country = 'ARMENIA' THEN in_count ELSE 0 END) AS arm_in,
@@ -646,8 +648,8 @@ ORDER BY
 }
 
 function halfyearQueryBuilder(years, half) {
-  const halfCondition = half === 1 ? " AND month BETWEEN 1 AND 6" : " AND month BETWEEN 7 AND 12";
-  return `SELECT 
+   const halfCondition = half === 1 ? ' AND month BETWEEN 1 AND 6' : ' AND month BETWEEN 7 AND 12';
+   return `SELECT 
   CONCAT(year, ' H', IF(month BETWEEN 1 AND 6, 1, 2)) AS main_column,
   CONCAT(year, ' H', IF(month BETWEEN 1 AND 6, 1, 2)) AS 'key',
   SUM(CASE WHEN country = 'ARMENIA' THEN in_count ELSE 0 END) AS arm_in,
@@ -670,31 +672,38 @@ ORDER BY
 `;
 }
 
-const formatEaeuEmployeeApplicationsQuery = ({ year, month, period, claim_type ,report_type,decType}) => {
-  let period_where_condition = "";
-  const claim_type_where_condion = claim_type == "all" ? "" : ` AND a.type = '${claim_type}'`;
+const formatEaeuEmployeeApplicationsQuery = ({
+   year,
+   month,
+   period,
+   claim_type,
+   // report_type,
+   // decType,
+}) => {
+   let period_where_condition = '';
+   const claim_type_where_condion = claim_type == 'all' ? '' : ` AND a.type = '${claim_type}'`;
 
-  if (period == periodsMap.H1) {
-    period_where_condition = `   AND QUARTER(a.created_at) IN (1,2) `;
-  } else if (period == periodsMap.H2) {
-    period_where_condition = `   AND  QUARTER(a.created_at) IN (3,4)  `;
-  } else if (period == periodsMap.ANNUAL) {
-    period_where_condition = ` `;
-  } else if (period == periodsMap.Q1) {
-    period_where_condition = `   AND  QUARTER(a.created_at) =1  `;
-  } else if (period == periodsMap.Q2) {
-    period_where_condition = `   AND  QUARTER(a.created_at) =2  `;
-  } else if (period == periodsMap.Q3) {
-    period_where_condition = `   AND  QUARTER(a.created_at) =3  `;
-  } else if (period == periodsMap.Q4) {
-    period_where_condition = `   AND  QUARTER(a.created_at) =4  `;
-  } else if (period == periodsMap["9MONTHLY"]) {
-    period_where_condition = `   AND  QUARTER(a.created_at) IN(1,2,3)  `;
-  }
+   if (period == periodsMap.H1) {
+      period_where_condition = `   AND QUARTER(a.created_at) IN (1,2) `;
+   } else if (period == periodsMap.H2) {
+      period_where_condition = `   AND  QUARTER(a.created_at) IN (3,4)  `;
+   } else if (period == periodsMap.ANNUAL) {
+      period_where_condition = ` `;
+   } else if (period == periodsMap.Q1) {
+      period_where_condition = `   AND  QUARTER(a.created_at) =1  `;
+   } else if (period == periodsMap.Q2) {
+      period_where_condition = `   AND  QUARTER(a.created_at) =2  `;
+   } else if (period == periodsMap.Q3) {
+      period_where_condition = `   AND  QUARTER(a.created_at) =3  `;
+   } else if (period == periodsMap.Q4) {
+      period_where_condition = `   AND  QUARTER(a.created_at) =4  `;
+   } else if (period == periodsMap['9MONTHLY']) {
+      period_where_condition = `   AND  QUARTER(a.created_at) IN(1,2,3)  `;
+   }
 
-  const monthWhereCondition = month ? ` AND month(a.created_at) = '${month}'` : "";
+   const monthWhereCondition = month ? ` AND month(a.created_at) = '${month}'` : '';
 
-  return `SELECT
+   return `SELECT
       sd.name_am,
 
 
@@ -741,39 +750,39 @@ const formatEaeuEmployeeApplicationsQuery = ({ year, month, period, claim_type ,
 };
 
 const formatEaeuEmployeeDecisionsQuery = ({
-  year,
-  month,
-  period,
-  claim_type,
-  decType,
-  report_type,
+   year,
+   month,
+   period,
+   claim_type,
+   decType,
+   // report_type,
 }) => {
-  let period_where_condition = "";
-  const claim_type_where_condion = claim_type == "all" ? "" : ` AND a.type = '${claim_type}'`;
+   let period_where_condition = '';
+   const claim_type_where_condion = claim_type == 'all' ? '' : ` AND a.type = '${claim_type}'`;
 
-  let action = ` AND action IN ('${decType}') `;
+   const action = ` AND action IN ('${decType}') `;
 
-  if (period == periodsMap.H1) {
-    period_where_condition = `   AND QUARTER(g.created_at) IN (1,2) `;
-  } else if (period == periodsMap.H2) {
-    period_where_condition = `   AND  QUARTER(g.created_at) IN (3,4)  `;
-  } else if (period == periodsMap.ANNUAL) {
-    period_where_condition = ` `;
-  } else if (period == periodsMap.Q1) {
-    period_where_condition = `   AND  QUARTER(g.created_at) =1  `;
-  } else if (period == periodsMap.Q2) {
-    period_where_condition = `   AND  QUARTER(g.created_at) =2  `;
-  } else if (period == periodsMap.Q3) {
-    period_where_condition = `   AND  QUARTER(g.created_at) =3  `;
-  } else if (period == periodsMap.Q4) {
-    period_where_condition = `   AND  QUARTER(g.created_at) =4  `;
-  } else if (period == periodsMap["9MONTHLY"]) {
-    period_where_condition = `   AND  QUARTER(g.created_at) IN(1,2,3)  `;
-  }
+   if (period == periodsMap.H1) {
+      period_where_condition = `   AND QUARTER(g.created_at) IN (1,2) `;
+   } else if (period == periodsMap.H2) {
+      period_where_condition = `   AND  QUARTER(g.created_at) IN (3,4)  `;
+   } else if (period == periodsMap.ANNUAL) {
+      period_where_condition = ` `;
+   } else if (period == periodsMap.Q1) {
+      period_where_condition = `   AND  QUARTER(g.created_at) =1  `;
+   } else if (period == periodsMap.Q2) {
+      period_where_condition = `   AND  QUARTER(g.created_at) =2  `;
+   } else if (period == periodsMap.Q3) {
+      period_where_condition = `   AND  QUARTER(g.created_at) =3  `;
+   } else if (period == periodsMap.Q4) {
+      period_where_condition = `   AND  QUARTER(g.created_at) =4  `;
+   } else if (period == periodsMap['9MONTHLY']) {
+      period_where_condition = `   AND  QUARTER(g.created_at) IN(1,2,3)  `;
+   }
 
-  const monthWhereCondition = month ? ` AND month(g.created_at) = ${month}` : "";
+   const monthWhereCondition = month ? ` AND month(g.created_at) = ${month}` : '';
 
-  return `SELECT
+   return `SELECT
       sd.name_am,
 
 
@@ -825,31 +834,38 @@ const formatEaeuEmployeeDecisionsQuery = ({
     ORDER BY grand_total DESC`;
 };
 
-const formatEaeuEmployeeFamApplicationsQuery = ({ year, month, period, claim_type ,report_type,decType}) => {
-  let period_where_condition = "";
-  const claim_type_where_condion = claim_type == "all" ? "" : ` AND a.type = '${claim_type}'`;
+const formatEaeuEmployeeFamApplicationsQuery = ({
+   year,
+   month,
+   period,
+   claim_type,
+   // report_type,
+   // decType,
+}) => {
+   let period_where_condition = '';
+   const claim_type_where_condion = claim_type == 'all' ? '' : ` AND a.type = '${claim_type}'`;
 
-  if (period == periodsMap.H1) {
-    period_where_condition = `   AND QUARTER(a.created_at) IN (1,2) `;
-  } else if (period == periodsMap.H2) {
-    period_where_condition = `   AND  QUARTER(a.created_at) IN (3,4)  `;
-  } else if (period == periodsMap.ANNUAL) {
-    period_where_condition = ` `;
-  } else if (period == periodsMap.Q1) {
-    period_where_condition = `   AND  QUARTER(a.created_at) =1  `;
-  } else if (period == periodsMap.Q2) {
-    period_where_condition = `   AND  QUARTER(a.created_at) =2  `;
-  } else if (period == periodsMap.Q3) {
-    period_where_condition = `   AND  QUARTER(a.created_at) =3  `;
-  } else if (period == periodsMap.Q4) {
-    period_where_condition = `   AND  QUARTER(a.created_at) =4  `;
-  } else if (period == periodsMap["9MONTHLY"]) {
-    period_where_condition = `   AND  QUARTER(a.created_at) IN(1,2,3)  `;
-  }
+   if (period == periodsMap.H1) {
+      period_where_condition = `   AND QUARTER(a.created_at) IN (1,2) `;
+   } else if (period == periodsMap.H2) {
+      period_where_condition = `   AND  QUARTER(a.created_at) IN (3,4)  `;
+   } else if (period == periodsMap.ANNUAL) {
+      period_where_condition = ` `;
+   } else if (period == periodsMap.Q1) {
+      period_where_condition = `   AND  QUARTER(a.created_at) =1  `;
+   } else if (period == periodsMap.Q2) {
+      period_where_condition = `   AND  QUARTER(a.created_at) =2  `;
+   } else if (period == periodsMap.Q3) {
+      period_where_condition = `   AND  QUARTER(a.created_at) =3  `;
+   } else if (period == periodsMap.Q4) {
+      period_where_condition = `   AND  QUARTER(a.created_at) =4  `;
+   } else if (period == periodsMap['9MONTHLY']) {
+      period_where_condition = `   AND  QUARTER(a.created_at) IN(1,2,3)  `;
+   }
 
-  const monthWhereCondition = month ? ` AND month(a.created_at) = '${month}'` : "";
+   const monthWhereCondition = month ? ` AND month(a.created_at) = '${month}'` : '';
 
-  return `SELECT
+   return `SELECT
       sd.name_am,
 
 
@@ -895,39 +911,39 @@ const formatEaeuEmployeeFamApplicationsQuery = ({ year, month, period, claim_typ
     ORDER BY grand_total DESC`;
 };
 const formatEaeuEmployeeFamDecisionsQuery = ({
-  year,
-  month,
-  period,
-  claim_type,
-  decType,
-  report_type,
+   year,
+   month,
+   period,
+   claim_type,
+   decType,
+   // report_type,
 }) => {
-  let period_where_condition = "";
-  const claim_type_where_condion = claim_type == "all" ? "" : ` AND a.type = '${claim_type}'`;
+   let period_where_condition = '';
+   const claim_type_where_condion = claim_type == 'all' ? '' : ` AND a.type = '${claim_type}'`;
 
-  let action = ` AND action IN ('${decType}') `;
+   const action = ` AND action IN ('${decType}') `;
 
-  if (period == periodsMap.H1) {
-    period_where_condition = `   AND QUARTER(g.created_at) IN (1,2) `;
-  } else if (period == periodsMap.H2) {
-    period_where_condition = `   AND  QUARTER(g.created_at) IN (3,4)  `;
-  } else if (period == periodsMap.ANNUAL) {
-    period_where_condition = ` `;
-  } else if (period == periodsMap.Q1) {
-    period_where_condition = `   AND  QUARTER(g.created_at) =1  `;
-  } else if (period == periodsMap.Q2) {
-    period_where_condition = `   AND  QUARTER(g.created_at) =2  `;
-  } else if (period == periodsMap.Q3) {
-    period_where_condition = `   AND  QUARTER(g.created_at) =3  `;
-  } else if (period == periodsMap.Q4) {
-    period_where_condition = `   AND  QUARTER(g.created_at) =4  `;
-  } else if (period == periodsMap["9MONTHLY"]) {
-    period_where_condition = `   AND  QUARTER(g.created_at) IN(1,2,3)  `;
-  }
+   if (period == periodsMap.H1) {
+      period_where_condition = `   AND QUARTER(g.created_at) IN (1,2) `;
+   } else if (period == periodsMap.H2) {
+      period_where_condition = `   AND  QUARTER(g.created_at) IN (3,4)  `;
+   } else if (period == periodsMap.ANNUAL) {
+      period_where_condition = ` `;
+   } else if (period == periodsMap.Q1) {
+      period_where_condition = `   AND  QUARTER(g.created_at) =1  `;
+   } else if (period == periodsMap.Q2) {
+      period_where_condition = `   AND  QUARTER(g.created_at) =2  `;
+   } else if (period == periodsMap.Q3) {
+      period_where_condition = `   AND  QUARTER(g.created_at) =3  `;
+   } else if (period == periodsMap.Q4) {
+      period_where_condition = `   AND  QUARTER(g.created_at) =4  `;
+   } else if (period == periodsMap['9MONTHLY']) {
+      period_where_condition = `   AND  QUARTER(g.created_at) IN(1,2,3)  `;
+   }
 
-  const monthWhereCondition = month ? ` AND month(g.created_at) = ${month}` : "";
+   const monthWhereCondition = month ? ` AND month(g.created_at) = ${month}` : '';
 
-  return `SELECT
+   return `SELECT
       sd.name_am,
 
 
@@ -978,32 +994,32 @@ const formatEaeuEmployeeFamDecisionsQuery = ({
     ORDER BY grand_total DESC`;
 };
 
-const formatWpApplicationsQuery = ({ year, month, period, decType, claim_type, report_type }) => {
-  let period_where_condition = "";
+const formatWpApplicationsQuery = ({ year, month, period, claim_type }) => {
+   let period_where_condition = '';
 
-  if (period == periodsMap.H1) {
-    period_where_condition = `   AND QUARTER(a.created_at) IN (1,2) `;
-  } else if (period == periodsMap.H2) {
-    period_where_condition = `   AND  QUARTER(a.created_at) IN (3,4)  `;
-  } else if (period == periodsMap.ANNUAL) {
-    period_where_condition = ` `;
-  } else if (period == periodsMap.Q1) {
-    period_where_condition = `   AND  QUARTER(a.created_at) =1  `;
-  } else if (period == periodsMap.Q2) {
-    period_where_condition = `   AND  QUARTER(a.created_at) =2  `;
-  } else if (period == periodsMap.Q3) {
-    period_where_condition = `   AND  QUARTER(a.created_at) =3  `;
-  } else if (period == periodsMap.Q4) {
-    period_where_condition = `   AND  QUARTER(a.created_at) =4  `;
-  } else if (period == periodsMap["9MONTHLY"]) {
-    period_where_condition = `   AND  QUARTER(a.created_at) IN(1,2,3)  `;
-  }
+   if (period == periodsMap.H1) {
+      period_where_condition = `   AND QUARTER(a.created_at) IN (1,2) `;
+   } else if (period == periodsMap.H2) {
+      period_where_condition = `   AND  QUARTER(a.created_at) IN (3,4)  `;
+   } else if (period == periodsMap.ANNUAL) {
+      period_where_condition = ` `;
+   } else if (period == periodsMap.Q1) {
+      period_where_condition = `   AND  QUARTER(a.created_at) =1  `;
+   } else if (period == periodsMap.Q2) {
+      period_where_condition = `   AND  QUARTER(a.created_at) =2  `;
+   } else if (period == periodsMap.Q3) {
+      period_where_condition = `   AND  QUARTER(a.created_at) =3  `;
+   } else if (period == periodsMap.Q4) {
+      period_where_condition = `   AND  QUARTER(a.created_at) =4  `;
+   } else if (period == periodsMap['9MONTHLY']) {
+      period_where_condition = `   AND  QUARTER(a.created_at) IN(1,2,3)  `;
+   }
 
-  const claim_type_where_condion = claim_type == "all" ? "" : ` AND a.type = '${claim_type}'`;
+   const claim_type_where_condion = claim_type == 'all' ? '' : ` AND a.type = '${claim_type}'`;
 
-  const monthWhereCondition = month ? ` AND month(a.creeated_at) = '${month}'` : "";
+   const monthWhereCondition = month ? ` AND month(a.creeated_at) = '${month}'` : '';
 
-  return `SELECT
+   return `SELECT
         sd.name_am,
 
         SUM(sd.gender_id = 2 AND sd.age BETWEEN 0 AND 34) AS female_under_34,
@@ -1066,34 +1082,41 @@ const formatWpApplicationsQuery = ({ year, month, period, decType, claim_type, r
       ORDER BY grand_total DESC`;
 };
 
-const formatWpDecisionsQuery = ({ year, month, period, decType, claim_type ,report_type}) => {
-  let period_where_condition = "";
+const formatWpDecisionsQuery = ({
+   year,
+   month,
+   period,
+   decType,
+   claim_type,
+   // report_type
+}) => {
+   let period_where_condition = '';
 
-  let action = ` AND action IN ('${decType}') `;
+   const action = ` AND action IN ('${decType}') `;
 
-  if (period == periodsMap.H1) {
-    period_where_condition = `   AND QUARTER(g.created_at) IN (1,2) `;
-  } else if (period == periodsMap.H2) {
-    period_where_condition = `   AND  QUARTER(g.created_at) IN (3,4)  `;
-  } else if (period == periodsMap.ANNUAL) {
-    period_where_condition = ` `;
-  } else if (period == periodsMap.Q1) {
-    period_where_condition = `   AND  QUARTER(g.created_at) =1  `;
-  } else if (period == periodsMap.Q2) {
-    period_where_condition = `   AND  QUARTER(g.created_at) =2  `;
-  } else if (period == periodsMap.Q3) {
-    period_where_condition = `   AND  QUARTER(g.created_at) =3  `;
-  } else if (period == periodsMap.Q4) {
-    period_where_condition = `   AND  QUARTER(g.created_at) =4  `;
-  } else if (period == periodsMap["9MONTHLY"]) {
-    period_where_condition = `   AND  QUARTER(g.created_at) IN(1,2,3)  `;
-  }
+   if (period == periodsMap.H1) {
+      period_where_condition = `   AND QUARTER(g.created_at) IN (1,2) `;
+   } else if (period == periodsMap.H2) {
+      period_where_condition = `   AND  QUARTER(g.created_at) IN (3,4)  `;
+   } else if (period == periodsMap.ANNUAL) {
+      period_where_condition = ` `;
+   } else if (period == periodsMap.Q1) {
+      period_where_condition = `   AND  QUARTER(g.created_at) =1  `;
+   } else if (period == periodsMap.Q2) {
+      period_where_condition = `   AND  QUARTER(g.created_at) =2  `;
+   } else if (period == periodsMap.Q3) {
+      period_where_condition = `   AND  QUARTER(g.created_at) =3  `;
+   } else if (period == periodsMap.Q4) {
+      period_where_condition = `   AND  QUARTER(g.created_at) =4  `;
+   } else if (period == periodsMap['9MONTHLY']) {
+      period_where_condition = `   AND  QUARTER(g.created_at) IN(1,2,3)  `;
+   }
 
-  const claim_type_where_condion = claim_type == "all" ? "" : ` AND a.type = '${claim_type}'`;
+   const claim_type_where_condion = claim_type == 'all' ? '' : ` AND a.type = '${claim_type}'`;
 
-  const monthWhereCondition = month ? ` AND month(g.created_at) = '${month}'` : "";
+   const monthWhereCondition = month ? ` AND month(g.created_at) = '${month}'` : '';
 
-  return `SELECT
+   return `SELECT
       sd.name_am,
 
 
@@ -1171,32 +1194,39 @@ const formatWpDecisionsQuery = ({ year, month, period, decType, claim_type ,repo
     ORDER BY grand_total DESC`;
 };
 
-const formatVolunteerApplicationsQuery = ({ year, month, period, claim_type ,report_type,decType}) => {
-  let period_where_condition = "";
+const formatVolunteerApplicationsQuery = ({
+   year,
+   month,
+   period,
+   claim_type,
+   // report_type,
+   // decType,
+}) => {
+   let period_where_condition = '';
 
-  const claim_type_where_condion = claim_type == "all" ? "" : ` AND a.type = '${claim_type}'`;
+   const claim_type_where_condion = claim_type == 'all' ? '' : ` AND a.type = '${claim_type}'`;
 
-  if (period == periodsMap.H1) {
-    period_where_condition = `   AND QUARTER(a.created_at) IN (1,2) `;
-  } else if (period == periodsMap.H2) {
-    period_where_condition = `   AND  QUARTER(a.created_at) IN (3,4)  `;
-  } else if (period == periodsMap.ANNUAL) {
-    period_where_condition = ` `;
-  } else if (period == periodsMap.Q1) {
-    period_where_condition = `   AND  QUARTER(a.created_at) =1  `;
-  } else if (period == periodsMap.Q2) {
-    period_where_condition = `   AND  QUARTER(a.created_at) =2  `;
-  } else if (period == periodsMap.Q3) {
-    period_where_condition = `   AND  QUARTER(a.created_at) =3  `;
-  } else if (period == periodsMap.Q4) {
-    period_where_condition = `   AND  QUARTER(a.created_at) =4  `;
-  } else if (period == periodsMap["9MONTHLY"]) {
-    period_where_condition = `   AND  QUARTER(a.created_at) IN(1,2,3)  `;
-  }
+   if (period == periodsMap.H1) {
+      period_where_condition = `   AND QUARTER(a.created_at) IN (1,2) `;
+   } else if (period == periodsMap.H2) {
+      period_where_condition = `   AND  QUARTER(a.created_at) IN (3,4)  `;
+   } else if (period == periodsMap.ANNUAL) {
+      period_where_condition = ` `;
+   } else if (period == periodsMap.Q1) {
+      period_where_condition = `   AND  QUARTER(a.created_at) =1  `;
+   } else if (period == periodsMap.Q2) {
+      period_where_condition = `   AND  QUARTER(a.created_at) =2  `;
+   } else if (period == periodsMap.Q3) {
+      period_where_condition = `   AND  QUARTER(a.created_at) =3  `;
+   } else if (period == periodsMap.Q4) {
+      period_where_condition = `   AND  QUARTER(a.created_at) =4  `;
+   } else if (period == periodsMap['9MONTHLY']) {
+      period_where_condition = `   AND  QUARTER(a.created_at) IN(1,2,3)  `;
+   }
 
-  const monthWhereCondition = month ? ` AND month(a.created_at) = ${month}` : "";
+   const monthWhereCondition = month ? ` AND month(a.created_at) = ${month}` : '';
 
-  return `SELECT
+   return `SELECT
       sd.name_am,
 
       SUM(CASE WHEN sd.gender_id = 2 AND sd.age BETWEEN 0 AND 34 THEN 1 ELSE 0 END) AS female_under_34,
@@ -1241,34 +1271,41 @@ const formatVolunteerApplicationsQuery = ({ year, month, period, claim_type ,rep
     ORDER BY grand_total DESC`;
 };
 
-const formatVolunteerDecisionsQuery = ({ year, month, period, claim_type, decType ,report_type}) => {
-  let period_where_condition = "";
+const formatVolunteerDecisionsQuery = ({
+   year,
+   month,
+   period,
+   claim_type,
+   decType,
+   // report_type,
+}) => {
+   let period_where_condition = '';
 
-  const claim_type_where_condion = claim_type == "all" ? "" : ` AND a.type = '${claim_type}'`;
+   const claim_type_where_condion = claim_type == 'all' ? '' : ` AND a.type = '${claim_type}'`;
 
-  let action = ` AND action IN ('${decType}') `;
+   const action = ` AND action IN ('${decType}') `;
 
-  if (period == periodsMap.H1) {
-    period_where_condition = `   AND QUARTER(g.created_at) IN (1,2) `;
-  } else if (period == periodsMap.H2) {
-    period_where_condition = `   AND  QUARTER(g.created_at) IN (3,4)  `;
-  } else if (period == periodsMap.ANNUAL) {
-    period_where_condition = ` `;
-  } else if (period == periodsMap.Q1) {
-    period_where_condition = `   AND  QUARTER(g.created_at) =1  `;
-  } else if (period == periodsMap.Q2) {
-    period_where_condition = `   AND  QUARTER(g.created_at) =2  `;
-  } else if (period == periodsMap.Q3) {
-    period_where_condition = `   AND  QUARTER(g.created_at) =3  `;
-  } else if (period == periodsMap.Q4) {
-    period_where_condition = `   AND  QUARTER(g.created_at) =4  `;
-  } else if (period == periodsMap["9MONTHLY"]) {
-    period_where_condition = `   AND  QUARTER(g.created_at) IN(1,2,3)  `;
-  }
+   if (period == periodsMap.H1) {
+      period_where_condition = `   AND QUARTER(g.created_at) IN (1,2) `;
+   } else if (period == periodsMap.H2) {
+      period_where_condition = `   AND  QUARTER(g.created_at) IN (3,4)  `;
+   } else if (period == periodsMap.ANNUAL) {
+      period_where_condition = ` `;
+   } else if (period == periodsMap.Q1) {
+      period_where_condition = `   AND  QUARTER(g.created_at) =1  `;
+   } else if (period == periodsMap.Q2) {
+      period_where_condition = `   AND  QUARTER(g.created_at) =2  `;
+   } else if (period == periodsMap.Q3) {
+      period_where_condition = `   AND  QUARTER(g.created_at) =3  `;
+   } else if (period == periodsMap.Q4) {
+      period_where_condition = `   AND  QUARTER(g.created_at) =4  `;
+   } else if (period == periodsMap['9MONTHLY']) {
+      period_where_condition = `   AND  QUARTER(g.created_at) IN(1,2,3)  `;
+   }
 
-  const monthWhereCondition = month ? ` AND month(g.created_at) = ${month}` : "";
+   const monthWhereCondition = month ? ` AND month(g.created_at) = ${month}` : '';
 
-  return `SELECT
+   return `SELECT
       sd.name_am,
 
 
@@ -1323,29 +1360,29 @@ const formatVolunteerDecisionsQuery = ({ year, month, period, claim_type, decTyp
 };
 
 const formatEaeuOfficialQuery = ({ year, period, claim_type, report_type, decType }) => {
-  // claim_type  may be 'total' || 'status_claim' || 'extension'
-  // action  may be 'allow' || 'reject' || 'cease' || 'terminate' || 'terminate_citizen'
-  let period_in_where_condition = "";
-  let action = "";
-  const claim_type_where_condion =
-    claim_type == "all" ? "" : ` AND stat_data.claim_type = '${claim_type}'`;
+   // claim_type  may be 'total' || 'status_claim' || 'extension'
+   // action  may be 'allow' || 'reject' || 'cease' || 'terminate' || 'terminate_citizen'
+   let period_in_where_condition = '';
+   let action = '';
+   const claim_type_where_condion =
+      claim_type == 'all' ? '' : ` AND stat_data.claim_type = '${claim_type}'`;
 
-  if (report_type == 1) {
-    period_in_where_condition = "stat_data.claim_date";
-    action = "";
-  } else {
-    period_in_where_condition = "stat_data.log_date";
-    action = ` AND stat_data.action = '${decType}' `;
-  }
+   if (report_type == 1) {
+      period_in_where_condition = 'stat_data.claim_date';
+      action = '';
+   } else {
+      period_in_where_condition = 'stat_data.log_date';
+      action = ` AND stat_data.action = '${decType}' `;
+   }
 
-  let monthWhereCondition = "";
-  if (period == periodsMap.H1) {
-    monthWhereCondition = ` AND QUARTER(${period_in_where_condition}) IN (1,2) `;
-  } else if (period == periodsMap.H2) {
-    monthWhereCondition = ` AND QUARTER(${period_in_where_condition}) IN (3,4) `;
-  }
+   let monthWhereCondition = '';
+   if (period == periodsMap.H1) {
+      monthWhereCondition = ` AND QUARTER(${period_in_where_condition}) IN (1,2) `;
+   } else if (period == periodsMap.H2) {
+      monthWhereCondition = ` AND QUARTER(${period_in_where_condition}) IN (3,4) `;
+   }
 
-  return `SELECT 
+   return `SELECT 
   stat_data.name_en, 
   stat_data.name_am, 
   stat_data.name_ru, 
@@ -1435,35 +1472,34 @@ const formatEaeuOfficialQuery = ({ year, period, claim_type, report_type, decTyp
 };
 
 const formatEaeuEmployeeFamOfficialQuery = ({
-  year,
-  month,
-  period,
-  claim_type,
-  report_type,
-  decType,
+   year,
+   // month,
+   period,
+   claim_type,
+   report_type,
+   decType,
 }) => {
-  let period_in_where_condition = "";
-  let action = "";
+   let period_in_where_condition = '';
+   let action = '';
 
-  if (report_type == 1) {
-    period_in_where_condition = "stat_data.claim_date";
-  } else {
-    period_in_where_condition = "stat_data.log_date";
-    action = ` AND stat_data.action = '${decType}' `;
-  }
+   if (report_type == 1) {
+      period_in_where_condition = 'stat_data.claim_date';
+   } else {
+      period_in_where_condition = 'stat_data.log_date';
+      action = ` AND stat_data.action = '${decType}' `;
+   }
 
-  const claim_type_where_condion =
-    claim_type == "all" ? "" : ` AND stat_data.claim_type = '${claim_type}'`;
+   const claim_type_where_condion =
+      claim_type == 'all' ? '' : ` AND stat_data.claim_type = '${claim_type}'`;
 
-  let monthWhereCondition = "";
-  if (period == periodsMap.H1) {
-    monthWhereCondition = ` AND QUARTER(${period_in_where_condition}) IN (1,2) `;
-    ` AND month() = '${month}'`;
-  } else if (period == periodsMap.H2) {
-    monthWhereCondition = ` AND QUARTER(${period_in_where_condition}) IN (3,4) `;
-  }
+   let monthWhereCondition = '';
+   if (period == periodsMap.H1) {
+      monthWhereCondition = ` AND QUARTER(${period_in_where_condition}) IN (1,2) `;
+   } else if (period == periodsMap.H2) {
+      monthWhereCondition = ` AND QUARTER(${period_in_where_condition}) IN (3,4) `;
+   }
 
-  return `SELECT 
+   return `SELECT 
   stat_data.name_en, 
   stat_data.name_am, 
   stat_data.name_ru, 
@@ -1552,29 +1588,35 @@ const formatEaeuEmployeeFamOfficialQuery = ({
   stat_data.name_ru`;
 };
 
-const formatWpOfficialQuery = ({ year, month, period, claim_type, report_type, decType }) => {
-  let period_in_where_condition = "";
-  let action = "";
+const formatWpOfficialQuery = ({
+   year,
+   // month,
+   period,
+   claim_type,
+   report_type,
+   decType,
+}) => {
+   let period_in_where_condition = '';
+   let action = '';
 
-  if (report_type == 1) {
-    period_in_where_condition = "stat_data.claim_date";
-  } else {
-    period_in_where_condition = "stat_data.log_date";
-    action = ` AND stat_data.action = '${decType}' `;
-  }
+   if (report_type == 1) {
+      period_in_where_condition = 'stat_data.claim_date';
+   } else {
+      period_in_where_condition = 'stat_data.log_date';
+      action = ` AND stat_data.action = '${decType}' `;
+   }
 
-  const claim_type_where_condion =
-    claim_type == "all" ? "" : ` AND stat_data.claim_type = '${claim_type}'`;
+   const claim_type_where_condion =
+      claim_type == 'all' ? '' : ` AND stat_data.claim_type = '${claim_type}'`;
 
-  let monthWhereCondition = "";
-  if (period == periodsMap.H1) {
-    monthWhereCondition = ` AND QUARTER(${period_in_where_condition}) IN (1,2) `;
-    ` AND month() = '${month}'`;
-  } else if (period == periodsMap.H2) {
-    monthWhereCondition = ` AND QUARTER(${period_in_where_condition}) IN (3,4) `;
-  }
+   let monthWhereCondition = '';
+   if (period == periodsMap.H1) {
+      monthWhereCondition = ` AND QUARTER(${period_in_where_condition}) IN (1,2) `;
+   } else if (period == periodsMap.H2) {
+      monthWhereCondition = ` AND QUARTER(${period_in_where_condition}) IN (3,4) `;
+   }
 
-  return `SELECT stat_data.name_en, stat_data.name_am, stat_data.name_ru, 
+   return `SELECT stat_data.name_en, stat_data.name_am, stat_data.name_ru, 
   count(stat_data.id) as grand_total,
   count(if(stat_data.gender_id = 1, stat_data.id, null)) as total_male,
   count(if(stat_data.gender_id = 2, stat_data.id, null)) as total_female,
@@ -1644,298 +1686,304 @@ const formatWpOfficialQuery = ({ year, month, period, claim_type, report_type, d
 };
 
 const mapWpData = (data) => {
-  const ageGenderCombinations = [
-    { label: "Ընդամենը  16-19 տարեկան", field: "total_16_19" },
-    { label: "Արական", field: "male_16_19" },
-    { label: "Իգական", field: "female_16_19" },
-    { label: "Ընդամենը  20-24 տարեկան", field: "total_20_24" },
-    { label: "Արական", field: "male_20_24" },
-    { label: "Իգական", field: "female_20_24" },
-    { label: "Ընդամենը  25-29 տարեկան", field: "total_25_29" },
-    { label: "Արական", field: "male_25_29" },
-    { label: "Իգական", field: "female_25_29" },
-    { label: "Ընդամենը  30-34 տարեկան", field: "total_30_34" },
-    { label: "Արական", field: "male_30_34" },
-    { label: "Իգական", field: "female_30_34" },
-    { label: "Ընդամենը  35-39 տարեկան", field: "total_35_39" },
-    { label: "Արական", field: "male_35_39" },
-    { label: "Իգական", field: "female_35_39" },
-    { label: "Ընդամենը 40-44 տարեկան", field: "total_40_44" },
-    { label: "Արական", field: "male_40_44" },
-    { label: "Իգական", field: "female_40_44" },
-    { label: "Ընդամենը 45-49 տարեկան", field: "total_45_49" },
-    { label: "Արական", field: "male_45_49" },
-    { label: "Իգական", field: "female_45_49" },
-    { label: "Ընդամենը 50-54 տարեկան", field: "total_50_54" },
-    { label: "Արական", field: "male_50_54" },
-    { label: "Իգական", field: "female_50_54" },
-    { label: "Ընդամենը 55-59 տարեկան", field: "total_55_59" },
-    { label: "Արական", field: "male_55_59" },
-    { label: "Իգական", field: "female_55_59" },
-    { label: "Ընդամենը 60-64 տարեկան", field: "total_60_64" },
-    { label: "Արական", field: "male_60_64" },
-    { label: "Իգական", field: "female_60_64" },
-    { label: "Ընդամենը 65+ տարեկան", field: "total_upper_65" },
-    { label: "Արական", field: "male_upper_65" },
-    { label: "Իգական", field: "female_upper_65" },
-  ];
+   const ageGenderCombinations = [
+      { label: 'Ընդամենը  16-19 տարեկան', field: 'total_16_19' },
+      { label: 'Արական', field: 'male_16_19' },
+      { label: 'Իգական', field: 'female_16_19' },
+      { label: 'Ընդամենը  20-24 տարեկան', field: 'total_20_24' },
+      { label: 'Արական', field: 'male_20_24' },
+      { label: 'Իգական', field: 'female_20_24' },
+      { label: 'Ընդամենը  25-29 տարեկան', field: 'total_25_29' },
+      { label: 'Արական', field: 'male_25_29' },
+      { label: 'Իգական', field: 'female_25_29' },
+      { label: 'Ընդամենը  30-34 տարեկան', field: 'total_30_34' },
+      { label: 'Արական', field: 'male_30_34' },
+      { label: 'Իգական', field: 'female_30_34' },
+      { label: 'Ընդամենը  35-39 տարեկան', field: 'total_35_39' },
+      { label: 'Արական', field: 'male_35_39' },
+      { label: 'Իգական', field: 'female_35_39' },
+      { label: 'Ընդամենը 40-44 տարեկան', field: 'total_40_44' },
+      { label: 'Արական', field: 'male_40_44' },
+      { label: 'Իգական', field: 'female_40_44' },
+      { label: 'Ընդամենը 45-49 տարեկան', field: 'total_45_49' },
+      { label: 'Արական', field: 'male_45_49' },
+      { label: 'Իգական', field: 'female_45_49' },
+      { label: 'Ընդամենը 50-54 տարեկան', field: 'total_50_54' },
+      { label: 'Արական', field: 'male_50_54' },
+      { label: 'Իգական', field: 'female_50_54' },
+      { label: 'Ընդամենը 55-59 տարեկան', field: 'total_55_59' },
+      { label: 'Արական', field: 'male_55_59' },
+      { label: 'Իգական', field: 'female_55_59' },
+      { label: 'Ընդամենը 60-64 տարեկան', field: 'total_60_64' },
+      { label: 'Արական', field: 'male_60_64' },
+      { label: 'Իգական', field: 'female_60_64' },
+      { label: 'Ընդամենը 65+ տարեկան', field: 'total_upper_65' },
+      { label: 'Արական', field: 'male_upper_65' },
+      { label: 'Իգական', field: 'female_upper_65' },
+   ];
 
-  const arrayOfObjects = ageGenderCombinations.map((combination) => {
-    const rowData = data.reduce((acc, country) => {
-      acc[country.name_en] = country[combination.field];
-      return acc;
-    }, {} as Record<string, any>);
+   const arrayOfObjects = ageGenderCombinations.map((combination) => {
+      const rowData = data.reduce(
+         (acc, country) => {
+            acc[country.name_en] = country[combination.field];
+            return acc;
+         },
+         {} as Record<string, any>,
+      );
 
-    // Calculate the total of the row
-    const total = (Object.values(rowData) as Array<number>).reduce(
-      (sum, value) => sum + Number(value || 0),
-      0,
-    );
-    rowData.total = total;
+      // Calculate the total of the row
+      const total = (Object.values(rowData) as Array<number>).reduce(
+         (sum, value) => sum + Number(value || 0),
+         0,
+      );
+      rowData.total = total;
 
-    return {
-      ageGender: combination.label,
-      ...rowData,
-    };
-  });
+      return {
+         ageGender: combination.label,
+         ...rowData,
+      };
+   });
 
-  return arrayOfObjects;
+   return arrayOfObjects;
 };
 
 const mapEaeuFamData = (data) => {
-  const ageGenderCombinations = [
-    { label: "Ընդամենը  0-15 տարեկան", field: "total_under_16" },
-    { label: "Արական", field: "male_under_16" },
-    { label: "Իգական", field: "female_under_16" },
-    { label: "Ընդամենը  16-19 տարեկան", field: "total_16_19" },
-    { label: "Արական", field: "male_16_19" },
-    { label: "Իգական", field: "female_16_19" },
-    { label: "Ընդամենը  20-24 տարեկան", field: "total_20_24" },
-    { label: "Արական", field: "male_20_24" },
-    { label: "Իգական", field: "female_20_24" },
-    { label: "Ընդամենը  25-29 տարեկան", field: "total_25_29" },
-    { label: "Արական", field: "male_25_29" },
-    { label: "Իգական", field: "female_25_29" },
-    { label: "Ընդամենը  30-34 տարեկան", field: "total_30_34" },
-    { label: "Արական", field: "male_30_34" },
-    { label: "Իգական", field: "female_30_34" },
-    { label: "Ընդամենը  35-39 տարեկան", field: "total_35_39" },
-    { label: "Արական", field: "male_35_39" },
-    { label: "Իգական", field: "female_35_39" },
-    { label: "Ընդամենը 40-44 տարեկան", field: "total_40_44" },
-    { label: "Արական", field: "male_40_44" },
-    { label: "Իգական", field: "female_40_44" },
-    { label: "Ընդամենը 45-49 տարեկան", field: "total_45_49" },
-    { label: "Արական", field: "male_45_49" },
-    { label: "Իգական", field: "female_45_49" },
-    { label: "Ընդամենը 50-54 տարեկան", field: "total_50_54" },
-    { label: "Արական", field: "male_50_54" },
-    { label: "Իգական", field: "female_50_54" },
-    { label: "Ընդամենը 55-59 տարեկան", field: "total_55_59" },
-    { label: "Արական", field: "male_55_59" },
-    { label: "Իգական", field: "female_55_59" },
-    { label: "Ընդամենը 60-64 տարեկան", field: "total_60_64" },
-    { label: "Արական", field: "male_60_64" },
-    { label: "Իգական", field: "female_60_64" },
-    { label: "Ընդամենը 65+ տարեկան", field: "total_upper_65" },
-    { label: "Արական", field: "male_upper_65" },
-    { label: "Իգական", field: "female_upper_65" },
-  ];
+   const ageGenderCombinations = [
+      { label: 'Ընդամենը  0-15 տարեկան', field: 'total_under_16' },
+      { label: 'Արական', field: 'male_under_16' },
+      { label: 'Իգական', field: 'female_under_16' },
+      { label: 'Ընդամենը  16-19 տարեկան', field: 'total_16_19' },
+      { label: 'Արական', field: 'male_16_19' },
+      { label: 'Իգական', field: 'female_16_19' },
+      { label: 'Ընդամենը  20-24 տարեկան', field: 'total_20_24' },
+      { label: 'Արական', field: 'male_20_24' },
+      { label: 'Իգական', field: 'female_20_24' },
+      { label: 'Ընդամենը  25-29 տարեկան', field: 'total_25_29' },
+      { label: 'Արական', field: 'male_25_29' },
+      { label: 'Իգական', field: 'female_25_29' },
+      { label: 'Ընդամենը  30-34 տարեկան', field: 'total_30_34' },
+      { label: 'Արական', field: 'male_30_34' },
+      { label: 'Իգական', field: 'female_30_34' },
+      { label: 'Ընդամենը  35-39 տարեկան', field: 'total_35_39' },
+      { label: 'Արական', field: 'male_35_39' },
+      { label: 'Իգական', field: 'female_35_39' },
+      { label: 'Ընդամենը 40-44 տարեկան', field: 'total_40_44' },
+      { label: 'Արական', field: 'male_40_44' },
+      { label: 'Իգական', field: 'female_40_44' },
+      { label: 'Ընդամենը 45-49 տարեկան', field: 'total_45_49' },
+      { label: 'Արական', field: 'male_45_49' },
+      { label: 'Իգական', field: 'female_45_49' },
+      { label: 'Ընդամենը 50-54 տարեկան', field: 'total_50_54' },
+      { label: 'Արական', field: 'male_50_54' },
+      { label: 'Իգական', field: 'female_50_54' },
+      { label: 'Ընդամենը 55-59 տարեկան', field: 'total_55_59' },
+      { label: 'Արական', field: 'male_55_59' },
+      { label: 'Իգական', field: 'female_55_59' },
+      { label: 'Ընդամենը 60-64 տարեկան', field: 'total_60_64' },
+      { label: 'Արական', field: 'male_60_64' },
+      { label: 'Իգական', field: 'female_60_64' },
+      { label: 'Ընդամենը 65+ տարեկան', field: 'total_upper_65' },
+      { label: 'Արական', field: 'male_upper_65' },
+      { label: 'Իգական', field: 'female_upper_65' },
+   ];
 
-  const arrayOfObjects = ageGenderCombinations.map((combination) => {
-    const rowData = data.reduce((acc, country) => {
-      acc[country.name_am] = country[combination.field];
-      return acc;
-    }, {} as Record<string, any>);
+   const arrayOfObjects = ageGenderCombinations.map((combination) => {
+      const rowData = data.reduce(
+         (acc, country) => {
+            acc[country.name_am] = country[combination.field];
+            return acc;
+         },
+         {} as Record<string, any>,
+      );
 
-    // Calculate the total of the row
-    const total = (Object.values(rowData) as Array<number>).reduce(
-      (sum, value) => sum + Number(value || 0),
-      0,
-    );
-    rowData.total = total;
+      // Calculate the total of the row
+      const total = (Object.values(rowData) as Array<number>).reduce(
+         (sum, value) => sum + Number(value || 0),
+         0,
+      );
+      rowData.total = total;
 
-    return {
-      ageGender: combination.label,
-      ...rowData,
-    };
-  });
+      return {
+         ageGender: combination.label,
+         ...rowData,
+      };
+   });
 
-  return { arrayOfObjects, countries: data.map((country) => country.name_am) };
+   return { arrayOfObjects, countries: data.map((country) => country.name_am) };
 };
 
 const formatStatisticsPeriodsQuery = (statisticsType) => {
-  switch (statisticsType) {
-    case "asylum":
-      return "SELECT DISTINCT YEAR(mul_date) AS Year FROM tb_case ORDER BY Year DESC";
-    case "wp":
-      return "SELECT DISTINCT YEAR(created_at) AS Year FROM ms_logs ORDER BY Year DESC";
-    case "sahmanahatum":
-      return "SELECT DISTINCT year AS Year FROM crosses ORDER BY Year DESC";
-    default:
-      return "";
-  }
+   switch (statisticsType) {
+      case 'asylum':
+         return 'SELECT DISTINCT YEAR(mul_date) AS Year FROM tb_case ORDER BY Year DESC';
+      case 'wp':
+         return 'SELECT DISTINCT YEAR(created_at) AS Year FROM ms_logs ORDER BY Year DESC';
+      case 'sahmanahatum':
+         return 'SELECT DISTINCT year AS Year FROM crosses ORDER BY Year DESC';
+      default:
+         return '';
+   }
 };
 
 const formatPeriodLabel = (period, month) => {
-  const monthLabel = MOCK_MONTHS[month] ? `${MOCK_MONTHS[month]} ամսում` : "";
-  const PERIOD_LABEL_MAPS = {
-    h1: "1-ին կիսամյակում",
-    h2: "2-րդ կիսամյակում",
-    q1: "1-ին եռամսյակում",
-    q2: "2-րդ եռամսյակում",
-    q3: "3-րդ եռամսյակում",
-    q4: "4-րդ եռամսյակում",
-    "9monthly": "9-ամսյակում",
-    monthly: monthLabel,
-  };
+   const monthLabel = MOCK_MONTHS[month] ? `${MOCK_MONTHS[month]} ամսում` : '';
+   const PERIOD_LABEL_MAPS = {
+      h1: '1-ին կիսամյակում',
+      h2: '2-րդ կիսամյակում',
+      q1: '1-ին եռամսյակում',
+      q2: '2-րդ եռամսյակում',
+      q3: '3-րդ եռամսյակում',
+      q4: '4-րդ եռամսյակում',
+      '9monthly': '9-ամսյակում',
+      monthly: monthLabel,
+   };
 
-  return PERIOD_LABEL_MAPS[period] || "";
+   return PERIOD_LABEL_MAPS[period] || '';
 };
 
 const formatDecisionLabel = (decisionType) => {
-  if (!decisionType) return "";
+   if (!decisionType) return '';
 
-  const DECISION_TYPE_LABELS_MAP = {
-    1: " բավարարման որոշումների վիճակագրությունը ",
-    2: " մերժման որոշումների վիճակագրությունը ",
-    3: " կարճման որոշումների վիճակագրությունը ",
-  };
+   const DECISION_TYPE_LABELS_MAP = {
+      1: ' բավարարման որոշումների վիճակագրությունը ',
+      2: ' մերժման որոշումների վիճակագրությունը ',
+      3: ' կարճման որոշումների վիճակագրությունը ',
+   };
 
-  return DECISION_TYPE_LABELS_MAP[decisionType] || "";
+   return DECISION_TYPE_LABELS_MAP[decisionType] || '';
 };
 
 function buildStatExcelTitle(filters, statPageName) {
-  if (filters?.statisticsType === "wpSimple") {
-    return formatWpSimpleExcelTitle(filters, statPageName);
-  }
+   if (filters?.statisticsType === 'wpSimple') {
+      return formatWpSimpleExcelTitle(filters);
+   }
 
-  if (BORDER_CROSS_STAT_PAGES_BASE_TITLES_MAP[statPageName]) {
-    return formatBorderCrossExcelTitle(filters, statPageName);
-  }
+   if (BORDER_CROSS_STAT_PAGES_BASE_TITLES_MAP[statPageName]) {
+      return formatBorderCrossExcelTitle(filters, statPageName);
+   }
 
-  if (ASYLUM_STAT_PAGES_BASE_TITLES_MAP[statPageName]) {
-    return formatAsylumExcelTitle(filters, statPageName);
-  }
-  return null;
+   if (ASYLUM_STAT_PAGES_BASE_TITLES_MAP[statPageName]) {
+      return formatAsylumExcelTitle(filters, statPageName);
+   }
+   return null;
 }
 
 const addExcelTotalRow = (statisticsType, data) => {
-  switch (statisticsType) {
-    case STATISTICS_TYPE_MAPS.ASYLUM_YEARS:
-    case STATISTICS_TYPE_MAPS.ASYLUM_TOTAL: {
-      const totals = {
-        country_arm: "Ընդամենը",
-        asylum_seeker: data.reduce((sum, item) => sum + (item.asylum_seeker || 0), 0),
-        positive_decisions: data.reduce((sum, item) => sum + (item.positive_decisions || 0), 0),
-        negative_decisions: data.reduce((sum, item) => sum + (item.negative_decisions || 0), 0),
-        cease_decisions: data.reduce((sum, item) => sum + (item.cease_decisions || 0), 0),
-      };
-      return data.unshift(totals);
-    }
-    case STATISTICS_TYPE_MAPS.ASYLUM_APPLICATIONS:
-    case STATISTICS_TYPE_MAPS.ASYLUM_DECISIONS:
-    case STATISTICS_TYPE_MAPS.B_CROSS_TOTAL:
-    case STATISTICS_TYPE_MAPS.B_CROSS_COUNTRIES:
-    case STATISTICS_TYPE_MAPS.B_CROSS_PERIOD:
-    case STATISTICS_TYPE_MAPS.WP_SIMPLE: {
-      const firstField = Object.keys(data[0])[0];
-      const totals = { [firstField]: "Ընդամենը" };
+   switch (statisticsType) {
+      case STATISTICS_TYPE_MAPS.ASYLUM_YEARS:
+      case STATISTICS_TYPE_MAPS.ASYLUM_TOTAL: {
+         const totals = {
+            country_arm: 'Ընդամենը',
+            asylum_seeker: data.reduce((sum, item) => sum + (item.asylum_seeker || 0), 0),
+            positive_decisions: data.reduce((sum, item) => sum + (item.positive_decisions || 0), 0),
+            negative_decisions: data.reduce((sum, item) => sum + (item.negative_decisions || 0), 0),
+            cease_decisions: data.reduce((sum, item) => sum + (item.cease_decisions || 0), 0),
+         };
+         return data.unshift(totals);
+      }
+      case STATISTICS_TYPE_MAPS.ASYLUM_APPLICATIONS:
+      case STATISTICS_TYPE_MAPS.ASYLUM_DECISIONS:
+      case STATISTICS_TYPE_MAPS.B_CROSS_TOTAL:
+      case STATISTICS_TYPE_MAPS.B_CROSS_COUNTRIES:
+      case STATISTICS_TYPE_MAPS.B_CROSS_PERIOD:
+      case STATISTICS_TYPE_MAPS.WP_SIMPLE: {
+         const firstField = Object.keys(data[0])[0];
+         const totals = { [firstField]: 'Ընդամենը' };
 
-      const numericFields = Object.keys(data[0]).filter((key) => key !== firstField);
+         const numericFields = Object.keys(data[0]).filter((key) => key !== firstField);
 
-      numericFields.forEach((field) => {
-        totals[field] = data.reduce((sum, item) => sum + Number(item[field] || 0), 0);
-      });
+         numericFields.forEach((field) => {
+            totals[field] = data.reduce((sum, item) => sum + Number(item[field] || 0), 0);
+         });
 
-      data.unshift(totals);
-      return data;
-    }
-    default:
-      return data;
-  }
+         data.unshift(totals);
+         return data;
+      }
+      default:
+         return data;
+   }
 };
 
 const addExcelTitleRow = ({ worksheet, filters, statisticsType }) => {
-  const title = buildStatExcelTitle(filters, statisticsType);
+   const title = buildStatExcelTitle(filters, statisticsType);
 
-  if (!title) return;
-  worksheet.addRow([title]);
+   if (!title) return;
+   worksheet.addRow([title]);
 };
 
-function formatWpSimpleExcelTitle(filters, statPageName) {
-  const periodLabel = formatPeriodLabel(filters.period, filters.month);
-  const yearLabel = filters.year ? `${filters.year}թ.` : "";
-  const decisionLabel = !filters?.decType
-    ? "ստացված դիմումների"
-    : filters?.decType === "allow"
-      ? "բավարարման որոշումների"
-      : filters?.decType === "reject"
-        ? "մերժման որոշումների"
-        : filters?.decType === "cease"
-          ? "կարճման որոշումների"
-          : filters?.decType === "terminate"
-            ? "դադարեցման որոշումների"
-            : "";
-  const claimLabel =
-    filters?.claim_type === "extension"
-      ? "երկարաձգման"
-      : filters?.claim_type === "status_claim"
-        ? "առաջնային"
-        : "";
-  return `${
-    WP_SIMPLE_STAT_PAGES_BASE_TITLES_MAP[filters.wp_type]
-  } ${claimLabel} ${decisionLabel} վիճակագրությունը ${yearLabel} ${periodLabel}`;
+function formatWpSimpleExcelTitle(filters) {
+   const periodLabel = formatPeriodLabel(filters.period, filters.month);
+   const yearLabel = filters.year ? `${filters.year}թ.` : '';
+   const decisionLabel = !filters?.decType
+      ? 'ստացված դիմումների'
+      : filters?.decType === 'allow'
+        ? 'բավարարման որոշումների'
+        : filters?.decType === 'reject'
+          ? 'մերժման որոշումների'
+          : filters?.decType === 'cease'
+            ? 'կարճման որոշումների'
+            : filters?.decType === 'terminate'
+              ? 'դադարեցման որոշումների'
+              : '';
+   const claimLabel =
+      filters?.claim_type === 'extension'
+         ? 'երկարաձգման'
+         : filters?.claim_type === 'status_claim'
+           ? 'առաջնային'
+           : '';
+   return `${
+      WP_SIMPLE_STAT_PAGES_BASE_TITLES_MAP[filters.wp_type]
+   } ${claimLabel} ${decisionLabel} վիճակագրությունը ${yearLabel} ${periodLabel}`;
 }
 
 function formatBorderCrossExcelTitle(filters, statPageName) {
-  const periodLabel = formatPeriodLabel(filters.period, filters.month);
-  const typeLabel =
-    filters?.borderCross === "point"
-      ? "ըստ անցակետերի"
-      : filters?.borderCross === "type"
-        ? "ըստ տեսակի"
-        : "";
-  const yearLabel = !filters?.year
-    ? ""
-    : Array.isArray(filters.year)
-      ? `${filters.year.join(",")}թ`
-      : `${filters.year}թ.`;
+   const periodLabel = formatPeriodLabel(filters.period, filters.month);
+   const typeLabel =
+      filters?.borderCross === 'point'
+         ? 'ըստ անցակետերի'
+         : filters?.borderCross === 'type'
+           ? 'ըստ տեսակի'
+           : '';
+   const yearLabel = !filters?.year
+      ? ''
+      : Array.isArray(filters.year)
+        ? `${filters.year.join(',')}թ`
+        : `${filters.year}թ.`;
 
-  return `${BORDER_CROSS_STAT_PAGES_BASE_TITLES_MAP[statPageName]} ${typeLabel} ${yearLabel} ${periodLabel}`;
+   return `${BORDER_CROSS_STAT_PAGES_BASE_TITLES_MAP[statPageName]} ${typeLabel} ${yearLabel} ${periodLabel}`;
 }
 
 function formatAsylumExcelTitle(filters, statPageName) {
-  const periodLabel = formatPeriodLabel(filters.period, filters.month);
-  const decisionLabel = formatDecisionLabel(filters.decType);
-  const yearLabel = filters.year ? `${filters.year}թ.` : "";
+   const periodLabel = formatPeriodLabel(filters.period, filters.month);
+   const decisionLabel = formatDecisionLabel(filters.decType);
+   const yearLabel = filters.year ? `${filters.year}թ.` : '';
 
-  return `${ASYLUM_STAT_PAGES_BASE_TITLES_MAP[statPageName]} ${decisionLabel} ${yearLabel} ${periodLabel}`;
+   return `${ASYLUM_STAT_PAGES_BASE_TITLES_MAP[statPageName]} ${decisionLabel} ${yearLabel} ${periodLabel}`;
 }
 
 export {
-  sanitizeData,
-  formatAsylumQuery,
-  mergeAndAlignCells,
-  formatEaeuEmployeeApplicationsQuery,
-  formatEaeuEmployeeDecisionsQuery,
-  formatEaeuEmployeeFamApplicationsQuery,
-  formatEaeuEmployeeFamDecisionsQuery,
-  formatWpApplicationsQuery,
-  formatWpDecisionsQuery,
-  formatVolunteerApplicationsQuery,
-  formatExcelMetaData,
-  formatTotalAsylumQuery,
-  formatTotalBorderCrossQuery,
-  formatPeriodBorderCrossQuery,
-  formatCountryBorderCrossQuery,
-  formatEaeuOfficialQuery,
-  formatEaeuEmployeeFamOfficialQuery,
-  formatWpOfficialQuery,
-  mapWpData,
-  mapEaeuFamData,
-  formatStatisticsPeriodsQuery,
-  addExcelTotalRow,
-  addExcelTitleRow,
-  formatVolunteerDecisionsQuery,
+   sanitizeData,
+   formatAsylumQuery,
+   mergeAndAlignCells,
+   formatEaeuEmployeeApplicationsQuery,
+   formatEaeuEmployeeDecisionsQuery,
+   formatEaeuEmployeeFamApplicationsQuery,
+   formatEaeuEmployeeFamDecisionsQuery,
+   formatWpApplicationsQuery,
+   formatWpDecisionsQuery,
+   formatVolunteerApplicationsQuery,
+   formatExcelMetaData,
+   formatTotalAsylumQuery,
+   formatTotalBorderCrossQuery,
+   formatPeriodBorderCrossQuery,
+   formatCountryBorderCrossQuery,
+   formatEaeuOfficialQuery,
+   formatEaeuEmployeeFamOfficialQuery,
+   formatWpOfficialQuery,
+   mapWpData,
+   mapEaeuFamData,
+   formatStatisticsPeriodsQuery,
+   addExcelTotalRow,
+   addExcelTitleRow,
+   formatVolunteerDecisionsQuery,
 };
