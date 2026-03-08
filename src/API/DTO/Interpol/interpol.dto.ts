@@ -24,3 +24,7 @@ export class InterpolSltdSearchRequestDto {
    typeOfDocument!: string;
    nb?: number;
 }
+
+export class InterpolSltdDetailsRequestDto {
+   id!: string;
+}

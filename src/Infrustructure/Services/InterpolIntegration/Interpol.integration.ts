@@ -11,6 +11,7 @@ import type {
    InterpolFile,
    InterpolFileResponse,
    InterpolSearchResponse,
+   InterpolSltdDetailsResponse,
    InterpolSltdSearchResponse,
    KnownResultCodeKey,
    ResultCodeKey,
@@ -129,6 +130,67 @@ export class InterpolIntegration {
         </tns:Search>`;
 
       const { status, xml, requestXml } = await this.soapCallSltd('Search', body, true, 60000);
+      const fault = this.extractSoapFault(xml);
+      const basicFields = this.parseBasicFields(xml);
+      const resultCodeMeta = this.evaluateResultCode(basicFields.resultCode);
+
+      if (status >= 400 || fault) {
+         return {
+            ok: false,
+            httpStatus: status,
+            fault,
+            ...basicFields,
+            resultCodeMeta,
+            raw: xml,
+            request: requestXml,
+            xmlData: this.extractXmlDataInner(xml),
+         };
+      }
+
+      if (resultCodeMeta.key === 'NO_ANSWER') {
+         return {
+            ok: true,
+            httpStatus: status,
+            fault: null,
+            ...basicFields,
+            resultCodeMeta,
+            raw: xml,
+            request: requestXml,
+            xmlData: '',
+         };
+      }
+
+      if (resultCodeMeta.key !== 'NO_ERROR') {
+         return {
+            ok: false,
+            httpStatus: status,
+            fault: null,
+            ...basicFields,
+            resultCodeMeta,
+            raw: xml,
+            request: requestXml,
+            xmlData: this.extractXmlDataInner(xml),
+         };
+      }
+
+      return {
+         ok: true,
+         httpStatus: status,
+         fault: null,
+         ...basicFields,
+         resultCodeMeta,
+         raw: xml,
+         request: requestXml,
+         xmlData: this.extractXmlDataInner(xml),
+      };
+   }
+
+   async sltdDetails(id: string): Promise<InterpolSltdDetailsResponse> {
+      const body = `        <tns:Details>
+            <tns:Id>${this.xmlEscape(id)}</tns:Id>
+        </tns:Details>`;
+
+      const { status, xml, requestXml } = await this.soapCallSltd('Details', body, true, 60000);
       const fault = this.extractSoapFault(xml);
       const basicFields = this.parseBasicFields(xml);
       const resultCodeMeta = this.evaluateResultCode(basicFields.resultCode);
