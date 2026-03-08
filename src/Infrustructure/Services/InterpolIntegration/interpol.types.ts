@@ -97,3 +97,7 @@ export type InterpolFileResponse = BaseResponse & {
 export type InterpolSltdSearchResponse = BaseResponse & {
    xmlData: string;
 };
+
+export type InterpolSltdDetailsResponse = BaseResponse & {
+   xmlData: string;
+};

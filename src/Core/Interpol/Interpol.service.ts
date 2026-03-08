@@ -3,6 +3,7 @@ import type {
    InterpolDetailsResponse,
    InterpolFileResponse,
    InterpolSearchResponse,
+   InterpolSltdDetailsResponse,
    InterpolSltdSearchResponse,
 } from 'src/Infrustructure/Services/InterpolIntegration/interpol.types';
 
@@ -55,6 +56,15 @@ export class InterpolService {
          typeOfDocument,
          nbRecord: safeNb,
       });
+   }
+
+   async sltdDetails(id: string): Promise<InterpolSltdDetailsResponse> {
+      const normalizedId = (id || '').trim();
+      if (!normalizedId) {
+         throw new BadRequestException('id is required');
+      }
+
+      return this.interpolIntegration.sltdDetails(normalizedId);
    }
 
    async details(itemId: string): Promise<InterpolDetailsResponse> {
