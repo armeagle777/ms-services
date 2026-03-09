@@ -9,6 +9,7 @@ import {
 } from 'src/API/DTO/Persons';
 import {
    HvhhParamDto,
+   PoliceSearchQueryDto,
    PnumParamDto,
    SsnParamDto,
    VehicleParamDto,
@@ -58,8 +59,8 @@ export class PersonsController {
    }
 
    @Get(':pnum/police')
-   getPoliceByPnum(@Param() params: PnumParamDto) {
-      return this.personsService.getPoliceByPnum(params.pnum);
+   getPoliceByPnum(@Param() params: PnumParamDto, @Query() query: PoliceSearchQueryDto) {
+      return this.personsService.getPoliceByPnum(params.pnum, query);
    }
 
    @Post(':ssn/qkag')

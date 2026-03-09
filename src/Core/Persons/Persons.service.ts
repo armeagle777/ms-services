@@ -189,8 +189,16 @@ export class PersonsService {
       return { visaList, crossingList, residencePermitList } as BordercrossResponse;
    }
 
-   async getPoliceByPnum(pnum: string): Promise<PoliceResponse | ''> {
-      return this.icIntegration.getPoliceByPnum(pnum);
+   async getPoliceByPnum(
+      pnum: string,
+      filters?: { firstName?: string; lastName?: string; birthDate?: string },
+   ): Promise<PoliceResponse | ''> {
+      return this.icIntegration.searchWantedPersons({
+         pnum,
+         firstName: filters?.firstName,
+         lastName: filters?.lastName,
+         birthDate: filters?.birthDate,
+      });
    }
 
    async getCompanyByHvhh(hvhh: string): Promise<PetregistrCompanyResponse | []> {

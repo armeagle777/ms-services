@@ -1,6 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import {
-   // BadRequestException,
+   BadRequestException,
    Injectable,
    InternalServerErrorException,
 } from '@nestjs/common';
@@ -9,7 +9,6 @@ import { firstValueFrom } from 'rxjs';
 import qs from 'qs';
 
 import {
-   // PersonSearchResponse,
    PoliceResponse,
 } from 'src/Core/Persons/interfaces/persons.interfaces';
 
@@ -20,28 +19,48 @@ export class IcIntegration {
       private readonly configService: ConfigService,
    ) {}
 
-   async getPoliceByPnum(pnum: string): Promise<PoliceResponse | ''> {
-      const policeUrl = this.configService.get<string>('POLICE_URL');
-      if (!policeUrl) throw new InternalServerErrorException('POLICE_URL is not configured');
+   async searchWantedPersons({
+      pnum,
+      firstName,
+      lastName,
+      birthDate,
+   }: {
+      pnum?: string;
+      firstName?: string;
+      lastName?: string;
+      birthDate?: string;
+   }): Promise<PoliceResponse | ''> {
+      const icApiUrl = this.configService.get<string>('IC_API_URL');
+      if (!icApiUrl) throw new InternalServerErrorException('IC_API_URL is not configured');
+
+      const normalizedPnum = (pnum || '').trim();
+      const normalizedFirstName = (firstName || '').trim();
+      const normalizedLastName = (lastName || '').trim();
+      const normalizedBirthDate = (birthDate || '').trim();
+
+      if (!normalizedPnum && !normalizedFirstName && !normalizedLastName && !normalizedBirthDate) {
+         throw new BadRequestException(
+            'At least one of pnum, firstName, lastName, birthDate is required',
+         );
+      }
 
       const requestBody = {
          Dzev: 9,
          HAYR: '',
-         SSN: pnum,
-         BDATE: '',
-         last_name: '',
-         first_name: '',
-         STUGOX: this.configService.get<string>('POLICE_REQUEST_STUGOX'),
-         User: this.configService.get<string>('POLICE_REQUEST_USER_NAME'),
-         USER_ID: this.configService.get<string>('POLICE_REQUEST_USER_ID'),
-         PASSWORD: this.configService.get<string>('POLICE_REQUEST_USER_PASSWORD'),
+         SSN: normalizedPnum,
+         BDATE: normalizedBirthDate,
+         last_name: normalizedLastName,
+         first_name: normalizedFirstName,
+         STUGOX: this.configService.get<string>('IC_API_STUGOX'),
+         User: this.configService.get<string>('IC_API_USER_NAME'),
+         USER_ID: this.configService.get<string>('IC_API_USER_ID'),
+         PASSWORD: this.configService.get<string>('IC_API_USER_PASSWORD'),
       };
 
-      const dataString = qs.stringify({ customer: JSON.stringify(requestBody) });
       const response = await firstValueFrom(
-         this.httpService.post(policeUrl, dataString, {
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-         }),
+         this.httpService.request(
+            this.buildOptions(icApiUrl, { customer: JSON.stringify(requestBody) }),
+         ),
       );
 
       const data = response.data;

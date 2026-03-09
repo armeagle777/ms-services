@@ -13,3 +13,9 @@ export class HvhhParamDto {
 export class VehicleParamDto {
    paramValue!: string;
 }
+
+export class PoliceSearchQueryDto {
+   firstName?: string;
+   lastName?: string;
+   birthDate?: string;
+}
