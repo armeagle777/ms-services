@@ -1,22 +1,17 @@
 import { HttpService } from '@nestjs/axios';
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+   // BadRequestException,
+   Injectable,
+   InternalServerErrorException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 import qs from 'qs';
 
 import {
-   PersonSearchResponse,
+   // PersonSearchResponse,
    PoliceResponse,
 } from 'src/Core/Persons/interfaces/persons.interfaces';
-
-type IcPersonDataRequest = {
-   pnum?: string;
-   fName?: string;
-   lName?: string;
-   bDay?: string;
-   mName?: string;
-   docNum?: string;
-};
 
 @Injectable()
 export class IcIntegration {
