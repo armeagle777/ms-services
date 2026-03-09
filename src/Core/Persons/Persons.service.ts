@@ -9,7 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 import qs from 'qs';
 import { XMLParser } from 'fast-xml-parser';
-import { IcIntegration } from 'src/Infrustructure/Services/InvestigativeCommitteeIntegration/Ic.integration';
+import { InvestigativeCommitteeIntegration } from 'src/Infrustructure/Services/InvestigativeCommitteeIntegration/InvestigativeCommitee.integration';
 
 import {
    BordercrossRequestDto,
@@ -38,7 +38,7 @@ export class PersonsService {
    constructor(
       private readonly httpService: HttpService,
       private readonly configService: ConfigService,
-      private readonly icIntegration: IcIntegration,
+      private readonly icIntegration: InvestigativeCommitteeIntegration,
    ) {}
 
    async downloadBprInfo() {

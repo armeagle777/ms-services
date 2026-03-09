@@ -9,4 +9,4 @@ export { PetregistrController } from './Petregistr.controller';
 export { SphereController } from './Sphere.controller';
 export { StatisticsController } from './Statistics.controller';
 export { TaxController } from './Tax.controller';
-export { IcController } from './Ic.controller';
+export { InvestigativeCommitteeController } from './InvestigativeCommittee.controller';
