@@ -2,7 +2,7 @@ import { HttpService } from '@nestjs/axios';
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
-import qs from 'qs';
+import * as qs from 'qs';
 
 import { PoliceResponse } from 'src/Core/Persons/interfaces/persons.interfaces';
 
@@ -18,19 +18,22 @@ export class IcIntegration {
       firstName,
       lastName,
       birthDate,
+      middleName,
    }: {
       pnum?: string;
       firstName?: string;
       lastName?: string;
       birthDate?: string;
+      middleName?: string;
    }): Promise<PoliceResponse | ''> {
       const icApiUrl = this.configService.get<string>('IC_API_URL');
       if (!icApiUrl) throw new InternalServerErrorException('IC_API_URL is not configured');
 
       const normalizedPnum = (pnum || '').trim();
-      const normalizedFirstName = (firstName || '').trim();
-      const normalizedLastName = (lastName || '').trim();
-      const normalizedBirthDate = (birthDate || '').trim();
+      const normalizedFirstName = normalizedPnum ? '' : (firstName || '').trim();
+      const normalizedLastName = normalizedPnum ? '' : (lastName || '').trim();
+      const normalizedBirthDate = normalizedPnum ? '' : (birthDate || '').trim();
+      const normalizedMiddleName = normalizedPnum ? '' : (middleName || '*').trim();
 
       if (!normalizedPnum && !normalizedFirstName && !normalizedLastName && !normalizedBirthDate) {
          throw new BadRequestException(
@@ -40,7 +43,7 @@ export class IcIntegration {
 
       const requestBody = {
          Dzev: 9,
-         HAYR: '',
+         HAYR: normalizedMiddleName,
          SSN: normalizedPnum,
          BDATE: normalizedBirthDate,
          last_name: normalizedLastName,
@@ -58,8 +61,8 @@ export class IcIntegration {
       );
 
       const data = response.data;
-      if (!data?.INFO) return '';
-      return data.INFO as PoliceResponse;
+
+      return data as PoliceResponse;
    }
 
    buildOptions(url: string, body: Record<string, unknown>) {

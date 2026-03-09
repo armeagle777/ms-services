@@ -6,18 +6,15 @@ import {
    Post,
 } from '@nestjs/common';
 
-import { McsService } from 'src/Core/Mcs/Mcs.service';
-import {
-   // McsAddressQueryDto,
-   McsSearchPersonsDto,
-} from 'src/API/DTO/Mcs/mcs.dto';
+import { SearchWantedDto } from 'src/API/DTO/Ic/search-wanted.dto';
+import { IcService } from 'src/Core/Ic/Ic.service';
 
 @Controller('ic')
 export class IcController {
-   constructor(private readonly mcsService: McsService) {}
+   constructor(private readonly icService: IcService) {}
 
    @Post('persons/search')
-   searchPersons(@Body() body: McsSearchPersonsDto) {
-      return this.mcsService.searchPersons(body);
+   searchPersons(@Body() body: SearchWantedDto) {
+      return this.icService.searchWantedPersons(body);
    }
 }
