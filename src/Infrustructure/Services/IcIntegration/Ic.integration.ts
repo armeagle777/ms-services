@@ -1,16 +1,10 @@
 import { HttpService } from '@nestjs/axios';
-import {
-   BadRequestException,
-   Injectable,
-   InternalServerErrorException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 import qs from 'qs';
 
-import {
-   PoliceResponse,
-} from 'src/Core/Persons/interfaces/persons.interfaces';
+import { PoliceResponse } from 'src/Core/Persons/interfaces/persons.interfaces';
 
 @Injectable()
 export class IcIntegration {
