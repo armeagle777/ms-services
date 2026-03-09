@@ -5,7 +5,7 @@ import type {
    InterpolSearchResponse,
    InterpolSltdDetailsResponse,
    InterpolSltdSearchResponse,
-} from 'src/Infrustructure/Services/InterpolIntegration/interpol.types';
+} from 'src/Infrustructure/Services/InterpolIntegration/Models/interpol.types';
 
 import { InterpolIntegration } from 'src/Infrustructure/Services/InterpolIntegration/Interpol.integration';
 import {

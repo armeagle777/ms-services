@@ -18,7 +18,7 @@ import type {
    ResultCodeMeta,
    SearchHit,
    SoapCallResult,
-} from './interpol.types';
+} from './Models/interpol.types';
 
 const SOAP_NS = 'http://schemas.xmlsoap.org/soap/envelope/';
 const XSI_NS = 'http://www.w3.org/2001/XMLSchema-instance';

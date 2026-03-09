@@ -3,8 +3,8 @@ import { HttpModule } from '@nestjs/axios';
 
 // import { EkengIntegration } from './EkengIntegration/Ekeng.integration';
 import { PkiClientService } from './ESignIntegration/PkiClient.service';
-import { InterpolIntegration } from './InterpolIntegration';
-import { IcIntegration } from 'src/Infrustructure/Services/IcIntegration/Ic.integration';
+import { InterpolIntegration } from './InterpolIntegration/Interpol.integration';
+import { InvestigativeCommitteeIntegration } from 'src/Infrustructure/Services/InvestigativeCommitteeIntegration/InvestigativeCommitee.integration';
 
 @Module({
    imports: [HttpModule],
@@ -12,13 +12,13 @@ import { IcIntegration } from 'src/Infrustructure/Services/IcIntegration/Ic.inte
       // EkengIntegration,
       PkiClientService,
       InterpolIntegration,
-      IcIntegration,
+      InvestigativeCommitteeIntegration,
    ],
    providers: [
       // EkengIntegration,
       PkiClientService,
       InterpolIntegration,
-      IcIntegration,
+      InvestigativeCommitteeIntegration,
    ],
 })
 export class IntegrationModule {}

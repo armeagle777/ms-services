@@ -7,7 +7,7 @@ import * as qs from 'qs';
 import { PoliceResponse } from 'src/Core/Persons/interfaces/persons.interfaces';
 
 @Injectable()
-export class IcIntegration {
+export class InvestigativeCommitteeIntegration {
    constructor(
       private readonly httpService: HttpService,
       private readonly configService: ConfigService,

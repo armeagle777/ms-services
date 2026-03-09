@@ -9,7 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 import qs from 'qs';
 import { XMLParser } from 'fast-xml-parser';
-import { IcIntegration } from 'src/Infrustructure/Services/IcIntegration/Ic.integration';
+import { IcIntegration } from 'src/Infrustructure/Services/InvestigativeCommitteeIntegration/Ic.integration';
 
 import {
    BordercrossRequestDto,

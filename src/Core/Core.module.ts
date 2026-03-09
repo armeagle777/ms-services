@@ -22,7 +22,7 @@ import {
    STATISTICS_SEQUELIZE,
    WP_SEQUELIZE as STATISTICS_WP_SEQUELIZE,
 } from 'src/Core/Statistics/statistics.tokens';
-import { IcService } from './Ic/Ic.service';
+import { InvestigativeCommitteeService } from './InvestigativeCommittee/InvestigativeCommittee.service';
 
 const services = [
    PersonsService,
@@ -36,7 +36,7 @@ const services = [
    InterpolService,
    EsignService,
    StatisticsService,
-   IcService,
+   InvestigativeCommitteeService,
 ];
 
 const helpers = [];
