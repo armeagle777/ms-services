@@ -7,7 +7,7 @@ import {
 import {
    ArtsakhController,
    EsignController,
-   IcController,
+   InvestigativeCommitteeController,
    InterpolController,
    KadastrController,
    McsController,
@@ -35,7 +35,7 @@ import { CoreModule } from 'src/Core/Core.module';
       InterpolController,
       EsignController,
       StatisticsController,
-      IcController,
+      InvestigativeCommitteeController,
    ],
    providers: [],
 })
