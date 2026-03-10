@@ -1,8 +1,13 @@
 import { Global, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Sequelize } from 'sequelize';
-import { AUTH_POSTGRES_SEQUELIZE, AUTH_USER_MODEL } from './database.tokens';
+import {
+   AUTH_POSTGRES_SEQUELIZE,
+   AUTH_REQUEST_LOG_MODEL,
+   AUTH_USER_MODEL,
+} from './database.tokens';
 import { initAuthUserEntity } from './Entities/AuthUser.entity';
+import { initRequestLogEntity } from './Entities/RequestLog.entity';
 import { AuthDbMigrationService } from './Migrations/AuthDbMigration.service';
 
 const databaseProviders = [
@@ -28,6 +33,11 @@ const databaseProviders = [
       provide: AUTH_USER_MODEL,
       inject: [AUTH_POSTGRES_SEQUELIZE],
       useFactory: (sequelize: Sequelize) => initAuthUserEntity(sequelize),
+   },
+   {
+      provide: AUTH_REQUEST_LOG_MODEL,
+      inject: [AUTH_POSTGRES_SEQUELIZE],
+      useFactory: (sequelize: Sequelize) => initRequestLogEntity(sequelize),
    },
 ];
 

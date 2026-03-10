@@ -25,6 +25,7 @@ import {
 import { InvestigativeCommitteeService } from './InvestigativeCommittee/InvestigativeCommittee.service';
 import { AuthService } from './Auth/Auth.service';
 import { DatabaseModule } from 'src/Infrustructure/Database/Database.module';
+import { RequestLoggingService } from './Logging/RequestLogging.service';
 
 const services = [
    PersonsService,
@@ -40,6 +41,7 @@ const services = [
    StatisticsService,
    InvestigativeCommitteeService,
    AuthService,
+   RequestLoggingService,
 ];
 
 const helpers = [];

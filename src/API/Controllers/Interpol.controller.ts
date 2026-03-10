@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards, UseInterceptors } from '@nestjs/common';
 
 import { InterpolService } from 'src/Core/Interpol/Interpol.service';
 import {
@@ -10,9 +10,11 @@ import {
    InterpolSltdSearchRequestDto,
 } from 'src/API/DTO/Interpol/interpol.dto';
 import { BasicAuthGuard } from 'src/API/Guards/BasicAuth.guard';
+import { ProtectedRequestLoggingInterceptor } from 'src/API/Interceptors/ProtectedRequestLogging.interceptor';
 
 @Controller('interpol')
 @UseGuards(BasicAuthGuard)
+@UseInterceptors(ProtectedRequestLoggingInterceptor)
 export class InterpolController {
    constructor(private readonly interpolService: InterpolService) {}
 

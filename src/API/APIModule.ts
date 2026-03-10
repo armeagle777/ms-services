@@ -20,6 +20,7 @@ import {
 } from './Controllers';
 import { CoreModule } from 'src/Core/Core.module';
 import { BasicAuthGuard } from './Guards/BasicAuth.guard';
+import { ProtectedRequestLoggingInterceptor } from './Interceptors/ProtectedRequestLogging.interceptor';
 // import { SignatureVerificationMiddleware } from './Middlewares';
 
 @Module({
@@ -38,7 +39,7 @@ import { BasicAuthGuard } from './Guards/BasicAuth.guard';
       StatisticsController,
       InvestigativeCommitteeController,
    ],
-   providers: [BasicAuthGuard],
+   providers: [BasicAuthGuard, ProtectedRequestLoggingInterceptor],
 })
 export class APIModule {
    // configure(consumer: MiddlewareConsumer) {
