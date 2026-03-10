@@ -1,8 +1,14 @@
 export class InterpolSearchRequestDto {
-   name!: string;
-   forename!: string;
+   name?: string;
+   forename?: string;
+   ageMin?: number;
+   ageMax?: number;
+   dateOfBirth?: string;
+   identity?: string;
+   entityId?: string;
    dob?: string;
    nb?: number;
+   nbRecord?: number;
 }
 
 export class InterpolDetailsQueryDto {
