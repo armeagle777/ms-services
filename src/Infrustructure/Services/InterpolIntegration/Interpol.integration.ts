@@ -55,7 +55,7 @@ export class InterpolIntegration {
             ${parts.join('')}
         </tns:Search>`;
 
-      const { status, xml, requestXml } = await this.soapCall('Search', body, true, 60000);
+      const { status, xml } = await this.soapCall('Search', body, true, 60000);
       const fault = this.extractSoapFault(xml);
       const basicFields = this.parseBasicFields(xml);
       const resultCodeMeta = this.evaluateResultCode(basicFields.resultCode);
@@ -121,7 +121,7 @@ export class InterpolIntegration {
             <tns:NbRecord>${Number(nbRecord)}</tns:NbRecord>
         </tns:Search>`;
 
-      const { status, xml, requestXml } = await this.soapCallSltd('Search', body, true, 60000);
+      const { status, xml } = await this.soapCallSltd('Search', body, true, 60000);
       const fault = this.extractSoapFault(xml);
       const basicFields = this.parseBasicFields(xml);
       const resultCodeMeta = this.evaluateResultCode(basicFields.resultCode);
@@ -174,7 +174,7 @@ export class InterpolIntegration {
             <tns:Id>${this.xmlEscape(id)}</tns:Id>
         </tns:Details>`;
 
-      const { status, xml, requestXml } = await this.soapCallSltd('Details', body, true, 60000);
+      const { status, xml } = await this.soapCallSltd('Details', body, true, 60000);
       const fault = this.extractSoapFault(xml);
       const basicFields = this.parseBasicFields(xml);
       const resultCodeMeta = this.evaluateResultCode(basicFields.resultCode);
@@ -227,7 +227,7 @@ export class InterpolIntegration {
             <tns:NominalSearchItemId>${this.xmlEscape(nominalSearchItemId)}</tns:NominalSearchItemId>
         </tns:Details>`;
 
-      const { status, xml, requestXml } = await this.soapCall('Details', body, true, 60000);
+      const { status, xml } = await this.soapCall('Details', body, true, 60000);
       const fault = this.extractSoapFault(xml);
       const basicFields = this.parseBasicFields(xml);
       const resultCodeMeta = this.evaluateResultCode(basicFields.resultCode);
@@ -275,7 +275,7 @@ export class InterpolIntegration {
          false,
          120000,
       );
-      return this.mapFileResponse(status, xml, requestXml);
+      return this.mapFileResponse(status, xml);
    }
 
    async imageFile(nominalItemId: string, imagePath: string): Promise<InterpolFileResponse> {
@@ -284,11 +284,11 @@ export class InterpolIntegration {
             <tns:ImagePath>${this.xmlEscape(imagePath)}</tns:ImagePath>
         </tns:ImageFile>`;
 
-      const { status, xml, requestXml } = await this.soapCall('ImageFile', body, false, 120000);
-      return this.mapFileResponse(status, xml, requestXml);
+      const { status, xml } = await this.soapCall('ImageFile', body, false, 120000);
+      return this.mapFileResponse(status, xml);
    }
 
-   private mapFileResponse(status: number, xml: string, requestXml: string): InterpolFileResponse {
+   private mapFileResponse(status: number, xml: string): InterpolFileResponse {
       const fault = this.extractSoapFault(xml);
       const basicFields = this.parseBasicFields(xml);
       const resultCodeMeta = this.evaluateResultCode(basicFields.resultCode);
