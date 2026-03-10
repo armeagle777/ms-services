@@ -2,7 +2,7 @@ import { Global, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Sequelize } from 'sequelize';
 import { AUTH_POSTGRES_SEQUELIZE, AUTH_USER_MODEL } from './database.tokens';
-import { AuthUserEntity, initAuthUserEntity } from './Entities/AuthUser.entity';
+import { initAuthUserEntity } from './Entities/AuthUser.entity';
 import { AuthDbMigrationService } from './Migrations/AuthDbMigration.service';
 
 const databaseProviders = [
