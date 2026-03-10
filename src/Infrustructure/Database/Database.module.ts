@@ -1,9 +1,40 @@
 import { Global, Module } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { Sequelize } from 'sequelize';
+import { AUTH_POSTGRES_SEQUELIZE, AUTH_USER_MODEL } from './database.tokens';
+import { AuthUserEntity, initAuthUserEntity } from './Entities/AuthUser.entity';
+import { AuthDbMigrationService } from './Migrations/AuthDbMigration.service';
+
+const databaseProviders = [
+   {
+      provide: AUTH_POSTGRES_SEQUELIZE,
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+         const host = configService.get<string>('POSTGRES_DB_HOST', '127.0.0.1');
+         const port = Number(configService.get<string>('POSTGRES_DB_PORT', '5432'));
+         const db = configService.get<string>('POSTGRES_DB_NAME', 'ms_services_auth');
+         const username = configService.get<string>('POSTGRES_DB_USERNAME', 'postgres');
+         const password = configService.get<string>('POSTGRES_DB_PASSWORD', 'postgres');
+
+         return new Sequelize(db, username, password, {
+            host,
+            port,
+            dialect: 'postgres',
+            logging: false,
+         });
+      },
+   },
+   {
+      provide: AUTH_USER_MODEL,
+      inject: [AUTH_POSTGRES_SEQUELIZE],
+      useFactory: (sequelize: Sequelize) => initAuthUserEntity(sequelize),
+   },
+];
 
 @Global()
 @Module({
    imports: [],
-   exports: [],
-   providers: [],
+   exports: [...databaseProviders, AuthDbMigrationService],
+   providers: [...databaseProviders, AuthDbMigrationService],
 })
 export class DatabaseModule {}

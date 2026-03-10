@@ -23,6 +23,8 @@ import {
    WP_SEQUELIZE as STATISTICS_WP_SEQUELIZE,
 } from 'src/Core/Statistics/statistics.tokens';
 import { InvestigativeCommitteeService } from './InvestigativeCommittee/InvestigativeCommittee.service';
+import { AuthService } from './Auth/Auth.service';
+import { DatabaseModule } from 'src/Infrustructure/Database/Database.module';
 
 const services = [
    PersonsService,
@@ -37,6 +39,7 @@ const services = [
    EsignService,
    StatisticsService,
    InvestigativeCommitteeService,
+   AuthService,
 ];
 
 const helpers = [];
@@ -157,7 +160,7 @@ const databaseProviders = [
 ];
 
 @Module({
-   imports: [ConfigModule, HttpModule, IntegrationModule],
+   imports: [ConfigModule, HttpModule, IntegrationModule, DatabaseModule],
    providers: [...services, ...helpers, ...databaseProviders],
    exports: [...services],
 })

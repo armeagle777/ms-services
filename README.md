@@ -32,6 +32,44 @@
 $ npm install
 ```
 
+## Auth DB (PostgreSQL) and protected endpoints
+
+This project now uses a dedicated PostgreSQL database for simple Basic Auth checks on:
+
+- `/api/interpol/*`
+- `/api/investigative-committee/*`
+
+### 1. Start PostgreSQL via Docker
+
+```bash
+npm run db:up
+```
+
+### 2. Configure env
+
+Required variables:
+
+- `POSTGRES_DB_HOST`
+- `POSTGRES_DB_PORT`
+- `POSTGRES_DB_NAME`
+- `POSTGRES_DB_USERNAME`
+- `POSTGRES_DB_PASSWORD`
+- `AUTH_SEED_USERNAME`
+- `AUTH_SEED_PASSWORD`
+
+On app startup, a migration service will:
+
+- create `users` table (if missing)
+- upsert one seeded user from `AUTH_SEED_USERNAME` / `AUTH_SEED_PASSWORD`
+
+### 3. Call protected endpoints
+
+Use HTTP Basic Auth header:
+
+```bash
+Authorization: Basic base64(username:password)
+```
+
 ## Compile and run the project
 
 ```bash
