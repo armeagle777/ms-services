@@ -2,12 +2,16 @@ import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from
 import { Request } from 'express';
 import { AuthService } from 'src/Core/Auth/Auth.service';
 
+type AuthenticatedRequest = Request & {
+   authUsername?: string;
+};
+
 @Injectable()
 export class BasicAuthGuard implements CanActivate {
    constructor(private readonly authService: AuthService) {}
 
    async canActivate(context: ExecutionContext): Promise<boolean> {
-      const request = context.switchToHttp().getRequest<Request>();
+      const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
       const authHeader = request.headers.authorization || '';
 
       if (!authHeader.startsWith('Basic ')) {
@@ -30,6 +34,7 @@ export class BasicAuthGuard implements CanActivate {
          throw new UnauthorizedException('Invalid username or password');
       }
 
+      request.authUsername = username.trim();
       return true;
    }
 }

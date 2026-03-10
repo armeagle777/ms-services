@@ -16,6 +16,7 @@ export class AuthDbMigrationService implements OnModuleInit {
    async onModuleInit() {
       await this.sequelize.authenticate();
       await this.migrateUsersTable();
+      await this.migrateRequestLogsTable();
       await this.seedDefaultUser();
    }
 
@@ -49,5 +50,23 @@ export class AuthDbMigrationService implements OnModuleInit {
       );
 
       this.logger.log(`Auth user migrated: ${username}`);
+   }
+
+   private async migrateRequestLogsTable() {
+      await this.sequelize.query(`
+         CREATE TABLE IF NOT EXISTS request_logs (
+            id SERIAL PRIMARY KEY,
+            username VARCHAR(255) NULL,
+            method VARCHAR(16) NOT NULL,
+            path VARCHAR(1024) NOT NULL,
+            "statusCode" INTEGER NOT NULL,
+            ip VARCHAR(64) NULL,
+            body TEXT NULL,
+            query TEXT NULL,
+            error TEXT NULL,
+            "createdAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
+            "updatedAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW()
+         );
+      `);
    }
 }
