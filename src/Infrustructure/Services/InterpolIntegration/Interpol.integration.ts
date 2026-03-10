@@ -269,12 +269,7 @@ export class InterpolIntegration {
             <tns:PathToNotice>${this.xmlEscape(pathToNotice)}</tns:PathToNotice>
         </tns:GetNoticePDFFile>`;
 
-      const { status, xml, requestXml } = await this.soapCall(
-         'GetNoticePDFFile',
-         body,
-         false,
-         120000,
-      );
+      const { status, xml } = await this.soapCall('GetNoticePDFFile', body, false, 120000);
       return this.mapFileResponse(status, xml);
    }
 
