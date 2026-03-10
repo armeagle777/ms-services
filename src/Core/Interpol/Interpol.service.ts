@@ -105,7 +105,12 @@ export class InterpolService {
       const hasAgeBounds = ageMin !== undefined || ageMax !== undefined;
       const hasDateOfBirth = Boolean(dateOfBirth);
       const hasAnyCriteria = Boolean(
-         name || forename || hasIdentitySearch || hasEntityIdSearch || hasAgeBounds || hasDateOfBirth,
+         name ||
+            forename ||
+            hasIdentitySearch ||
+            hasEntityIdSearch ||
+            hasAgeBounds ||
+            hasDateOfBirth,
       );
 
       if (!hasAnyCriteria) {
