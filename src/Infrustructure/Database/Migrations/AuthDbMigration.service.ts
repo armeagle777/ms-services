@@ -1,6 +1,7 @@
 import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Sequelize } from 'sequelize';
+import * as bcrypt from 'bcryptjs';
 import { AUTH_POSTGRES_SEQUELIZE } from '../database.tokens';
 
 @Injectable()
@@ -33,6 +34,7 @@ export class AuthDbMigrationService implements OnModuleInit {
    private async seedDefaultUser() {
       const username = this.configService.get<string>('AUTH_SEED_USERNAME', 'admin');
       const password = this.configService.get<string>('AUTH_SEED_PASSWORD', 'admin123');
+      const hashedPassword = await bcrypt.hash(password, 10);
 
       await this.sequelize.query(
          `
@@ -42,7 +44,7 @@ export class AuthDbMigrationService implements OnModuleInit {
             DO UPDATE SET password = EXCLUDED.password, "updatedAt" = NOW();
          `,
          {
-            replacements: { username, password },
+            replacements: { username, password: hashedPassword },
          },
       );
 
