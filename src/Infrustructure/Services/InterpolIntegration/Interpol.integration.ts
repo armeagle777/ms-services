@@ -10,6 +10,7 @@ import type {
    InterpolDetailsResponse,
    InterpolFile,
    InterpolFileResponse,
+   InterpolNominalSearchParams,
    InterpolSearchResponse,
    InterpolSltdDetailsResponse,
    InterpolSltdSearchResponse,
@@ -36,19 +37,22 @@ export class InterpolIntegration {
    async search({
       name,
       forename,
-      dobDdMmYyyy,
+      ageMin,
+      ageMax,
+      dateOfBirth,
+      identity,
+      entityId,
       nbRecord,
-   }: {
-      name: string;
-      forename: string;
-      dobDdMmYyyy?: string;
-      nbRecord: number;
-   }): Promise<InterpolSearchResponse> {
+   }: InterpolNominalSearchParams): Promise<InterpolSearchResponse> {
       const parts = [];
       if (name) parts.push(`<tns:Name>${this.xmlEscape(name)}</tns:Name>`);
       if (forename) parts.push(`<tns:Forename>${this.xmlEscape(forename)}</tns:Forename>`);
-      if (dobDdMmYyyy)
-         parts.push(`<tns:DateOfBirth>${this.xmlEscape(dobDdMmYyyy)}</tns:DateOfBirth>`);
+      if (ageMin !== undefined) parts.push(`<tns:AgeMin>${ageMin}</tns:AgeMin>`);
+      if (ageMax !== undefined) parts.push(`<tns:AgeMax>${ageMax}</tns:AgeMax>`);
+      if (dateOfBirth)
+         parts.push(`<tns:DateOfBirth>${this.xmlEscape(dateOfBirth)}</tns:DateOfBirth>`);
+      if (identity) parts.push(`<tns:Identity>${this.xmlEscape(identity)}</tns:Identity>`);
+      if (entityId) parts.push(`<tns:EntityId>${this.xmlEscape(entityId)}</tns:EntityId>`);
       parts.push(`<tns:NbRecord>${Number(nbRecord)}</tns:NbRecord>`);
 
       const body = `        <tns:Search>

@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import type {
    InterpolDetailsResponse,
    InterpolFileResponse,
+   InterpolNominalSearchParams,
    InterpolSearchResponse,
    InterpolSltdDetailsResponse,
    InterpolSltdSearchResponse,
@@ -18,23 +19,8 @@ export class InterpolService {
    constructor(private readonly interpolIntegration: InterpolIntegration) {}
 
    async search(body: InterpolSearchRequestDto): Promise<InterpolSearchResponse> {
-      const name = (body?.name || '').trim();
-      const forename = (body?.forename || '').trim();
-      const dobInput = (body?.dob || '').trim();
-
-      if (!name || !forename) {
-         throw new BadRequestException('name and forename are required');
-      }
-
-      const dob = this.validateDobDdMmYyyy(dobInput);
-      const safeNb = this.parseNbRecord(body?.nb);
-
-      return this.interpolIntegration.search({
-         name,
-         forename,
-         dobDdMmYyyy: dob,
-         nbRecord: safeNb,
-      });
+      const params = this.normalizeNominalSearch(body);
+      return this.interpolIntegration.search(params);
    }
 
    async sltdSearch(body: InterpolSltdSearchRequestDto): Promise<InterpolSltdSearchResponse> {
@@ -98,7 +84,87 @@ export class InterpolService {
    private parseNbRecord(nb?: number) {
       const numberValue = Number(nb);
       if (!Number.isFinite(numberValue) || numberValue < 1) return 10;
-      return Math.min(Math.floor(numberValue), 50);
+      return Math.min(Math.floor(numberValue), 100);
+   }
+
+   private normalizeNominalSearch(body: InterpolSearchRequestDto): InterpolNominalSearchParams {
+      const name = this.normalizeString(body?.name);
+      const forename = this.normalizeString(body?.forename);
+      const identity = this.normalizeString(body?.identity);
+      const entityId = this.normalizeString(body?.entityId);
+      const dateOfBirth = this.validateDobDdMmYyyy(
+         this.normalizeString(body?.dateOfBirth) || this.normalizeString(body?.dob),
+      );
+      const ageMin = this.parseAge(body?.ageMin, 'ageMin');
+      const ageMax = this.parseAge(body?.ageMax, 'ageMax');
+      const nbRecord = this.parseNbRecord(body?.nbRecord ?? body?.nb);
+
+      const hasNameSearch = Boolean(name);
+      const hasIdentitySearch = Boolean(identity);
+      const hasEntityIdSearch = Boolean(entityId);
+      const hasAgeBounds = ageMin !== undefined || ageMax !== undefined;
+      const hasDateOfBirth = Boolean(dateOfBirth);
+      const hasAnyCriteria = Boolean(
+         name || forename || hasIdentitySearch || hasEntityIdSearch || hasAgeBounds || hasDateOfBirth,
+      );
+
+      if (!hasAnyCriteria) {
+         throw new BadRequestException(
+            'At least one search criterion is required: name, identity, or entityId.',
+         );
+      }
+
+      if (!hasNameSearch && (forename || hasAgeBounds || hasDateOfBirth)) {
+         throw new BadRequestException(
+            'forename, ageMin, ageMax, and dateOfBirth can only be used together with name.',
+         );
+      }
+
+      if (hasNameSearch && hasIdentitySearch) {
+         throw new BadRequestException('Cannot search both name and identity.');
+      }
+
+      if (hasNameSearch && hasEntityIdSearch) {
+         throw new BadRequestException('Cannot search both name and entityId.');
+      }
+
+      if (hasIdentitySearch && hasEntityIdSearch) {
+         throw new BadRequestException('Cannot search both identity and entityId.');
+      }
+
+      if (hasAgeBounds && hasDateOfBirth) {
+         throw new BadRequestException('Cannot search both age limits and dateOfBirth.');
+      }
+
+      if (ageMin !== undefined && ageMax !== undefined && ageMin > ageMax) {
+         throw new BadRequestException('ageMin cannot be greater than ageMax.');
+      }
+
+      return {
+         name,
+         forename,
+         ageMin,
+         ageMax,
+         dateOfBirth,
+         identity,
+         entityId,
+         nbRecord,
+      };
+   }
+
+   private normalizeString(value?: string) {
+      return (value || '').trim();
+   }
+
+   private parseAge(value: number | string | undefined, fieldName: 'ageMin' | 'ageMax') {
+      if (value === undefined || value === null || value === '') return undefined;
+
+      const numberValue = Number(value);
+      if (!Number.isInteger(numberValue) || numberValue < 0) {
+         throw new BadRequestException(`${fieldName} must be a non-negative integer.`);
+      }
+
+      return numberValue;
    }
 
    private validateDobDdMmYyyy(dob: string) {

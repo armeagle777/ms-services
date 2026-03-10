@@ -76,6 +76,17 @@ export type InterpolSearchResponse = BaseResponse & {
    hits: SearchHit[];
 };
 
+export type InterpolNominalSearchParams = {
+   name: string;
+   forename?: string;
+   ageMin?: number;
+   ageMax?: number;
+   dateOfBirth?: string;
+   identity?: string;
+   entityId?: string;
+   nbRecord: number;
+};
+
 export type InterpolDetailsResponse = BaseResponse & {
    details: DetailsPayload | null;
 };
