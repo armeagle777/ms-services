@@ -7,7 +7,6 @@ export type SoapCallResult = {
 export type BasicFields = {
    resultCode: string | null;
    resultOtherCode: string | null;
-   requestId: string | null;
 };
 
 export type KnownResultCodeKey =
@@ -38,10 +37,7 @@ export type BaseResponse = {
    fault: string | null;
    resultCode: string | null;
    resultOtherCode: string | null;
-   requestId: string | null;
    resultCodeMeta: ResultCodeMeta;
-   raw: string;
-   request: string;
 };
 
 export type SearchHit = {

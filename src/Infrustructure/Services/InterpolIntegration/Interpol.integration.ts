@@ -67,8 +67,6 @@ export class InterpolIntegration {
             fault,
             ...basicFields,
             resultCodeMeta,
-            raw: xml,
-            request: requestXml,
             hits: [],
          };
       }
@@ -80,8 +78,6 @@ export class InterpolIntegration {
             fault: null,
             ...basicFields,
             resultCodeMeta,
-            raw: xml,
-            request: requestXml,
             hits: [],
          };
       }
@@ -93,8 +89,6 @@ export class InterpolIntegration {
             fault: null,
             ...basicFields,
             resultCodeMeta,
-            raw: xml,
-            request: requestXml,
             hits: [],
          };
       }
@@ -105,8 +99,6 @@ export class InterpolIntegration {
          fault: null,
          ...basicFields,
          resultCodeMeta,
-         raw: xml,
-         request: requestXml,
          hits: this.parseSearchHits(xml),
       };
    }
@@ -141,8 +133,6 @@ export class InterpolIntegration {
             fault,
             ...basicFields,
             resultCodeMeta,
-            raw: xml,
-            request: requestXml,
             xmlData: this.extractXmlDataInner(xml),
          };
       }
@@ -154,8 +144,6 @@ export class InterpolIntegration {
             fault: null,
             ...basicFields,
             resultCodeMeta,
-            raw: xml,
-            request: requestXml,
             xmlData: '',
          };
       }
@@ -167,8 +155,6 @@ export class InterpolIntegration {
             fault: null,
             ...basicFields,
             resultCodeMeta,
-            raw: xml,
-            request: requestXml,
             xmlData: this.extractXmlDataInner(xml),
          };
       }
@@ -179,8 +165,6 @@ export class InterpolIntegration {
          fault: null,
          ...basicFields,
          resultCodeMeta,
-         raw: xml,
-         request: requestXml,
          xmlData: this.extractXmlDataInner(xml),
       };
    }
@@ -202,8 +186,6 @@ export class InterpolIntegration {
             fault,
             ...basicFields,
             resultCodeMeta,
-            raw: xml,
-            request: requestXml,
             xmlData: this.extractXmlDataInner(xml),
          };
       }
@@ -215,8 +197,6 @@ export class InterpolIntegration {
             fault: null,
             ...basicFields,
             resultCodeMeta,
-            raw: xml,
-            request: requestXml,
             xmlData: '',
          };
       }
@@ -228,8 +208,6 @@ export class InterpolIntegration {
             fault: null,
             ...basicFields,
             resultCodeMeta,
-            raw: xml,
-            request: requestXml,
             xmlData: this.extractXmlDataInner(xml),
          };
       }
@@ -240,8 +218,6 @@ export class InterpolIntegration {
          fault: null,
          ...basicFields,
          resultCodeMeta,
-         raw: xml,
-         request: requestXml,
          xmlData: this.extractXmlDataInner(xml),
       };
    }
@@ -263,8 +239,6 @@ export class InterpolIntegration {
             fault,
             ...basicFields,
             resultCodeMeta,
-            raw: xml,
-            request: requestXml,
             details: null,
          };
       }
@@ -276,8 +250,6 @@ export class InterpolIntegration {
             fault: null,
             ...basicFields,
             resultCodeMeta,
-            raw: xml,
-            request: requestXml,
             details: null,
          };
       }
@@ -288,8 +260,6 @@ export class InterpolIntegration {
          fault: null,
          ...basicFields,
          resultCodeMeta,
-         raw: xml,
-         request: requestXml,
          details: this.parseDetails(xml),
       };
    }
@@ -330,8 +300,6 @@ export class InterpolIntegration {
             fault,
             ...basicFields,
             resultCodeMeta,
-            raw: xml,
-            request: requestXml,
             files: [],
          };
       }
@@ -342,8 +310,6 @@ export class InterpolIntegration {
          fault: null,
          ...basicFields,
          resultCodeMeta,
-         raw: xml,
-         request: requestXml,
          files: this.extractBinFilesFromAnswer(xml),
       };
    }
@@ -691,7 +657,6 @@ ${bodyXml}
       return {
          resultCode: this.firstTagValue(responseXml, 'resultCode'),
          resultOtherCode: this.firstTagValue(responseXml, 'resultOtherCode'),
-         requestId: this.firstTagValue(responseXml, 'requestId'),
       };
    }
 
