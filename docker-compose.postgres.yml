@@ -1,0 +1,27 @@
+version: '3.9'
+
+services:
+   auth-postgres:
+      image: postgres:16-alpine
+      container_name: ms-services-auth-postgres
+      restart: unless-stopped
+      environment:
+         POSTGRES_DB: ${POSTGRES_DB_NAME:-ms_services_auth}
+         POSTGRES_USER: ${POSTGRES_DB_USERNAME:-postgres}
+         POSTGRES_PASSWORD: ${POSTGRES_DB_PASSWORD:-postgres}
+      ports:
+         - '${POSTGRES_DB_PORT:-5432}:5432'
+      volumes:
+         - auth_postgres_data:/var/lib/postgresql/data
+      healthcheck:
+         test:
+            [
+               'CMD-SHELL',
+               'pg_isready -U ${POSTGRES_DB_USERNAME:-postgres} -d ${POSTGRES_DB_NAME:-ms_services_auth}',
+            ]
+         interval: 10s
+         timeout: 5s
+         retries: 5
+
+volumes:
+   auth_postgres_data:

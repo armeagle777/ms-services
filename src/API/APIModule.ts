@@ -19,6 +19,7 @@ import {
    TaxController,
 } from './Controllers';
 import { CoreModule } from 'src/Core/Core.module';
+import { BasicAuthGuard } from './Guards/BasicAuth.guard';
 // import { SignatureVerificationMiddleware } from './Middlewares';
 
 @Module({
@@ -37,7 +38,7 @@ import { CoreModule } from 'src/Core/Core.module';
       StatisticsController,
       InvestigativeCommitteeController,
    ],
-   providers: [],
+   providers: [BasicAuthGuard],
 })
 export class APIModule {
    // configure(consumer: MiddlewareConsumer) {
