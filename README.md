@@ -54,13 +54,13 @@ Required variables:
 - `POSTGRES_DB_NAME`
 - `POSTGRES_DB_USERNAME`
 - `POSTGRES_DB_PASSWORD`
-- `AUTH_SEED_USERNAME`
-- `AUTH_SEED_PASSWORD`
+- `CLIENT_APPLICATION_1_USERNAME`
+- `CLIENT_APPLICATION_1_PASSWORD`
 
 On app startup, a migration service will:
 
 - create `users` table (if missing)
-- upsert one seeded user from `AUTH_SEED_USERNAME` / `AUTH_SEED_PASSWORD`
+- upsert one seeded user from `CLIENT_APPLICATION_1_USERNAME` / `CLIENT_APPLICATION_1_PASSWORD`
 
 ### 3. Call protected endpoints
 

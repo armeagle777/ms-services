@@ -32,8 +32,8 @@ export class AuthDbMigrationService implements OnModuleInit {
    }
 
    private async seedDefaultUser() {
-      const username = this.configService.get<string>('AUTH_SEED_USERNAME', 'admin');
-      const password = this.configService.get<string>('AUTH_SEED_PASSWORD', 'admin123');
+      const username = this.configService.get<string>('CLIENT_APPLICATION_1_USERNAME', 'admin');
+      const password = this.configService.get<string>('CLIENT_APPLICATION_1_PASSWORD', 'admin123');
       const hashedPassword = await bcrypt.hash(password, 10);
 
       await this.sequelize.query(
