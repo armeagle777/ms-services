@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import * as bcrypt from 'bcryptjs';
 import { AUTH_USER_MODEL } from 'src/Infrustructure/Database/database.tokens';
 import { AuthUserEntity } from 'src/Infrustructure/Database/Entities/AuthUser.entity';
 
@@ -20,6 +21,12 @@ export class AuthService {
          return false;
       }
 
-      return user.password === password;
+      const storedPassword = user.password || '';
+      try {
+         return await bcrypt.compare(password, storedPassword);
+      } catch {
+         // Backward compatibility with legacy plaintext records.
+         return storedPassword === password;
+      }
    }
 }
