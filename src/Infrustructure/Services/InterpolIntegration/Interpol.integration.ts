@@ -193,6 +193,7 @@ export class InterpolIntegration {
       const fault = this.extractSoapFault(xml);
       const basicFields = this.parseBasicFields(xml);
       const resultCodeMeta = this.evaluateResultCode(basicFields.resultCode);
+      const xmlData = this.parseXmlDataToJson(xml);
 
       if (status >= 400 || fault) {
          return {
@@ -201,7 +202,7 @@ export class InterpolIntegration {
             fault,
             ...basicFields,
             resultCodeMeta,
-            xmlData: this.extractXmlDataInner(xml),
+            xmlData,
          };
       }
 
@@ -212,7 +213,7 @@ export class InterpolIntegration {
             fault: null,
             ...basicFields,
             resultCodeMeta,
-            xmlData: '',
+            xmlData: null,
          };
       }
 
@@ -223,7 +224,7 @@ export class InterpolIntegration {
             fault: null,
             ...basicFields,
             resultCodeMeta,
-            xmlData: this.extractXmlDataInner(xml),
+            xmlData,
          };
       }
 
@@ -233,7 +234,7 @@ export class InterpolIntegration {
          fault: null,
          ...basicFields,
          resultCodeMeta,
-         xmlData: this.extractXmlDataInner(xml),
+         xmlData,
       };
    }
 
