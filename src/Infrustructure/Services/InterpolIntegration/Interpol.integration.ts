@@ -2,6 +2,7 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'crypto';
+import { XMLParser } from 'fast-xml-parser';
 import { firstValueFrom } from 'rxjs';
 import type {
    BasicFields,
@@ -30,6 +31,11 @@ const SLTD_TNS_NS = 'urn:interpol:ws:wsp:sltd';
 
 @Injectable()
 export class InterpolIntegration {
+   private readonly xmlParser = new XMLParser({
+      ignoreAttributes: false,
+      removeNSPrefix: true,
+   });
+
    constructor(
       private readonly httpService: HttpService,
       private readonly configService: ConfigService,
@@ -130,6 +136,7 @@ export class InterpolIntegration {
       const fault = this.extractSoapFault(xml);
       const basicFields = this.parseBasicFields(xml);
       const resultCodeMeta = this.evaluateResultCode(basicFields.resultCode);
+      const xmlData = this.parseXmlDataToJson(xml);
 
       if (status >= 400 || fault) {
          return {
@@ -138,7 +145,7 @@ export class InterpolIntegration {
             fault,
             ...basicFields,
             resultCodeMeta,
-            xmlData: this.extractXmlDataInner(xml),
+            xmlData,
          };
       }
 
@@ -149,7 +156,7 @@ export class InterpolIntegration {
             fault: null,
             ...basicFields,
             resultCodeMeta,
-            xmlData: '',
+            xmlData: null,
          };
       }
 
@@ -160,7 +167,7 @@ export class InterpolIntegration {
             fault: null,
             ...basicFields,
             resultCodeMeta,
-            xmlData: this.extractXmlDataInner(xml),
+            xmlData,
          };
       }
 
@@ -170,7 +177,7 @@ export class InterpolIntegration {
          fault: null,
          ...basicFields,
          resultCodeMeta,
-         xmlData: this.extractXmlDataInner(xml),
+         xmlData,
       };
    }
 
@@ -671,6 +678,29 @@ ${bodyXml}
    private extractXmlDataInner(responseXml: string) {
       const match = responseXml.match(/<xmlData>([\s\S]*?)<\/xmlData>/i);
       return match ? match[1].trim() : '';
+   }
+
+   private parseXmlDataToJson(responseXml: string): Record<string, unknown> | null {
+      const xmlData = this.extractXmlDataInner(responseXml);
+      if (!xmlData) return null;
+
+      const looksEscapedXml = /&lt;[A-Za-z_]/.test(xmlData);
+      const normalizedXmlData = looksEscapedXml ? this.decodeXmlEntities(xmlData) : xmlData;
+
+      try {
+         return this.xmlParser.parse(normalizedXmlData) as Record<string, unknown>;
+      } catch {
+         return null;
+      }
+   }
+
+   private decodeXmlEntities(value: string) {
+      return value
+         .replace(/&lt;/g, '<')
+         .replace(/&gt;/g, '>')
+         .replace(/&quot;/g, '"')
+         .replace(/&apos;/g, "'")
+         .replace(/&amp;/g, '&');
    }
 
    private parseSearchHits(responseXml: string): SearchHit[] {

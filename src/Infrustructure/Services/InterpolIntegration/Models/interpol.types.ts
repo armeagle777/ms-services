@@ -102,7 +102,7 @@ export type InterpolFileResponse = BaseResponse & {
 };
 
 export type InterpolSltdSearchResponse = BaseResponse & {
-   xmlData: string;
+   xmlData: Record<string, unknown> | null;
 };
 
 export type InterpolSltdDetailsResponse = BaseResponse & {
