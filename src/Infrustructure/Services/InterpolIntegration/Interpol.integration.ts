@@ -518,7 +518,7 @@ export class InterpolIntegration {
          );
       }
 
-      const envelope = this.buildSltdEnvelope(bodyXml, includeAdminToken);
+      const envelope = this.buildSltdEnvelope(bodyXml, includeAdminToken, action);
       const headers = {
          'Content-Type': 'text/xml; charset=utf-8',
          Accept: 'text/xml; charset=utf-8',
@@ -598,14 +598,10 @@ ${bodyXml}
       return `ARM-${randomUUID()}`;
    }
 
-   private buildSltdEnvelope(bodyXml: string, includeAdminToken: boolean) {
+   private buildSltdEnvelope(bodyXml: string, includeAdminToken: boolean, action: string) {
       const sltdPrefix = this.getSltdXmlPrefix();
       const sltdNamespace = this.getSltdNamespace();
-      const wsUserInfoUsername = (
-         this.configService.get<string>('INTERPOL_SLTD_WS_USERINFO_USERNAME') ||
-         this.configService.get<string>('INTERPOL_SLTD_USERNAME') ||
-         ''
-      ).trim();
+      const wsUserInfoUsername = this.getSltdWsUserInfoUsername(action);
       const referenceInCountry = (
          this.configService.get<string>('INTERPOL_SLTD_REFERENCE_IN_COUNTRY') || 'YEREVAN'
       ).trim();
@@ -674,6 +670,23 @@ ${bodyXml}
       ).trim();
       if (configuredReference) return configuredReference;
       return this.isProductionEnv() ? 'ARM-TEST-001' : 'POSTMAN-001';
+   }
+
+   private getSltdWsUserInfoUsername(action: string) {
+      const actionUpper = (action || '').trim().toUpperCase();
+      const actionSpecific =
+         actionUpper === 'DETAILS'
+            ? this.configService.get<string>('INTERPOL_SLTD_DETAILS_WS_USERINFO_USERNAME')
+            : actionUpper === 'SEARCH'
+              ? this.configService.get<string>('INTERPOL_SLTD_SEARCH_WS_USERINFO_USERNAME')
+              : '';
+
+      return (
+         actionSpecific ||
+         this.configService.get<string>('INTERPOL_SLTD_WS_USERINFO_USERNAME') ||
+         this.configService.get<string>('INTERPOL_SLTD_USERNAME') ||
+         ''
+      ).trim();
    }
 
    private isProductionEnv() {
