@@ -27,7 +27,8 @@ const SOAP_NS = 'http://schemas.xmlsoap.org/soap/envelope/';
 const XSI_NS = 'http://www.w3.org/2001/XMLSchema-instance';
 const XSD_NS = 'http://www.w3.org/2001/XMLSchema';
 const TNS_NS = 'urn:interpol:ws:find:nominal';
-const SLTD_TNS_NS = 'urn:interpol:ws:wsp:sltd';
+const SLTD_TNS_NS_DEFAULT = 'urn:interpol:ws:wsp:sltd';
+const SLTD_TNS_NS_PRODUCTION = 'urn:interpol:ws:wsp:nomtdsltd';
 
 @Injectable()
 export class InterpolIntegration {
@@ -125,12 +126,13 @@ export class InterpolIntegration {
       typeOfDocument: string;
       nbRecord: number;
    }): Promise<InterpolSltdSearchResponse> {
-      const body = `        <tns:Search>
-            <tns:DIN>${this.xmlEscape(din)}</tns:DIN>
-            <tns:CountryOfRegistration>${this.xmlEscape(countryOfRegistration)}</tns:CountryOfRegistration>
-            <tns:TypeOfDocument>${this.xmlEscape(typeOfDocument)}</tns:TypeOfDocument>
-            <tns:NbRecord>${Number(nbRecord)}</tns:NbRecord>
-        </tns:Search>`;
+      const sltdPrefix = this.getSltdXmlPrefix();
+      const body = `        <${sltdPrefix}:Search>
+            <${sltdPrefix}:DIN>${this.xmlEscape(din)}</${sltdPrefix}:DIN>
+            <${sltdPrefix}:CountryOfRegistration>${this.xmlEscape(countryOfRegistration)}</${sltdPrefix}:CountryOfRegistration>
+            <${sltdPrefix}:TypeOfDocument>${this.xmlEscape(typeOfDocument)}</${sltdPrefix}:TypeOfDocument>
+            <${sltdPrefix}:NbRecord>${Number(nbRecord)}</${sltdPrefix}:NbRecord>
+        </${sltdPrefix}:Search>`;
 
       const { status, xml } = await this.soapCallSltd('Search', body, true, 60000);
       const fault = this.extractSoapFault(xml);
@@ -182,9 +184,10 @@ export class InterpolIntegration {
    }
 
    async sltdDetails(id: string): Promise<InterpolSltdDetailsResponse> {
-      const body = `        <tns:Details>
-            <tns:Id>${this.xmlEscape(id)}</tns:Id>
-        </tns:Details>`;
+      const sltdPrefix = this.getSltdXmlPrefix();
+      const body = `        <${sltdPrefix}:Details>
+            <${sltdPrefix}:Id>${this.xmlEscape(id)}</${sltdPrefix}:Id>
+        </${sltdPrefix}:Details>`;
 
       const { status, xml } = await this.soapCallSltd('Details', body, true, 60000);
       const fault = this.extractSoapFault(xml);
@@ -515,11 +518,11 @@ export class InterpolIntegration {
          );
       }
 
-      const envelope = this.buildSltdEnvelope(bodyXml, includeAdminToken);
+      const envelope = this.buildSltdEnvelope(bodyXml, includeAdminToken, action);
       const headers = {
          'Content-Type': 'text/xml; charset=utf-8',
          Accept: 'text/xml; charset=utf-8',
-         SOAPAction: `"${SLTD_TNS_NS}/${action}"`,
+         SOAPAction: `"${this.getSltdNamespace()}/${action}"`,
       };
 
       try {
@@ -595,12 +598,10 @@ ${bodyXml}
       return `ARM-${randomUUID()}`;
    }
 
-   private buildSltdEnvelope(bodyXml: string, includeAdminToken: boolean) {
-      const wsUserInfoUsername = (
-         this.configService.get<string>('INTERPOL_SLTD_WS_USERINFO_USERNAME') ||
-         this.configService.get<string>('INTERPOL_SLTD_USERNAME') ||
-         ''
-      ).trim();
+   private buildSltdEnvelope(bodyXml: string, includeAdminToken: boolean, action: string) {
+      const sltdPrefix = this.getSltdXmlPrefix();
+      const sltdNamespace = this.getSltdNamespace();
+      const wsUserInfoUsername = this.getSltdWsUserInfoUsername(action);
       const referenceInCountry = (
          this.configService.get<string>('INTERPOL_SLTD_REFERENCE_IN_COUNTRY') || 'YEREVAN'
       ).trim();
@@ -609,9 +610,7 @@ ${bodyXml}
       ).trim();
       const username = (this.configService.get<string>('INTERPOL_SLTD_USERNAME') || '').trim();
       const password = (this.configService.get<string>('INTERPOL_SLTD_PASSWORD') || '').trim();
-      const enquiriesReference = (
-         this.configService.get<string>('INTERPOL_SLTD_ENQUIRIES_REFERENCE') || 'POSTMAN-001'
-      ).trim();
+      const enquiriesReference = this.getSltdEnquiriesReference();
 
       if (!wsUserInfoUsername || !username || !password) {
          throw new InternalServerErrorException(
@@ -620,24 +619,24 @@ ${bodyXml}
       }
 
       const adminBlock = includeAdminToken
-         ? `\n        <tns:AdministrativeToken>\n            <tns:EnquiriesReference>${this.xmlEscape(enquiriesReference)}</tns:EnquiriesReference>\n        </tns:AdministrativeToken>`
+         ? `\n        <${sltdPrefix}:AdministrativeToken>\n            <${sltdPrefix}:EnquiriesReference>${this.xmlEscape(enquiriesReference)}</${sltdPrefix}:EnquiriesReference>\n        </${sltdPrefix}:AdministrativeToken>`
          : '';
 
       return `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="${SOAP_NS}"
                xmlns:xsi="${XSI_NS}"
                xmlns:xsd="${XSD_NS}"
-               xmlns:tns="${SLTD_TNS_NS}">
+               xmlns:${sltdPrefix}="${sltdNamespace}">
     <soap:Header>${adminBlock}
-        <tns:UserInformation>
-            <tns:Username>${this.xmlEscape(wsUserInfoUsername)}</tns:Username>
-            <tns:ReferenceInCountry>${this.xmlEscape(referenceInCountry)}</tns:ReferenceInCountry>
-        </tns:UserInformation>
+        <${sltdPrefix}:UserInformation>
+            <${sltdPrefix}:Username>${this.xmlEscape(wsUserInfoUsername)}</${sltdPrefix}:Username>
+            <${sltdPrefix}:ReferenceInCountry>${this.xmlEscape(referenceInCountry)}</${sltdPrefix}:ReferenceInCountry>
+        </${sltdPrefix}:UserInformation>
 
-        <tns:UsernameToken Version="${this.xmlEscape(wsUsernameVersion)}">
-            <tns:Username>${this.xmlEscape(username)}</tns:Username>
-            <tns:Password>${this.xmlEscape(password)}</tns:Password>
-        </tns:UsernameToken>
+        <${sltdPrefix}:UsernameToken Version="${this.xmlEscape(wsUsernameVersion)}">
+            <${sltdPrefix}:Username>${this.xmlEscape(username)}</${sltdPrefix}:Username>
+            <${sltdPrefix}:Password>${this.xmlEscape(password)}</${sltdPrefix}:Password>
+        </${sltdPrefix}:UsernameToken>
     </soap:Header>
 
     <soap:Body>
@@ -645,6 +644,55 @@ ${bodyXml}
     </soap:Body>
 </soap:Envelope>
 `;
+   }
+
+   private getSltdNamespace() {
+      const configuredNamespace = (
+         this.configService.get<string>('INTERPOL_SLTD_NAMESPACE') ||
+         this.configService.get<string>('INTERPOL_SLTD_TNS_NS') ||
+         ''
+      ).trim();
+      if (configuredNamespace) return configuredNamespace;
+      return this.isProductionEnv() ? SLTD_TNS_NS_PRODUCTION : SLTD_TNS_NS_DEFAULT;
+   }
+
+   private getSltdXmlPrefix() {
+      const configuredPrefix = (
+         this.configService.get<string>('INTERPOL_SLTD_XML_PREFIX') || ''
+      ).trim();
+      if (configuredPrefix) return configuredPrefix;
+      return this.isProductionEnv() ? 'urn' : 'tns';
+   }
+
+   private getSltdEnquiriesReference() {
+      const configuredReference = (
+         this.configService.get<string>('INTERPOL_SLTD_ENQUIRIES_REFERENCE') || ''
+      ).trim();
+      if (configuredReference) return configuredReference;
+      return this.isProductionEnv() ? 'ARM-TEST-001' : 'POSTMAN-001';
+   }
+
+   private getSltdWsUserInfoUsername(action: string) {
+      const actionUpper = (action || '').trim().toUpperCase();
+      const actionSpecific =
+         actionUpper === 'DETAILS'
+            ? this.configService.get<string>('INTERPOL_SLTD_DETAILS_WS_USERINFO_USERNAME')
+            : actionUpper === 'SEARCH'
+              ? this.configService.get<string>('INTERPOL_SLTD_SEARCH_WS_USERINFO_USERNAME')
+              : '';
+
+      return (
+         actionSpecific ||
+         this.configService.get<string>('INTERPOL_SLTD_WS_USERINFO_USERNAME') ||
+         this.configService.get<string>('INTERPOL_SLTD_USERNAME') ||
+         ''
+      ).trim();
+   }
+
+   private isProductionEnv() {
+      return (
+         (this.configService.get<string>('NODE_ENV') || '').trim().toLowerCase() === 'production'
+      );
    }
 
    private xmlEscape(value: unknown) {
