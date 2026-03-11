@@ -690,7 +690,9 @@ ${bodyXml}
    }
 
    private isProductionEnv() {
-      return (this.configService.get<string>('NODE_ENV') || '').trim().toLowerCase() === 'production';
+      return (
+         (this.configService.get<string>('NODE_ENV') || '').trim().toLowerCase() === 'production'
+      );
    }
 
    private xmlEscape(value: unknown) {
