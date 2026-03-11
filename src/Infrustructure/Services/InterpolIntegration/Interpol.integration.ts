@@ -1,6 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { randomUUID } from 'crypto';
 import { firstValueFrom } from 'rxjs';
 import type {
    BasicFields,
@@ -541,9 +542,7 @@ export class InterpolIntegration {
       const wsUserInfoUsername = (
          this.configService.get<string>('INTERPOL_WS_USERINFO_USERNAME') || ''
       ).trim();
-      const referenceInCountry = (
-         this.configService.get<string>('INTERPOL_REFERENCE_IN_COUNTRY') || 'ARM-TEST-001'
-      ).trim();
+      const referenceInCountry = this.generateRequestIdentifier();
       const wsUsernameVersion = (
          this.configService.get<string>('INTERPOL_WS_USERNAME_VERSION') || '1.0'
       ).trim();
@@ -583,6 +582,10 @@ ${bodyXml}
     </soap:Body>
 </soap:Envelope>
 `;
+   }
+
+   private generateRequestIdentifier() {
+      return `ARM-${randomUUID()}`;
    }
 
    private buildSltdEnvelope(bodyXml: string, includeAdminToken: boolean) {
