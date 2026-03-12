@@ -28,7 +28,7 @@ const XSI_NS = 'http://www.w3.org/2001/XMLSchema-instance';
 const XSD_NS = 'http://www.w3.org/2001/XMLSchema';
 const TNS_NS = 'urn:interpol:ws:find:nominal';
 const SLTD_TNS_NS_DEFAULT = 'urn:interpol:ws:wsp:sltd';
-// const SLTD_TNS_NS_PRODUCTION = 'urn:interpol:ws:wsp:nomtdsltd';
+const SLTD_TNS_NS_PRODUCTION = 'urn:interpol:ws:wsp:nomtdsltd';
 
 @Injectable()
 export class InterpolIntegration {
@@ -648,14 +648,7 @@ ${bodyXml}
    }
 
    private getSltdNamespace() {
-      // const configuredNamespace = (
-      //    this.configService.get<string>('INTERPOL_SLTD_NAMESPACE') ||
-      //    this.configService.get<string>('INTERPOL_SLTD_TNS_NS') ||
-      //    ''
-      // ).trim();
-      // if (configuredNamespace) return configuredNamespace;
-      // return this.isProductionEnv() ? SLTD_TNS_NS_PRODUCTION : SLTD_TNS_NS_DEFAULT;
-      return SLTD_TNS_NS_DEFAULT;
+      return this.isProductionEnv() ? SLTD_TNS_NS_PRODUCTION : SLTD_TNS_NS_DEFAULT;
    }
 
    private getSltdXmlPrefix() {
