@@ -1,27 +1,22 @@
-import {
-   // MiddlewareConsumer,
-   Module,
-   // NestModule, RequestMethod
-} from '@nestjs/common';
+import { Module } from '@nestjs/common';
 
 import {
-   ArtsakhController,
-   EsignController,
-   InvestigativeCommitteeController,
-   InterpolController,
-   KadastrController,
    McsController,
-   MojCesController,
-   PersonsController,
-   PetregistrController,
-   SphereController,
-   StatisticsController,
    TaxController,
+   EsignController,
+   MojCesController,
+   SphereController,
+   ArtsakhController,
+   KadastrController,
+   PersonsController,
+   InterpolController,
+   PetregistrController,
+   StatisticsController,
+   InvestigativeCommitteeController,
 } from './Controllers';
 import { CoreModule } from 'src/Core/Core.module';
 import { BasicAuthGuard } from './Guards/BasicAuth.guard';
 import { ProtectedRequestLoggingInterceptor } from './Interceptors/ProtectedRequestLogging.interceptor';
-// import { SignatureVerificationMiddleware } from './Middlewares';
 
 @Module({
    imports: [CoreModule],
@@ -41,16 +36,4 @@ import { ProtectedRequestLoggingInterceptor } from './Interceptors/ProtectedRequ
    ],
    providers: [BasicAuthGuard, ProtectedRequestLoggingInterceptor],
 })
-export class APIModule {
-   // configure(consumer: MiddlewareConsumer) {
-   //    consumer
-   //       .apply(SignatureVerificationMiddleware)
-   //       .exclude(
-   //          { path: 'work-permit/countries', method: RequestMethod.GET },
-   //          { path: 'work-permit/diagnosis', method: RequestMethod.GET },
-   //          { path: 'asylum/filter/options', method: RequestMethod.GET },
-   //       )
-   //       .forRoutes(WorkPermitController, AsylumController);
-   // }
-}
-// {}
+export class APIModule {}
