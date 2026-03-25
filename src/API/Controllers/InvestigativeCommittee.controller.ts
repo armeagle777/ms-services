@@ -2,11 +2,12 @@ import { Body, Controller, Post, UseGuards, UseInterceptors } from '@nestjs/comm
 
 import { SearchWantedDto } from 'src/API/DTO/Ic/search-wanted.dto';
 import { InvestigativeCommitteeService } from 'src/Core/InvestigativeCommittee/InvestigativeCommittee.service';
-import { BasicAuthGuard } from 'src/API/Guards/BasicAuth.guard';
 import { ProtectedRequestLoggingInterceptor } from 'src/API/Interceptors/ProtectedRequestLogging.interceptor';
+import { PermissionGuard } from 'src/modules/auth/guards/permission.guard';
+import { BasicAuthGuard } from 'src/modules/auth/guards/basic-auth.guard';
 
 @Controller('investigative-committee')
-@UseGuards(BasicAuthGuard)
+@UseGuards(BasicAuthGuard, PermissionGuard)
 @UseInterceptors(ProtectedRequestLoggingInterceptor)
 export class InvestigativeCommitteeController {
    constructor(private readonly icService: InvestigativeCommitteeService) {}
