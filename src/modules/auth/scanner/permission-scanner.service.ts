@@ -51,7 +51,10 @@ export class PermissionScannerService implements OnApplicationBootstrap {
    }
 
    private normalizeControllerName(className: string): string {
-      return (className || '').replace(/Controller$/i, '').trim().toLowerCase();
+      return (className || '')
+         .replace(/Controller$/i, '')
+         .trim()
+         .toLowerCase();
    }
 
    private normalizeActionName(handlerName: string): string {
