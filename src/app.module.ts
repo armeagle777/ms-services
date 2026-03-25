@@ -7,7 +7,13 @@ import { AdminModule } from './modules/auth/admin/admin.module';
 import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
-   imports: [ConfigModule.forRoot({ isGlobal: true }), APIModule, DatabaseModule, AuthModule, AdminModule],
+   imports: [
+      ConfigModule.forRoot({ isGlobal: true }),
+      APIModule,
+      DatabaseModule,
+      AuthModule,
+      AdminModule,
+   ],
    controllers: [PersonController],
    providers: [],
 })
