@@ -1,5 +1,4 @@
 export { ArtsakhController } from './Artsakh.controller';
-export { EsignController } from './Esign.controller';
 export { KadastrController } from './Kadastr.controller';
 export { McsController } from './Mcs.controller';
 export { InterpolController } from './Interpol.controller';

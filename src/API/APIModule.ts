@@ -6,7 +6,6 @@ import {
 
 import {
    ArtsakhController,
-   EsignController,
    InvestigativeCommitteeController,
    InterpolController,
    KadastrController,
@@ -35,7 +34,6 @@ import { ProtectedRequestLoggingInterceptor } from './Interceptors/ProtectedRequ
       SphereController,
       McsController,
       InterpolController,
-      EsignController,
       StatisticsController,
       InvestigativeCommitteeController,
    ],

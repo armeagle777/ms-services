@@ -4,7 +4,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DataTypes, Sequelize } from 'sequelize';
 
 import { ArtsakhService } from './Artsakh/Artsakh.service';
-import { EsignService } from './Esign/Esign.service';
 import { KadastrService } from './Kadastr/Kadastr.service';
 import { McsService } from './Mcs/Mcs.service';
 import { MojCesService } from './MojCes/MojCes.service';
@@ -37,7 +36,6 @@ const services = [
    SphereService,
    McsService,
    InterpolService,
-   EsignService,
    StatisticsService,
    InvestigativeCommitteeService,
    AuthService,
