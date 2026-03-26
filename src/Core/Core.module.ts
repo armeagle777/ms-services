@@ -15,7 +15,6 @@ import { SphereService } from './Sphere/Sphere.service';
 import { StatisticsService } from './Statistics/Statistics.service';
 import { TaxService } from './Tax/Tax.service';
 import { IntegrationModule } from 'src/Infrustructure/Services/Integration.module';
-import { ARTSAKH_SEQUELIZE } from 'src/Core/Artsakh/artsakh.tokens';
 import { SPHERE_MODEL, SPHERE_SEQUELIZE } from 'src/Core/Sphere/sphere.tokens';
 import {
    SAHMANAHATUM_SEQUELIZE,
@@ -26,6 +25,7 @@ import { InvestigativeCommitteeService } from './InvestigativeCommittee/Investig
 import { AuthService } from './Auth/Auth.service';
 import { DatabaseModule } from 'src/Infrustructure/Database/Database.module';
 import { RequestLoggingService } from './Logging/RequestLogging.service';
+import { ARTSAKH_CONNECTION } from 'src/Infrustructure/Database/database.tokens';
 
 const services = [
    PersonsService,
@@ -48,13 +48,13 @@ const helpers = [];
 
 const databaseProviders = [
    {
-      provide: ARTSAKH_SEQUELIZE,
+      provide: ARTSAKH_CONNECTION,
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
-         const host = configService.get<string>('DATABASE_HOST');
+         const host = configService.get<string>('ARTSAKH_DATABASE_HOST');
          const db = configService.get<string>('ARTSAKH_DATABASE_NAME');
-         const username = configService.get<string>('DATABASE_USERNAME');
-         const password = configService.get<string>('DATABASE_PASSWORD');
+         const username = configService.get<string>('ARTSAKH_DATABASE_USERNAME');
+         const password = configService.get<string>('ARTSAKH_DATABASE_USER_PASSWORD');
 
          return new Sequelize(db || '', username || '', password || '', {
             host,

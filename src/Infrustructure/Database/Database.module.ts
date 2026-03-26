@@ -2,6 +2,7 @@ import { Global, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Sequelize } from 'sequelize';
 import {
+   ARTSAKH_CONNECTION,
    AUTH_POSTGRES_SEQUELIZE,
    AUTH_REQUEST_LOG_MODEL,
    AUTH_USER_MODEL,
@@ -9,6 +10,7 @@ import {
 import { initAuthUserEntity } from './Entities/AuthUser.entity';
 import { initRequestLogEntity } from './Entities/RequestLog.entity';
 import { AuthDbMigrationService } from './Migrations/AuthDbMigration.service';
+import { ArtsakhDbProvider } from './ArtsakhDb/ArtsakhDb.provider';
 
 const databaseProviders = [
    {
@@ -44,7 +46,7 @@ const databaseProviders = [
 @Global()
 @Module({
    imports: [],
-   exports: [...databaseProviders, AuthDbMigrationService],
-   providers: [...databaseProviders, AuthDbMigrationService],
+   exports: [...databaseProviders, AuthDbMigrationService, ARTSAKH_CONNECTION],
+   providers: [...databaseProviders, AuthDbMigrationService, ArtsakhDbProvider],
 })
 export class DatabaseModule {}
