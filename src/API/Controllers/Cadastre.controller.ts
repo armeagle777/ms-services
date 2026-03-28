@@ -1,5 +1,6 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body } from '@nestjs/common';
 import { CadastreService } from 'src/Core/Cadastre/Cadastre.service';
+import { PropertyByCertificateDto } from 'src/API/DTO/Cadastre/property-by-certificate.dto';
 
 @Controller('cadastre')
 export class CadastreController {
@@ -10,9 +11,8 @@ export class CadastreController {
       return this.cadastreService.getPropertiesBySsn(params.ssn);
    }
 
-   @Get('property-by-certificate/:certificateNumber')
-   getPropertyByCertificate(@Param() params: any) {
-      const certificateNumber = params.certificateNumber;
-      return this.cadastreService.getPropertyByCertificate(certificateNumber);
+   @Post('property-by-certificate')
+   getPropertyByCertificate(@Body() dto: PropertyByCertificateDto) {
+      return this.cadastreService.getPropertyByCertificate(dto.certificateNumber, dto.searchBase);
    }
 }
