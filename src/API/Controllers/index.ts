@@ -9,3 +9,4 @@ export { SphereController } from './Sphere.controller';
 export { StatisticsController } from './Statistics.controller';
 export { TaxController } from './Tax.controller';
 export { InvestigativeCommitteeController } from './InvestigativeCommittee.controller';
+export { StateRegisterController } from './StateRegister.controller';

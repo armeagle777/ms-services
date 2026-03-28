@@ -75,6 +75,7 @@ export class EkengBasicClientIntegration {
 
       try {
          const response: AxiosResponse = await axios(config);
+         console.log('response>>>>>>>>>', response);
          const data = response.data;
 
          if (data?.error) {

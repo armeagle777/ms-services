@@ -25,6 +25,7 @@ import { AuthService } from './Auth/Auth.service';
 import { DatabaseModule } from 'src/Infrustructure/Database/Database.module';
 import { RequestLoggingService } from './Logging/RequestLogging.service';
 import { ARTSAKH_CONNECTION } from 'src/Infrustructure/Database/database.tokens';
+import { StateRegisterService } from './StateRegister/StateRegister.service';
 
 const services = [
    PersonsService,
@@ -40,6 +41,7 @@ const services = [
    InvestigativeCommitteeService,
    AuthService,
    RequestLoggingService,
+   StateRegisterService,
 ];
 
 const helpers = [];

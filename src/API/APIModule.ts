@@ -16,6 +16,7 @@ import {
    SphereController,
    StatisticsController,
    TaxController,
+   StateRegisterController,
 } from './Controllers';
 import { CoreModule } from 'src/Core/Core.module';
 import { BasicAuthGuard } from './Guards/BasicAuth.guard';
@@ -36,6 +37,7 @@ import { ProtectedRequestLoggingInterceptor } from './Interceptors/ProtectedRequ
       InterpolController,
       StatisticsController,
       InvestigativeCommitteeController,
+      StateRegisterController,
    ],
    providers: [BasicAuthGuard, ProtectedRequestLoggingInterceptor],
 })

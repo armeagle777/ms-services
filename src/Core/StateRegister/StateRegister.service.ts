@@ -3,7 +3,7 @@ import { EkengBasicClientIntegration } from 'src/Infrustructure/Services/EkengBa
 
 @Injectable()
 export class StateRegisterService {
-   private readonly endpoint = '/tax/ssn';
+   private readonly endpoint = '/eregister/json_rpc';
 
    constructor(private readonly ekengBasicClient: EkengBasicClientIntegration) {}
 
