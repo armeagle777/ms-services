@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { StateRegisterService } from 'src/Core/StateRegister/StateRegister.service';
 
 @Controller('state-register')

@@ -4,12 +4,14 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as https from 'https';
 import * as crypto from 'crypto';
+import axios, { AxiosResponse } from 'axios';
 
 @Injectable()
 export class CadastreClientIntegration {
    private readonly privateKey: string;
    private readonly certificate: string;
    private readonly agent: https.Agent;
+   private readonly baseUrl: string;
 
    constructor(private readonly configService: ConfigService) {
       const keyPath = './src/API/Certificates/migration_am.key';
@@ -23,6 +25,8 @@ export class CadastreClientIntegration {
          cert: this.certificate,
          rejectUnauthorized: false,
       });
+
+      this.baseUrl = this.configService.get<string>('CADASTRE_API_URL');
    }
 
    signData(data: string) {
@@ -37,7 +41,7 @@ export class CadastreClientIntegration {
       const signature = this.signData(postData);
 
       return {
-         method: 'post',
+         method: 'post' as const,
          url,
          headers: {
             'Content-Type': 'application/json',
@@ -48,6 +52,32 @@ export class CadastreClientIntegration {
          data: postData,
          httpsAgent: this.agent,
       };
+   }
+
+   /**
+    * Execute request and handle response
+    * @param url - Target URL
+    * @param body - Request body
+    * @param responsePath - Path to extract from response (e.g., 'cad_get_realty_owned_response.owned_realties')
+    * @returns Extracted response data or empty array on error
+    */
+   async executeRequest<T = any>(endpoint: string, body: Record<string, unknown>): Promise<T | []> {
+      const url = this.buildUrl(endpoint);
+      const config = this.buildRequestOptions(url, body);
+
+      try {
+         const response: AxiosResponse = await axios(config);
+         const data = response.data;
+
+         return data as T;
+      } catch (error) {
+         const message = error instanceof Error ? error.message : String(error);
+         throw new InternalServerErrorException(`Cadastre request failed: ${message}`);
+      }
+   }
+
+   private buildUrl(endpoint: string): string {
+      return `${this.baseUrl}${endpoint}`;
    }
 
    private resolveAndReadCertFile(filePath: string) {
