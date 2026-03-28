@@ -17,6 +17,7 @@ import {
    StatisticsController,
    TaxController,
    StateRegisterController,
+   CadastreController,
 } from './Controllers';
 import { CoreModule } from 'src/Core/Core.module';
 import { BasicAuthGuard } from './Guards/BasicAuth.guard';
@@ -38,6 +39,7 @@ import { ProtectedRequestLoggingInterceptor } from './Interceptors/ProtectedRequ
       StatisticsController,
       InvestigativeCommitteeController,
       StateRegisterController,
+      CadastreController,
    ],
    providers: [BasicAuthGuard, ProtectedRequestLoggingInterceptor],
 })

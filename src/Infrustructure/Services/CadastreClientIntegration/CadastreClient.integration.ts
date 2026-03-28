@@ -54,21 +54,13 @@ export class CadastreClientIntegration {
       };
    }
 
-   /**
-    * Execute request and handle response
-    * @param url - Target URL
-    * @param body - Request body
-    * @param responsePath - Path to extract from response (e.g., 'cad_get_realty_owned_response.owned_realties')
-    * @returns Extracted response data or empty array on error
-    */
    async executeRequest<T = any>(endpoint: string, body: Record<string, unknown>): Promise<T | []> {
-      const url = this.buildUrl(endpoint);
-      const config = this.buildRequestOptions(url, body);
-
       try {
+         const url = this.buildUrl(endpoint);
+         const config = this.buildRequestOptions(url, body);
          const response: AxiosResponse = await axios(config);
-         const data = response.data;
 
+         const data = response?.data;
          return data as T;
       } catch (error) {
          const message = error instanceof Error ? error.message : String(error);

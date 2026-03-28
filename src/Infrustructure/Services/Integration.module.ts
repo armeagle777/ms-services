@@ -5,6 +5,7 @@ import { HttpModule } from '@nestjs/axios';
 import { InterpolIntegration } from './InterpolIntegration/Interpol.integration';
 import { InvestigativeCommitteeIntegration } from 'src/Infrustructure/Services/InvestigativeCommitteeIntegration/InvestigativeCommitee.integration';
 import { EkengBasicClientIntegration } from './EkengBasicClientIntegration/EkengBasicClient.integration';
+import { CadastreClientIntegration } from './CadastreClientIntegration/CadastreClient.integration';
 
 @Module({
    imports: [HttpModule],
@@ -13,12 +14,14 @@ import { EkengBasicClientIntegration } from './EkengBasicClientIntegration/Ekeng
       InterpolIntegration,
       InvestigativeCommitteeIntegration,
       EkengBasicClientIntegration,
+      CadastreClientIntegration,
    ],
    providers: [
       // EkengIntegration,
       InterpolIntegration,
       InvestigativeCommitteeIntegration,
       EkengBasicClientIntegration,
+      CadastreClientIntegration,
    ],
 })
 export class IntegrationModule {}

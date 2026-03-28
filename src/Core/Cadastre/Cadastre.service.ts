@@ -7,11 +7,6 @@ import { SEARCH_BASES } from './Cadastre.constants';
 export class CadastreService {
    constructor(private readonly cadastreClient: CadastreClientIntegration) {}
 
-   /**
-    * Get properties by SSN
-    * @param ssn - Social Security Number
-    * @returns Array of owned realties
-    */
    async getPropertiesBySsn(ssn: string): Promise<any[]> {
       const endpoint = '/get_realty_owned/v1';
 
@@ -23,15 +18,9 @@ export class CadastreService {
 
       const result = await this.cadastreClient.executeRequest(endpoint, body);
 
-      return Array.isArray(result) ? result : [];
+      return result;
    }
 
-   /**
-    * Get property by certificate number
-    * @param certificateNumber - Certificate number
-    * @param searchBase - Search base type (default: 'cert_number')
-    * @returns Array of realties
-    */
    async getPropertyByCertificate(
       certificateNumber: string,
       searchBase: string = 'cert_number',
@@ -47,6 +36,6 @@ export class CadastreService {
 
       const result = await this.cadastreClient.executeRequest(endpoint, body);
 
-      return Array.isArray(result) ? result : [];
+      return result;
    }
 }
