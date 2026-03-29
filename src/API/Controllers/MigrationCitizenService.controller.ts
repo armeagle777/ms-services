@@ -3,8 +3,8 @@ import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { MigrationCitizenService } from 'src/Core/MigrationCitizenService/MigrationCitizenService.service';
 import { McsAddressQueryDto, McsSearchPersonsDto } from 'src/API/DTO/Mcs/mcs.dto';
 
-@Controller('mcs')
-export class McsController {
+@Controller('migration-citizenship-service')
+export class MigrationCitizenServiceController {
    constructor(private readonly mcsService: MigrationCitizenService) {}
 
    @Get('options/communities')

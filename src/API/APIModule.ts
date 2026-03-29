@@ -9,7 +9,6 @@ import {
    InvestigativeCommitteeController,
    InterpolController,
    KadastrController,
-   McsController,
    MojCesController,
    PersonsController,
    PetregistrController,
@@ -18,6 +17,7 @@ import {
    TaxController,
    StateRegisterController,
    CadastreController,
+   MigrationCitizenServiceController,
 } from './Controllers';
 import { CoreModule } from 'src/Core/Core.module';
 import { BasicAuthGuard } from './Guards/BasicAuth.guard';
@@ -34,12 +34,12 @@ import { ProtectedRequestLoggingInterceptor } from './Interceptors/ProtectedRequ
       MojCesController,
       TaxController,
       SphereController,
-      McsController,
       InterpolController,
       StatisticsController,
       InvestigativeCommitteeController,
       StateRegisterController,
       CadastreController,
+      MigrationCitizenServiceController,
    ],
    providers: [BasicAuthGuard, ProtectedRequestLoggingInterceptor],
 })
