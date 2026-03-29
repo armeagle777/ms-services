@@ -4,7 +4,7 @@ import { RevenueCommitteeService } from 'src/Core/RevenueCommittee/RevenueCommit
 import { SsnParamDto, TinParamDto } from 'src/API/DTO/Tax/params.dto';
 import { CompanyObligationsQueryDto } from 'src/API/DTO/Tax/tax.dto';
 
-@Controller('tax')
+@Controller('revenue-committee')
 export class RevenueCommitteeController {
    constructor(private readonly revenueCommittee: RevenueCommitteeService) {}
 

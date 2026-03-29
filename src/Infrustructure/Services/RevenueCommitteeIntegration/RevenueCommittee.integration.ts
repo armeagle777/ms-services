@@ -25,9 +25,9 @@ export class RevenueCommitteeIntegration {
          rejectUnauthorized: false,
       });
 
-      this.baseUrl = this.configService.get<string>('TAX_API_URL') || '';
+      this.baseUrl = this.configService.get<string>('REVENUE_COMMITTEE_API_URL') || '';
       if (!this.baseUrl) {
-         throw new InternalServerErrorException('TAX_API_URL is not configured');
+         throw new InternalServerErrorException('REVENUE_COMMITTEE_API_URL is not configured');
       }
    }
 

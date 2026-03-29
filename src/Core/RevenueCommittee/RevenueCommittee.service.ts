@@ -59,7 +59,7 @@ export class RevenueCommitteeService {
             timeout: 10000,
          }),
       );
-
+      console.log('response???????', response);
       const jsonObj = this.xmlParser.parse(response.data);
       const responseBody = jsonObj?.Envelope?.Body?.Response?.ResponseBody || {};
 
