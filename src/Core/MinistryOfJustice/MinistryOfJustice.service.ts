@@ -15,7 +15,7 @@ export class MinistryOfJusticeService {
 
    async getDebtorData(body: MojCesDebtorRequestDto): Promise<MojCesDebtorResponse[]> {
       const sanitizedProps = Object.fromEntries(
-         Object.entries(body || {}).filter(([_, v]) => Boolean(v)),
+         Object.entries(body || {}).filter(([, v]) => Boolean(v)),
       );
 
       const options = this.ministryOfJustice.buildRequestOptions(
