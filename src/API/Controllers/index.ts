@@ -2,7 +2,7 @@ export { ArtsakhController } from './Artsakh.controller';
 export { KadastrController } from './Kadastr.controller';
 export { MigrationCitizenServiceController } from './MigrationCitizenService.controller';
 export { InterpolController } from './Interpol.controller';
-export { MojCesController } from './MojCes.controller';
+export { MinistryOfJusticeController } from './MinistryOfJutice.controller';
 export { PersonsController } from './Persons.controller';
 export { PetregistrController } from './Petregistr.controller';
 export { SphereController } from './Sphere.controller';
