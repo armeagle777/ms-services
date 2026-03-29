@@ -1,11 +1,12 @@
 export { ArtsakhController } from './Artsakh.controller';
 export { KadastrController } from './Kadastr.controller';
-export { McsController } from './Mcs.controller';
+export { MigrationCitizenServiceController } from './MigrationCitizenService.controller';
 export { InterpolController } from './Interpol.controller';
-export { MojCesController } from './MojCes.controller';
+export { MinistryOfJusticeController } from './MinistryOfJutice.controller';
 export { PersonsController } from './Persons.controller';
-export { PetregistrController } from './Petregistr.controller';
 export { SphereController } from './Sphere.controller';
 export { StatisticsController } from './Statistics.controller';
-export { TaxController } from './Tax.controller';
+export { RevenueCommitteeController } from './RevenueCommittee.controller';
 export { InvestigativeCommitteeController } from './InvestigativeCommittee.controller';
+export { StateRegisterController } from './StateRegister.controller';
+export { CadastreController } from './Cadastre.controller';

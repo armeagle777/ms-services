@@ -5,14 +5,13 @@ import { DataTypes, Sequelize } from 'sequelize';
 
 import { ArtsakhService } from './Artsakh/Artsakh.service';
 import { KadastrService } from './Kadastr/Kadastr.service';
-import { McsService } from './Mcs/Mcs.service';
-import { MojCesService } from './MojCes/MojCes.service';
+import { MigrationCitizenService } from './MigrationCitizenService/MigrationCitizenService.service';
+import { MinistryOfJusticeService } from './MinistryOfJustice/MinistryOfJustice.service';
 import { InterpolService } from './Interpol/Interpol.service';
 import { PersonsService } from './Persons/Persons.service';
-import { PetregistrService } from './Petregistr/Petregistr.service';
 import { SphereService } from './Sphere/Sphere.service';
 import { StatisticsService } from './Statistics/Statistics.service';
-import { TaxService } from './Tax/Tax.service';
+import { RevenueCommitteeService } from './RevenueCommittee/RevenueCommittee.service';
 import { IntegrationModule } from 'src/Infrustructure/Services/Integration.module';
 import { SPHERE_MODEL, SPHERE_SEQUELIZE } from 'src/Core/Sphere/sphere.tokens';
 import {
@@ -25,21 +24,24 @@ import { AuthService } from './Auth/Auth.service';
 import { DatabaseModule } from 'src/Infrustructure/Database/Database.module';
 import { RequestLoggingService } from './Logging/RequestLogging.service';
 import { ARTSAKH_CONNECTION } from 'src/Infrustructure/Database/database.tokens';
+import { StateRegisterService } from './StateRegister/StateRegister.service';
+import { CadastreService } from './Cadastre/Cadastre.service';
 
 const services = [
    PersonsService,
-   PetregistrService,
    KadastrService,
    ArtsakhService,
-   MojCesService,
-   TaxService,
+   MinistryOfJusticeService,
+   RevenueCommitteeService,
    SphereService,
-   McsService,
+   MigrationCitizenService,
    InterpolService,
    StatisticsService,
    InvestigativeCommitteeService,
    AuthService,
    RequestLoggingService,
+   StateRegisterService,
+   CadastreService,
 ];
 
 const helpers = [];

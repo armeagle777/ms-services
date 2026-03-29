@@ -9,33 +9,35 @@ import {
    InvestigativeCommitteeController,
    InterpolController,
    KadastrController,
-   McsController,
-   MojCesController,
    PersonsController,
-   PetregistrController,
    SphereController,
    StatisticsController,
-   TaxController,
+   StateRegisterController,
+   CadastreController,
+   MigrationCitizenServiceController,
+   RevenueCommitteeController,
 } from './Controllers';
 import { CoreModule } from 'src/Core/Core.module';
 import { BasicAuthGuard } from './Guards/BasicAuth.guard';
 import { ProtectedRequestLoggingInterceptor } from './Interceptors/ProtectedRequestLogging.interceptor';
+import { MinistryOfJusticeController } from './Controllers/MinistryOfJutice.controller';
 // import { SignatureVerificationMiddleware } from './Middlewares';
 
 @Module({
    imports: [CoreModule],
    controllers: [
       PersonsController,
-      PetregistrController,
       KadastrController,
       ArtsakhController,
-      MojCesController,
-      TaxController,
+      MinistryOfJusticeController,
+      RevenueCommitteeController,
       SphereController,
-      McsController,
       InterpolController,
       StatisticsController,
       InvestigativeCommitteeController,
+      StateRegisterController,
+      CadastreController,
+      MigrationCitizenServiceController,
    ],
    providers: [BasicAuthGuard, ProtectedRequestLoggingInterceptor],
 })
