@@ -4,7 +4,6 @@ export { MigrationCitizenServiceController } from './MigrationCitizenService.con
 export { InterpolController } from './Interpol.controller';
 export { MinistryOfJusticeController } from './MinistryOfJutice.controller';
 export { PersonsController } from './Persons.controller';
-export { PetregistrController } from './Petregistr.controller';
 export { SphereController } from './Sphere.controller';
 export { StatisticsController } from './Statistics.controller';
 export { TaxController } from './Tax.controller';

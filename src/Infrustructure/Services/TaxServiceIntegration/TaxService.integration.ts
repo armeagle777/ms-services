@@ -6,7 +6,7 @@ import * as https from 'https';
 import * as crypto from 'crypto';
 
 @Injectable()
-export class MinistryOfJusticeIntegration {
+export class TaxServiceIntegration {
    private readonly privateKey: string;
    private readonly certificate: string;
    private readonly agent: https.Agent;
@@ -25,9 +25,9 @@ export class MinistryOfJusticeIntegration {
          rejectUnauthorized: false,
       });
 
-      this.baseUrl = this.configService.get<string>('MOJ_CES_API_URL') || '';
+      this.baseUrl = this.configService.get<string>('TAX_API_URL') || '';
       if (!this.baseUrl) {
-         throw new InternalServerErrorException('MOJ_CES_API_URL is not configured');
+         throw new InternalServerErrorException('TAX_API_URL is not configured');
       }
    }
 

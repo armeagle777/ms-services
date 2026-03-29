@@ -9,7 +9,6 @@ import { MigrationCitizenService } from './MigrationCitizenService/MigrationCiti
 import { MinistryOfJusticeService } from './MinistryOfJustice/MinistryOfJustice.service';
 import { InterpolService } from './Interpol/Interpol.service';
 import { PersonsService } from './Persons/Persons.service';
-import { PetregistrService } from './Petregistr/Petregistr.service';
 import { SphereService } from './Sphere/Sphere.service';
 import { StatisticsService } from './Statistics/Statistics.service';
 import { TaxService } from './Tax/Tax.service';
@@ -30,7 +29,6 @@ import { CadastreService } from './Cadastre/Cadastre.service';
 
 const services = [
    PersonsService,
-   PetregistrService,
    KadastrService,
    ArtsakhService,
    MinistryOfJusticeService,

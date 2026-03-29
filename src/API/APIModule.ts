@@ -10,7 +10,6 @@ import {
    InterpolController,
    KadastrController,
    PersonsController,
-   PetregistrController,
    SphereController,
    StatisticsController,
    TaxController,
@@ -28,7 +27,6 @@ import { MinistryOfJusticeController } from './Controllers/MinistryOfJutice.cont
    imports: [CoreModule],
    controllers: [
       PersonsController,
-      PetregistrController,
       KadastrController,
       ArtsakhController,
       MinistryOfJusticeController,
