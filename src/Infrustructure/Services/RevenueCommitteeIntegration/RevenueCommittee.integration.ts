@@ -6,7 +6,7 @@ import * as https from 'https';
 import * as crypto from 'crypto';
 
 @Injectable()
-export class TaxServiceIntegration {
+export class RevenueCommitteeIntegration {
    private readonly privateKey: string;
    private readonly certificate: string;
    private readonly agent: https.Agent;

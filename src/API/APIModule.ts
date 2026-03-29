@@ -12,10 +12,10 @@ import {
    PersonsController,
    SphereController,
    StatisticsController,
-   TaxController,
    StateRegisterController,
    CadastreController,
    MigrationCitizenServiceController,
+   RevenueCommitteeController,
 } from './Controllers';
 import { CoreModule } from 'src/Core/Core.module';
 import { BasicAuthGuard } from './Guards/BasicAuth.guard';
@@ -30,7 +30,7 @@ import { MinistryOfJusticeController } from './Controllers/MinistryOfJutice.cont
       KadastrController,
       ArtsakhController,
       MinistryOfJusticeController,
-      TaxController,
+      RevenueCommitteeController,
       SphereController,
       InterpolController,
       StatisticsController,

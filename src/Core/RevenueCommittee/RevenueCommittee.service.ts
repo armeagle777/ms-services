@@ -8,11 +8,11 @@ import { CompanyObligationsQueryDto } from 'src/API/DTO/Tax/tax.dto';
 import {
    TaxObligationsResponse,
    TaxPersonObligationsResponse,
-} from 'src/Core/Tax/interfaces/tax.interfaces';
-import { TaxServiceIntegration } from 'src/Infrustructure/Services/TaxServiceIntegration/TaxService.integration';
+} from 'src/Core/RevenueCommittee/interfaces/tax.interfaces';
+import { RevenueCommitteeIntegration } from 'src/Infrustructure/Services/RevenueCommitteeIntegration/RevenueCommittee.integration';
 
 @Injectable()
-export class TaxService {
+export class RevenueCommitteeService {
    private readonly xmlParser = new XMLParser({
       ignoreAttributes: false,
       removeNSPrefix: true,
@@ -21,7 +21,7 @@ export class TaxService {
    constructor(
       private readonly httpService: HttpService,
       private readonly configService: ConfigService,
-      private readonly taxServiceIntegration: TaxServiceIntegration,
+      private readonly revenueCommittee: RevenueCommitteeIntegration,
    ) {}
 
    async getCompanyObligations(
@@ -33,7 +33,7 @@ export class TaxService {
 
       const ekengRequestProps = { tin, startDate, endDate };
 
-      const options = this.taxServiceIntegration.buildRequestOptions(
+      const options = this.revenueCommittee.buildRequestOptions(
          '/tin_info_obligation/v1',
          ekengRequestProps,
       );

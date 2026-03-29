@@ -6,7 +6,7 @@ export { MinistryOfJusticeController } from './MinistryOfJutice.controller';
 export { PersonsController } from './Persons.controller';
 export { SphereController } from './Sphere.controller';
 export { StatisticsController } from './Statistics.controller';
-export { TaxController } from './Tax.controller';
+export { RevenueCommitteeController } from './RevenueCommittee.controller';
 export { InvestigativeCommitteeController } from './InvestigativeCommittee.controller';
 export { StateRegisterController } from './StateRegister.controller';
 export { CadastreController } from './Cadastre.controller';

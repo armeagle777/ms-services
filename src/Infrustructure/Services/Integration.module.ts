@@ -8,7 +8,7 @@ import { EkengBasicClientIntegration } from './EkengBasicClientIntegration/Ekeng
 import { CadastreClientIntegration } from './CadastreClientIntegration/CadastreClient.integration';
 import { MigrationCitizenServiceIntegration } from './MigrationCitizenServiceIntegration/MigrationCitizenService.integration';
 import { MinistryOfJusticeIntegration } from './MinistryOfJusticeIntegration/MinistryOfJustice.integration';
-import { TaxServiceIntegration } from './TaxServiceIntegration/TaxService.integration';
+import { RevenueCommitteeIntegration } from './RevenueCommitteeIntegration/RevenueCommittee.integration';
 
 @Module({
    imports: [HttpModule],
@@ -20,7 +20,7 @@ import { TaxServiceIntegration } from './TaxServiceIntegration/TaxService.integr
       CadastreClientIntegration,
       MigrationCitizenServiceIntegration,
       MinistryOfJusticeIntegration,
-      TaxServiceIntegration,
+      RevenueCommitteeIntegration,
    ],
    providers: [
       // EkengIntegration,
@@ -30,7 +30,7 @@ import { TaxServiceIntegration } from './TaxServiceIntegration/TaxService.integr
       CadastreClientIntegration,
       MigrationCitizenServiceIntegration,
       MinistryOfJusticeIntegration,
-      TaxServiceIntegration,
+      RevenueCommitteeIntegration,
    ],
 })
 export class IntegrationModule {}

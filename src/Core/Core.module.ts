@@ -11,7 +11,7 @@ import { InterpolService } from './Interpol/Interpol.service';
 import { PersonsService } from './Persons/Persons.service';
 import { SphereService } from './Sphere/Sphere.service';
 import { StatisticsService } from './Statistics/Statistics.service';
-import { TaxService } from './Tax/Tax.service';
+import { RevenueCommitteeService } from './RevenueCommittee/RevenueCommittee.service';
 import { IntegrationModule } from 'src/Infrustructure/Services/Integration.module';
 import { SPHERE_MODEL, SPHERE_SEQUELIZE } from 'src/Core/Sphere/sphere.tokens';
 import {
@@ -32,7 +32,7 @@ const services = [
    KadastrService,
    ArtsakhService,
    MinistryOfJusticeService,
-   TaxService,
+   RevenueCommitteeService,
    SphereService,
    MigrationCitizenService,
    InterpolService,
