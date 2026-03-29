@@ -1,3 +1,4 @@
 export class MojCesDebtorRequestDto {
-   [key: string]: unknown;
+   psn?: string;
+   tax_id?: string;
 }
