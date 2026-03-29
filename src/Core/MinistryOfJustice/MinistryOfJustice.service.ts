@@ -1,30 +1,25 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Injectable } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
 
 import { MojCesDebtorRequestDto } from 'src/API/DTO/MojCes/moj-ces.dto';
 import { MojCesDebtorResponse } from 'src/Core/MinistryOfJustice/interfaces/moj-ces.interfaces';
-import { EkengCertClientIntegration } from 'src/Infrustructure/Services/EkengCertClientIntegration/EkengCertClient.integration';
+import { MinistryOfJusticeIntegration } from 'src/Infrustructure/Services/MinistryOfJusticeIntegration/MinistryOfJustice.integration';
 
 @Injectable()
 export class MinistryOfJusticeService {
    constructor(
       private readonly httpService: HttpService,
-      private readonly configService: ConfigService,
-      private readonly ekeng: EkengCertClientIntegration,
+      private readonly ministryOfJustice: MinistryOfJusticeIntegration,
    ) {}
 
    async getDebtorData(body: MojCesDebtorRequestDto): Promise<MojCesDebtorResponse[]> {
-      const apiUrl = this.configService.get<string>('MOJ_CES_API_URL');
-      if (!apiUrl) throw new InternalServerErrorException('MOJ_CES_API_URL is not configured');
-
       const sanitizedProps = Object.fromEntries(
          Object.entries(body || {}).filter(([_, v]) => Boolean(v)),
       );
 
-      const options = this.ekeng.buildRequestOptions(
-         `${apiUrl}/get_debtor_info/v1`,
+      const options = this.ministryOfJustice.buildRequestOptions(
+         '/get_debtor_info/v1',
          sanitizedProps,
       );
 

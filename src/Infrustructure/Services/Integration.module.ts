@@ -7,6 +7,7 @@ import { InvestigativeCommitteeIntegration } from 'src/Infrustructure/Services/I
 import { EkengBasicClientIntegration } from './EkengBasicClientIntegration/EkengBasicClient.integration';
 import { CadastreClientIntegration } from './CadastreClientIntegration/CadastreClient.integration';
 import { MigrationCitizenServiceIntegration } from './MigrationCitizenServiceIntegration/MigrationCitizenService.integration';
+import { MinistryOfJusticeIntegration } from './MinistryOfJusticeIntegration/MinistryOfJustice.integration';
 
 @Module({
    imports: [HttpModule],
@@ -17,6 +18,7 @@ import { MigrationCitizenServiceIntegration } from './MigrationCitizenServiceInt
       EkengBasicClientIntegration,
       CadastreClientIntegration,
       MigrationCitizenServiceIntegration,
+      MinistryOfJusticeIntegration,
    ],
    providers: [
       // EkengIntegration,
@@ -25,6 +27,7 @@ import { MigrationCitizenServiceIntegration } from './MigrationCitizenServiceInt
       EkengBasicClientIntegration,
       CadastreClientIntegration,
       MigrationCitizenServiceIntegration,
+      MinistryOfJusticeIntegration,
    ],
 })
 export class IntegrationModule {}
