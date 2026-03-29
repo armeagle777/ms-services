@@ -9,7 +9,6 @@ import {
    InvestigativeCommitteeController,
    InterpolController,
    KadastrController,
-   MojCesController,
    PersonsController,
    PetregistrController,
    SphereController,
@@ -22,6 +21,7 @@ import {
 import { CoreModule } from 'src/Core/Core.module';
 import { BasicAuthGuard } from './Guards/BasicAuth.guard';
 import { ProtectedRequestLoggingInterceptor } from './Interceptors/ProtectedRequestLogging.interceptor';
+import { MinistryOfJusticeController } from './Controllers/MinistryOfJutice.controller';
 // import { SignatureVerificationMiddleware } from './Middlewares';
 
 @Module({
@@ -31,7 +31,7 @@ import { ProtectedRequestLoggingInterceptor } from './Interceptors/ProtectedRequ
       PetregistrController,
       KadastrController,
       ArtsakhController,
-      MojCesController,
+      MinistryOfJusticeController,
       TaxController,
       SphereController,
       InterpolController,
