@@ -6,6 +6,7 @@ import { InterpolIntegration } from './InterpolIntegration/Interpol.integration'
 import { InvestigativeCommitteeIntegration } from 'src/Infrustructure/Services/InvestigativeCommitteeIntegration/InvestigativeCommitee.integration';
 import { EkengBasicClientIntegration } from './EkengBasicClientIntegration/EkengBasicClient.integration';
 import { CadastreClientIntegration } from './CadastreClientIntegration/CadastreClient.integration';
+import { MigrationCitizenServiceIntegration } from './MigrationCitizenServiceIntegration/MigrationCitizenService.integration';
 
 @Module({
    imports: [HttpModule],
@@ -15,6 +16,7 @@ import { CadastreClientIntegration } from './CadastreClientIntegration/CadastreC
       InvestigativeCommitteeIntegration,
       EkengBasicClientIntegration,
       CadastreClientIntegration,
+      MigrationCitizenServiceIntegration,
    ],
    providers: [
       // EkengIntegration,
@@ -22,6 +24,7 @@ import { CadastreClientIntegration } from './CadastreClientIntegration/CadastreC
       InvestigativeCommitteeIntegration,
       EkengBasicClientIntegration,
       CadastreClientIntegration,
+      MigrationCitizenServiceIntegration,
    ],
 })
 export class IntegrationModule {}

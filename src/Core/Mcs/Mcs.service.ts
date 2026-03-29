@@ -1,38 +1,33 @@
-import { HttpService } from '@nestjs/axios';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { firstValueFrom } from 'rxjs';
 
 import { McsSearchPersonsDto } from 'src/API/DTO/Mcs/mcs.dto';
 import { McsCatalogItem, McsPersonRecord } from 'src/Core/Mcs/interfaces/mcs.interfaces';
+import { MigrationCitizenServiceIntegration } from 'src/Infrustructure/Services/MigrationCitizenServiceIntegration/MigrationCitizenService.integration';
 
 @Injectable()
 export class McsService {
-   constructor(
-      private readonly httpService: HttpService,
-      private readonly configService: ConfigService,
-   ) {}
+   constructor(private readonly mcsClient: MigrationCitizenServiceIntegration) {}
 
    async getCommunities(region?: string): Promise<McsCatalogItem[] | null> {
       if (!region) return null;
 
-      const response = await firstValueFrom(
-         this.httpService.request(this.buildAddressOptions(`community?region=${region}`)),
+      const result = await this.mcsClient.executeAddressRequest(
+         `community?region=${region}`,
+         'rcr_catalog',
       );
 
-      return response.data?.rcr_catalog || [];
+      return Array.isArray(result) ? result : [];
    }
 
    async getResidences(region?: string, community?: string): Promise<McsCatalogItem[] | null> {
       if (!region || !community) return null;
 
-      const response = await firstValueFrom(
-         this.httpService.request(
-            this.buildAddressOptions(`residence?region=${region}&community=${community}`),
-         ),
+      const result = await this.mcsClient.executeAddressRequest(
+         `residence?region=${region}&community=${community}`,
+         'rcr_catalog',
       );
 
-      return response.data?.rcr_catalog || [];
+      return Array.isArray(result) ? result : [];
    }
 
    async getStreets(
@@ -44,15 +39,12 @@ export class McsService {
          return null;
       }
 
-      const response = await firstValueFrom(
-         this.httpService.request(
-            this.buildAddressOptions(
-               `street?region=${region}&community=${community}${residence ? `&residence=${residence}` : ''}`,
-            ),
-         ),
+      const result = await this.mcsClient.executeAddressRequest(
+         `street?region=${region}&community=${community}${residence ? `&residence=${residence}` : ''}`,
+         's_catalog.streets',
       );
 
-      return response.data?.s_catalog?.streets || [];
+      return Array.isArray(result) ? result : [];
    }
 
    async searchPersons(body: McsSearchPersonsDto): Promise<McsPersonRecord[]> {
@@ -86,10 +78,8 @@ export class McsService {
          registered_addresses: 'ALL',
          ssn_list: pnums,
       };
-      const response = await firstValueFrom(
-         this.httpService.request(this.buildPersonsOptions('by-ssn-list', body)),
-      );
-      return response.data?.avv_persons || [];
+      const result = await this.mcsClient.executePersonsRequest('by-ssn-list', body, 'avv_persons');
+      return Array.isArray(result) ? result : [];
    }
 
    private async getPersonsByAddress(filters: McsSearchPersonsDto): Promise<McsPersonRecord[]> {
@@ -118,13 +108,11 @@ export class McsService {
          ...(apartment ? { apartment } : {}),
       };
 
-      const response = await firstValueFrom(
-         this.httpService.request(this.buildPersonsOptions('by-addr', body)),
-      );
+      const result = await this.mcsClient.executePersonsRequest('by-addr', body, 'ssn_list');
 
-      if (!response.data?.ssn_list?.length) return [];
+      if (!Array.isArray(result) || !result.length) return [];
 
-      const personsDetailData = await this.getPersonsDetailsBySsnList(response.data.ssn_list);
+      const personsDetailData = await this.getPersonsDetailsBySsnList(result);
 
       if (filters?.age?.min || filters?.age?.max || filters?.gender) {
          return this.filterPersons(personsDetailData, {
@@ -176,13 +164,11 @@ export class McsService {
          },
       };
 
-      const response = await firstValueFrom(
-         this.httpService.request(this.buildPersonsOptions('by-birth-addr', body)),
-      );
+      const result = await this.mcsClient.executePersonsRequest('by-birth-addr', body, 'ssn_list');
 
-      if (!response.data?.ssn_list?.length) return [];
+      if (!Array.isArray(result) || !result.length) return [];
 
-      const personsDetailData = await this.getPersonsDetailsBySsnList(response.data.ssn_list);
+      const personsDetailData = await this.getPersonsDetailsBySsnList(result);
 
       if (filters?.age?.min || filters?.age?.max || filters?.gender) {
          return this.filterPersons(personsDetailData, {
@@ -218,13 +204,11 @@ export class McsService {
    ): Promise<McsPersonRecord[]> {
       const body = this.buildPersonSearchByAddressBody(filters, requiredFields);
 
-      const response = await firstValueFrom(
-         this.httpService.request(this.buildPersonsOptions(type, body)),
-      );
+      const result = await this.mcsClient.executePersonsRequest(type, body, 'ssn_list');
 
-      if (!response.data?.ssn_list?.length) return [];
+      if (!Array.isArray(result) || !result.length) return [];
 
-      const personsDetailData = await this.getPersonsDetailsBySsnList(response.data.ssn_list);
+      const personsDetailData = await this.getPersonsDetailsBySsnList(result);
 
       if (filters?.age?.min || filters?.age?.max || filters?.gender) {
          return this.filterPersons(personsDetailData, {
@@ -234,27 +218,6 @@ export class McsService {
       }
 
       return personsDetailData;
-   }
-
-   private buildAddressOptions(path: string) {
-      const baseUrl = this.configService.get<string>('MCS_ADDRESS_CATALOGS_API_URL');
-      return {
-         method: 'GET',
-         maxBodyLength: Infinity,
-         url: `${baseUrl}/${path}`,
-         headers: { 'Content-Type': 'application/json' },
-      };
-   }
-
-   private buildPersonsOptions(path: string, body: Record<string, unknown>) {
-      const baseUrl = this.configService.get<string>('MCS_SEARCH_PERSONS_API_URL');
-      return {
-         method: 'POST',
-         maxBodyLength: Infinity,
-         url: `${baseUrl}/${path}`,
-         headers: { 'Content-Type': 'application/json' },
-         data: JSON.stringify(body),
-      };
    }
 
    private buildPersonSearchByAddressBody(
