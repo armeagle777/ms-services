@@ -5,7 +5,7 @@ import { DataTypes, Sequelize } from 'sequelize';
 
 import { ArtsakhService } from './Artsakh/Artsakh.service';
 import { KadastrService } from './Kadastr/Kadastr.service';
-import { McsService } from './Mcs/Mcs.service';
+import { MigrationCitizenService } from './MigrationCitizenService/MigrationCitizenService.service';
 import { MojCesService } from './MojCes/MojCes.service';
 import { InterpolService } from './Interpol/Interpol.service';
 import { PersonsService } from './Persons/Persons.service';
@@ -36,7 +36,7 @@ const services = [
    MojCesService,
    TaxService,
    SphereService,
-   McsService,
+   MigrationCitizenService,
    InterpolService,
    StatisticsService,
    InvestigativeCommitteeService,

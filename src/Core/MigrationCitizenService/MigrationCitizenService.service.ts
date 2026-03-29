@@ -1,11 +1,14 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 
 import { McsSearchPersonsDto } from 'src/API/DTO/Mcs/mcs.dto';
-import { McsCatalogItem, McsPersonRecord } from 'src/Core/Mcs/interfaces/mcs.interfaces';
+import {
+   McsCatalogItem,
+   McsPersonRecord,
+} from 'src/Core/MigrationCitizenService/interfaces/mcs.interfaces';
 import { MigrationCitizenServiceIntegration } from 'src/Infrustructure/Services/MigrationCitizenServiceIntegration/MigrationCitizenService.integration';
 
 @Injectable()
-export class McsService {
+export class MigrationCitizenService {
    constructor(private readonly mcsClient: MigrationCitizenServiceIntegration) {}
 
    async getCommunities(region?: string): Promise<McsCatalogItem[] | null> {
