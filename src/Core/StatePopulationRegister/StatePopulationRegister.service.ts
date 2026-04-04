@@ -8,7 +8,7 @@ import {
 } from 'src/Core/Persons/interfaces/persons.interfaces';
 
 @Injectable()
-export class StatePopulationRegister {
+export class StatePopulationRegisterService {
    constructor(private readonly statePopulationRegister: StatePopulationRegisterIntegration) {}
 
    async getPersonBySsn(ssn: string): Promise<PersonResponse | []> {
