@@ -1,25 +1,15 @@
 import { HttpService } from '@nestjs/axios';
-import {
-   BadRequestException,
-   Injectable,
-   InternalServerErrorException,
-   NotImplementedException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 import qs from 'qs';
 import { XMLParser } from 'fast-xml-parser';
 import { InvestigativeCommitteeIntegration } from 'src/Infrustructure/Services/InvestigativeCommitteeIntegration/InvestigativeCommitee.integration';
+import { StatePopulationRegisterIntegration } from 'src/Infrustructure/Services/StatePopulationRegisterIntegration/StatePopulationRegister.integration';
 
-import {
-   BordercrossRequestDto,
-   QkagInfoRequestDto,
-   SearchPersonsRequestDto,
-} from 'src/API/DTO/Persons';
+import { BordercrossRequestDto, QkagInfoRequestDto } from 'src/API/DTO/Persons';
 import {
    BordercrossResponse,
-   PersonResponse,
-   PersonSearchResponse,
    PoliceResponse,
    QkagDocumentResponse,
    RoadPoliceResponse,
@@ -39,70 +29,8 @@ export class PersonsService {
       private readonly httpService: HttpService,
       private readonly configService: ConfigService,
       private readonly icIntegration: InvestigativeCommitteeIntegration,
+      private readonly statePopulationRegister: StatePopulationRegisterIntegration,
    ) {}
-
-   async downloadBprInfo() {
-      // _body: Record<string, unknown>
-      throw new NotImplementedException('File download logic is not migrated.');
-   }
-
-   async getPersonBySsn(ssn: string): Promise<PersonResponse | []> {
-      const bprUrl = this.configService.get<string>('BPR_URL');
-      if (!bprUrl) throw new InternalServerErrorException('BPR_URL is not configured');
-
-      const queryData = qs.stringify({ psn: ssn, addresses: 'ALL' });
-
-      const response = await firstValueFrom(
-         this.httpService.post(bprUrl, queryData, {
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-         }),
-      );
-
-      const { status, result } = response.data || {};
-      if (status === 'failed' || !Array.isArray(result) || result.length === 0) return [];
-
-      const person = result[0] || {};
-      const { AVVDocuments, AVVAddresses, ...restInfo } = person;
-
-      const addresses = AVVAddresses?.AVVAddress || [];
-      const documents = AVVDocuments?.Document || [];
-
-      return { addresses, documents, ...restInfo } as PersonResponse;
-   }
-
-   async getSearchedPersons(body: SearchPersonsRequestDto): Promise<PersonSearchResponse[]> {
-      const bprUrl = this.configService.get<string>('BPR_URL');
-      if (!bprUrl) throw new InternalServerErrorException('BPR_URL is not configured');
-
-      const { firstName, lastName, patronomicName, birthDate, documentNumber, ssn } = body || {};
-
-      const searchData: Record<string, string> = { addresses: 'ALL' };
-
-      if (ssn) searchData.psn = ssn;
-      if (firstName) searchData.first_name = firstName;
-      if (lastName) searchData.last_name = lastName;
-      if (patronomicName) searchData.middle_name = patronomicName;
-      if (birthDate) searchData.birth_date = birthDate;
-      if (documentNumber) searchData.docnum = documentNumber;
-
-      const queryData = qs.stringify(searchData);
-
-      const response = await firstValueFrom(
-         this.httpService.post(bprUrl, queryData, {
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-         }),
-      );
-
-      const { status, result } = response.data || {};
-      if (status === 'failed' || !Array.isArray(result)) return [];
-
-      return result.map((person: Record<string, unknown>) => {
-         const { AVVDocuments, AVVAddresses, ...restInfo } = person as any;
-         const addresses = AVVAddresses?.AVVAddress || [];
-         const documents = AVVDocuments?.Document || [];
-         return { addresses, documents, ...restInfo } as PersonSearchResponse;
-      });
-   }
 
    async getQkagInfoBySsn(ssn: string, body: QkagInfoRequestDto): Promise<QkagDocumentResponse[]> {
       const qkagUrl = this.configService.get<string>('QKAG_URL');

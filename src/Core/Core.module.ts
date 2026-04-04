@@ -26,6 +26,7 @@ import { RequestLoggingService } from './Logging/RequestLogging.service';
 import { ARTSAKH_CONNECTION } from 'src/Infrustructure/Database/database.tokens';
 import { StateRegisterService } from './StateRegister/StateRegister.service';
 import { CadastreService } from './Cadastre/Cadastre.service';
+import { StatePopulationRegisterService } from './StatePopulationRegister/StatePopulationRegister.service';
 
 const services = [
    PersonsService,
@@ -42,6 +43,7 @@ const services = [
    RequestLoggingService,
    StateRegisterService,
    CadastreService,
+   StatePopulationRegisterService,
 ];
 
 const helpers = [];

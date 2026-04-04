@@ -4,7 +4,6 @@ import { PersonsService } from 'src/Core/Persons/Persons.service';
 import {
    BordercrossRequestDto,
    QkagInfoRequestDto,
-   SearchPersonsRequestDto,
    VehicleSearchQueryDto,
 } from 'src/API/DTO/Persons';
 import {
@@ -18,25 +17,6 @@ import {
 @Controller('persons')
 export class PersonsController {
    constructor(private readonly personsService: PersonsService) {}
-
-   @Get(':ssn/bpr')
-   getPersonBySsn(@Param() params: SsnParamDto) {
-      return this.personsService.getPersonBySsn(params.ssn);
-   }
-
-   @Post('download')
-   downloadBprInfo() {
-      // @Body() body: Record<string, unknown>
-      return this.personsService
-         .downloadBprInfo
-         // body
-         ();
-   }
-
-   @Post('bpr')
-   getSearchedPersons(@Body() body: SearchPersonsRequestDto) {
-      return this.personsService.getSearchedPersons(body);
-   }
 
    @Get(':ssn/tax')
    getTaxBySsn(@Param() params: SsnParamDto) {
