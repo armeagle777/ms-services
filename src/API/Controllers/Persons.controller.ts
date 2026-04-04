@@ -4,7 +4,6 @@ import { PersonsService } from 'src/Core/Persons/Persons.service';
 import {
    BordercrossRequestDto,
    QkagInfoRequestDto,
-   SearchPersonsRequestDto,
    VehicleSearchQueryDto,
 } from 'src/API/DTO/Persons';
 import {
