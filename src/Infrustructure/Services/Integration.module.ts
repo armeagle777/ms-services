@@ -9,6 +9,7 @@ import { CadastreClientIntegration } from './CadastreClientIntegration/CadastreC
 import { MigrationCitizenServiceIntegration } from './MigrationCitizenServiceIntegration/MigrationCitizenService.integration';
 import { MinistryOfJusticeIntegration } from './MinistryOfJusticeIntegration/MinistryOfJustice.integration';
 import { RevenueCommitteeIntegration } from './RevenueCommitteeIntegration/RevenueCommittee.integration';
+import { StatePopulationRegisterIntegration } from './StatePopulationRegisterIntegration/StatePopulationRegister.integration';
 
 @Module({
    imports: [HttpModule],
@@ -21,6 +22,7 @@ import { RevenueCommitteeIntegration } from './RevenueCommitteeIntegration/Reven
       MigrationCitizenServiceIntegration,
       MinistryOfJusticeIntegration,
       RevenueCommitteeIntegration,
+      StatePopulationRegisterIntegration,
    ],
    providers: [
       // EkengIntegration,
@@ -31,6 +33,7 @@ import { RevenueCommitteeIntegration } from './RevenueCommitteeIntegration/Reven
       MigrationCitizenServiceIntegration,
       MinistryOfJusticeIntegration,
       RevenueCommitteeIntegration,
+      StatePopulationRegisterIntegration,
    ],
 })
 export class IntegrationModule {}
