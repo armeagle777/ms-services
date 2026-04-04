@@ -17,6 +17,7 @@ import {
    MigrationCitizenServiceController,
    RevenueCommitteeController,
    StatePopulationRegisterController,
+   TaxServiceController,
 } from './Controllers';
 import { CoreModule } from 'src/Core/Core.module';
 import { BasicAuthGuard } from './Guards/BasicAuth.guard';
@@ -40,6 +41,7 @@ import { MinistryOfJusticeController } from './Controllers/MinistryOfJutice.cont
       CadastreController,
       MigrationCitizenServiceController,
       StatePopulationRegisterController,
+      TaxServiceController,
    ],
    providers: [BasicAuthGuard, ProtectedRequestLoggingInterceptor],
 })

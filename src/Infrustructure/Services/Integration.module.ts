@@ -10,6 +10,7 @@ import { MigrationCitizenServiceIntegration } from './MigrationCitizenServiceInt
 import { MinistryOfJusticeIntegration } from './MinistryOfJusticeIntegration/MinistryOfJustice.integration';
 import { RevenueCommitteeIntegration } from './RevenueCommitteeIntegration/RevenueCommittee.integration';
 import { StatePopulationRegisterIntegration } from './StatePopulationRegisterIntegration/StatePopulationRegister.integration';
+import { TaxServiceIntegration } from './TaxServiceIntegration/TaxService.integration';
 
 @Module({
    imports: [HttpModule],
@@ -23,6 +24,7 @@ import { StatePopulationRegisterIntegration } from './StatePopulationRegisterInt
       MinistryOfJusticeIntegration,
       RevenueCommitteeIntegration,
       StatePopulationRegisterIntegration,
+      TaxServiceIntegration,
    ],
    providers: [
       // EkengIntegration,
@@ -34,6 +36,7 @@ import { StatePopulationRegisterIntegration } from './StatePopulationRegisterInt
       MinistryOfJusticeIntegration,
       RevenueCommitteeIntegration,
       StatePopulationRegisterIntegration,
+      TaxServiceIntegration,
    ],
 })
 export class IntegrationModule {}

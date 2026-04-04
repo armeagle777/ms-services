@@ -11,3 +11,4 @@ export { InvestigativeCommitteeController } from './InvestigativeCommittee.contr
 export { StateRegisterController } from './StateRegister.controller';
 export { CadastreController } from './Cadastre.controller';
 export { StatePopulationRegisterController } from './StatePopulationRegister.controller';
+export { TaxServiceController } from './TaxService.controller';
