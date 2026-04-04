@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosResponse } from 'axios';
-import qs from 'qs';
+import { stringify as qsStringify } from 'qs';
 
 @Injectable()
 export class StatePopulationRegisterIntegration {
@@ -22,7 +22,7 @@ export class StatePopulationRegisterIntegration {
     * @returns Request configuration object
     */
    buildGetPersonBySsnOptions(ssn: string) {
-      const queryData = qs.stringify({ psn: ssn, addresses: 'ALL' });
+      const queryData = qsStringify({ psn: ssn, addresses: 'ALL' });
       return {
          method: 'POST' as const,
          url: this.baseUrl,
@@ -37,7 +37,7 @@ export class StatePopulationRegisterIntegration {
     * @returns Request configuration object
     */
    buildSearchPersonsOptions(searchData: Record<string, unknown>) {
-      const queryData = qs.stringify({ ...searchData, addresses: 'ALL' });
+      const queryData = qsStringify({ ...searchData, addresses: 'ALL' });
       return {
          method: 'POST' as const,
          url: this.baseUrl,
