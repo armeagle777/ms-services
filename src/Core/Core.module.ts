@@ -13,6 +13,7 @@ import { SphereService } from './Sphere/Sphere.service';
 import { StatisticsService } from './Statistics/Statistics.service';
 import { RevenueCommitteeService } from './RevenueCommittee/RevenueCommittee.service';
 import { TaxService } from './TaxService/TaxService.service';
+import { CivilActsRegistrationService } from './CivilActsRegistration/CivilActsRegistration.service';
 import { IntegrationModule } from 'src/Infrustructure/Services/Integration.module';
 import { SPHERE_MODEL, SPHERE_SEQUELIZE } from 'src/Core/Sphere/sphere.tokens';
 import {
@@ -36,6 +37,7 @@ const services = [
    MinistryOfJusticeService,
    RevenueCommitteeService,
    TaxService,
+   CivilActsRegistrationService,
    SphereService,
    MigrationCitizenService,
    InterpolService,

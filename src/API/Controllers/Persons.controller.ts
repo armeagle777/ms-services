@@ -18,11 +18,6 @@ import {
 export class PersonsController {
    constructor(private readonly personsService: PersonsService) {}
 
-   @Get(':ssn/tax')
-   getTaxBySsn(@Param() params: SsnParamDto) {
-      return this.personsService.getTaxBySsn(params.ssn);
-   }
-
    @Get(':ssn/roadpolice')
    getRoadpoliceBySsn(@Param() params: SsnParamDto) {
       return this.personsService.getRoadpoliceBySsn(params.ssn);

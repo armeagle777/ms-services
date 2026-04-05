@@ -6,6 +6,7 @@ import qs from 'qs';
 import { XMLParser } from 'fast-xml-parser';
 import { InvestigativeCommitteeIntegration } from 'src/Infrustructure/Services/InvestigativeCommitteeIntegration/InvestigativeCommitee.integration';
 import { StatePopulationRegisterIntegration } from 'src/Infrustructure/Services/StatePopulationRegisterIntegration/StatePopulationRegister.integration';
+import { CivilActsRegistrationService } from 'src/Core/CivilActsRegistration/CivilActsRegistration.service';
 
 import { BordercrossRequestDto, QkagInfoRequestDto } from 'src/API/DTO/Persons';
 import {
@@ -30,49 +31,8 @@ export class PersonsService {
       private readonly configService: ConfigService,
       private readonly icIntegration: InvestigativeCommitteeIntegration,
       private readonly statePopulationRegister: StatePopulationRegisterIntegration,
+      private readonly civilActsRegistration: CivilActsRegistrationService,
    ) {}
-
-   async getQkagInfoBySsn(ssn: string, body: QkagInfoRequestDto): Promise<QkagDocumentResponse[]> {
-      const qkagUrl = this.configService.get<string>('QKAG_URL');
-      if (!qkagUrl) throw new InternalServerErrorException('QKAG_URL is not configured');
-
-      const { firstName, lastName } = body || {};
-      if (!firstName || !lastName) throw new BadRequestException('Missing fields');
-
-      const queryData = qs.stringify(
-         {
-            ssn,
-            first_name: firstName,
-            last_name: lastName,
-         },
-         { encode: true },
-      );
-
-      const response = await firstValueFrom(
-         this.httpService.post(qkagUrl, queryData, {
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-         }),
-      );
-
-      const { status, result } = response.data || {};
-      const documents = Object.values(result || {});
-      if (status === 'failed' || documents.length === 0) return [];
-
-      return documents as QkagDocumentResponse[];
-   }
-
-   async getTaxBySsn(ssn: string): Promise<TaxPayerInfo[] | []> {
-      const taxUrl = this.configService.get<string>('TAX_URL');
-      if (!taxUrl) throw new InternalServerErrorException('TAX_URL is not configured');
-
-      const response = await firstValueFrom(this.httpService.post(taxUrl, { ssn }));
-      const { data } = response;
-
-      const taxPayersInfo = data?.taxPayersInfo?.taxPayerInfo;
-      if (!taxPayersInfo) return [];
-
-      return taxPayersInfo as TaxPayerInfo[];
-   }
 
    async getRoadpoliceBySsn(psn: string): Promise<RoadPoliceResponse> {
       const licenseResponse = await firstValueFrom(
