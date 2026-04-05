@@ -1,14 +1,13 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 
-import { PersonsService } from 'src/Core/Persons/Persons.service';
 import { VehicleSearchQueryDto } from 'src/API/DTO/Persons';
 import {
-   HvhhParamDto,
-   PoliceSearchQueryDto,
    PnumParamDto,
+   PoliceSearchQueryDto,
    SsnParamDto,
    VehicleParamDto,
 } from 'src/API/DTO/Persons/params.dto';
+import { PersonsService } from 'src/Core/Persons/Persons.service';
 
 @Controller('persons')
 export class PersonsController {

@@ -1,27 +1,27 @@
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { DataTypes, Sequelize } from 'sequelize';
+import { Sequelize } from 'sequelize';
 
+import { DatabaseModule } from 'src/Infrustructure/Database/Database.module';
+import { ARTSAKH_CONNECTION } from 'src/Infrustructure/Database/database.tokens';
+import { IntegrationModule } from 'src/Infrustructure/Services/Integration.module';
 import { ArtsakhService } from './Artsakh/Artsakh.service';
+import { AuthService } from './Auth/Auth.service';
+import { CadastreService } from './Cadastre/Cadastre.service';
+import { CivilActsRegistrationService } from './CivilActsRegistration/CivilActsRegistration.service';
+import { InterpolService } from './Interpol/Interpol.service';
+import { InvestigativeCommitteeService } from './InvestigativeCommittee/InvestigativeCommittee.service';
 import { KadastrService } from './Kadastr/Kadastr.service';
+import { RequestLoggingService } from './Logging/RequestLogging.service';
 import { MigrationCitizenService } from './MigrationCitizenService/MigrationCitizenService.service';
 import { MinistryOfJusticeService } from './MinistryOfJustice/MinistryOfJustice.service';
-import { InterpolService } from './Interpol/Interpol.service';
 import { PersonsService } from './Persons/Persons.service';
 import { RevenueCommitteeService } from './RevenueCommittee/RevenueCommittee.service';
-import { TaxService } from './TaxService/TaxService.service';
-import { CivilActsRegistrationService } from './CivilActsRegistration/CivilActsRegistration.service';
 import { SektService } from './Sekt/Sekt.service';
-import { IntegrationModule } from 'src/Infrustructure/Services/Integration.module';
-import { InvestigativeCommitteeService } from './InvestigativeCommittee/InvestigativeCommittee.service';
-import { AuthService } from './Auth/Auth.service';
-import { DatabaseModule } from 'src/Infrustructure/Database/Database.module';
-import { RequestLoggingService } from './Logging/RequestLogging.service';
-import { ARTSAKH_CONNECTION } from 'src/Infrustructure/Database/database.tokens';
-import { StateRegisterService } from './StateRegister/StateRegister.service';
-import { CadastreService } from './Cadastre/Cadastre.service';
 import { StatePopulationRegisterService } from './StatePopulationRegister/StatePopulationRegister.service';
+import { StateRegisterService } from './StateRegister/StateRegister.service';
+import { TaxService } from './TaxService/TaxService.service';
 
 const services = [
    PersonsService,
