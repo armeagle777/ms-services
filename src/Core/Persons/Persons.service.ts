@@ -1,17 +1,15 @@
 import { HttpService } from '@nestjs/axios';
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { firstValueFrom } from 'rxjs';
 import qs from 'qs';
+import { firstValueFrom } from 'rxjs';
 import { InvestigativeCommitteeIntegration } from 'src/Infrustructure/Services/InvestigativeCommitteeIntegration/InvestigativeCommitee.integration';
 
-import { BordercrossRequestDto } from 'src/API/DTO/Persons';
 import {
-   BordercrossResponse,
+   PetregistrCompanyResponse,
    PoliceResponse,
    RoadPoliceResponse,
    VehicleSearchResponse,
-   PetregistrCompanyResponse,
 } from 'src/Core/Persons/interfaces/persons.interfaces';
 
 @Injectable()
@@ -76,28 +74,6 @@ export class PersonsService {
       if (!data?.result) return [];
 
       return data.result.company as PetregistrCompanyResponse;
-   }
-
-   private buildBordercrossRequest({
-      passportNumber,
-      citizenship,
-   }: {
-      passportNumber: string;
-      citizenship: string;
-   }) {
-      const axiosData = `<?xml version="1.0" encoding="UTF-8"?>\r\n <data>\r\n    <citizenship>${citizenship}</citizenship>\r\n    <passportNumber>${passportNumber}</passportNumber>\r\n </data>`;
-
-      return {
-         method: 'post',
-         maxBodyLength: Infinity,
-         url: this.configService.get<string>('BORDERCROSS_EKENQ_URL'),
-         headers: {
-            'Content-Type': 'application/xml',
-            Authorization: `Basic ${this.configService.get<string>('BORDERCROSS_EKENG_AUTHORIZATION')}`,
-            Cookie: this.configService.get<string>('BORDERCROSS_AXIOS_COOKIES'),
-         },
-         data: axiosData,
-      };
    }
 
    private buildLicensesRequest(psn: string) {

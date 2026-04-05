@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Body } from '@nestjs/common';
+import { Controller, Param, Post, Body } from '@nestjs/common';
 
 import { CivilActsRegistrationService } from 'src/Core/CivilActsRegistration/CivilActsRegistration.service';
 import { SsnParamDto } from 'src/API/DTO/Tax/params.dto';

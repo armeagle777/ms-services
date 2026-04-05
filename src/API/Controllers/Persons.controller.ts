@@ -1,7 +1,7 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 
 import { PersonsService } from 'src/Core/Persons/Persons.service';
-import { BordercrossRequestDto, VehicleSearchQueryDto } from 'src/API/DTO/Persons';
+import { VehicleSearchQueryDto } from 'src/API/DTO/Persons';
 import {
    HvhhParamDto,
    PoliceSearchQueryDto,
@@ -22,11 +22,6 @@ export class PersonsController {
    @Get(':paramValue/vehicle')
    searchVehicle(@Param() params: VehicleParamDto, @Query() query: VehicleSearchQueryDto) {
       return this.personsService.searchVehicle(params.paramValue, query.searchBase);
-   }
-
-   @Post('bordercross')
-   getBordercrossBySsn(@Body() body: BordercrossRequestDto) {
-      return this.personsService.getBordercrossBySsn(body);
    }
 
    @Get(':pnum/police')
