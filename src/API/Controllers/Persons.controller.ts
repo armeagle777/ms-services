@@ -28,9 +28,4 @@ export class PersonsController {
    getPoliceByPnum(@Param() params: PnumParamDto, @Query() query: PoliceSearchQueryDto) {
       return this.personsService.getPoliceByPnum(params.pnum, query);
    }
-
-   @Get(':hvhh/petregistr')
-   getCompanyByHvhh(@Param() params: HvhhParamDto) {
-      return this.personsService.getCompanyByHvhh(params.hvhh);
-   }
 }

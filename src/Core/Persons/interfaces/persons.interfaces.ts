@@ -48,8 +48,3 @@ export interface QkagDocumentResponse {
    // TODO: refine QKAG document fields
    [key: string]: unknown;
 }
-
-export interface PetregistrCompanyResponse {
-   // TODO: refine company response fields
-   [key: string]: unknown;
-}

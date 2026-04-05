@@ -4,9 +4,9 @@ import { ConfigService } from '@nestjs/config';
 import qs from 'qs';
 import { firstValueFrom } from 'rxjs';
 import { InvestigativeCommitteeIntegration } from 'src/Infrustructure/Services/InvestigativeCommitteeIntegration/InvestigativeCommitee.integration';
+import { StateRegisterService } from 'src/Core/StateRegister/StateRegister.service';
 
 import {
-   PetregistrCompanyResponse,
    PoliceResponse,
    RoadPoliceResponse,
    VehicleSearchResponse,
@@ -18,6 +18,7 @@ export class PersonsService {
       private readonly httpService: HttpService,
       private readonly configService: ConfigService,
       private readonly icIntegration: InvestigativeCommitteeIntegration,
+      private readonly stateRegisterService: StateRegisterService,
    ) {}
 
    async getRoadpoliceBySsn(psn: string): Promise<RoadPoliceResponse> {
@@ -55,25 +56,6 @@ export class PersonsService {
          lastName: filters?.lastName,
          birthDate: filters?.birthDate,
       });
-   }
-
-   async getCompanyByHvhh(hvhh: string): Promise<PetregistrCompanyResponse | []> {
-      const petregistrUrl = this.configService.get<string>('PETREGISTR_URL');
-      if (!petregistrUrl)
-         throw new InternalServerErrorException('PETREGISTR_URL is not configured');
-
-      const options = {
-         jsonrpc: '2.0',
-         id: 1,
-         method: 'company_info',
-         params: { tax_id: hvhh },
-      };
-
-      const response = await firstValueFrom(this.httpService.post(petregistrUrl, options));
-      const data = response.data;
-      if (!data?.result) return [];
-
-      return data.result.company as PetregistrCompanyResponse;
    }
 
    private buildLicensesRequest(psn: string) {
