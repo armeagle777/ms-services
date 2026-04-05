@@ -1,10 +1,9 @@
 import { HttpService } from '@nestjs/axios';
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import qs from 'qs';
 import { firstValueFrom } from 'rxjs';
 import { InvestigativeCommitteeIntegration } from 'src/Infrustructure/Services/InvestigativeCommitteeIntegration/InvestigativeCommitee.integration';
-import { StateRegisterService } from 'src/Core/StateRegister/StateRegister.service';
 
 import {
    PoliceResponse,
@@ -18,7 +17,6 @@ export class PersonsService {
       private readonly httpService: HttpService,
       private readonly configService: ConfigService,
       private readonly icIntegration: InvestigativeCommitteeIntegration,
-      private readonly stateRegisterService: StateRegisterService,
    ) {}
 
    async getRoadpoliceBySsn(psn: string): Promise<RoadPoliceResponse> {
