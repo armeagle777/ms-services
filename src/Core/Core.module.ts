@@ -9,13 +9,11 @@ import { MigrationCitizenService } from './MigrationCitizenService/MigrationCiti
 import { MinistryOfJusticeService } from './MinistryOfJustice/MinistryOfJustice.service';
 import { InterpolService } from './Interpol/Interpol.service';
 import { PersonsService } from './Persons/Persons.service';
-import { SphereService } from './Sphere/Sphere.service';
 import { RevenueCommitteeService } from './RevenueCommittee/RevenueCommittee.service';
 import { TaxService } from './TaxService/TaxService.service';
 import { CivilActsRegistrationService } from './CivilActsRegistration/CivilActsRegistration.service';
 import { SektService } from './Sekt/Sekt.service';
 import { IntegrationModule } from 'src/Infrustructure/Services/Integration.module';
-import { SPHERE_MODEL, SPHERE_SEQUELIZE } from 'src/Core/Sphere/sphere.tokens';
 import { InvestigativeCommitteeService } from './InvestigativeCommittee/InvestigativeCommittee.service';
 import { AuthService } from './Auth/Auth.service';
 import { DatabaseModule } from 'src/Infrustructure/Database/Database.module';
@@ -34,7 +32,6 @@ const services = [
    TaxService,
    CivilActsRegistrationService,
    SektService,
-   SphereService,
    MigrationCitizenService,
    InterpolService,
    InvestigativeCommitteeService,
@@ -63,38 +60,6 @@ const databaseProviders = [
             logging: false,
          });
       },
-   },
-   {
-      provide: SPHERE_MODEL,
-      inject: [SPHERE_SEQUELIZE],
-      useFactory: (sequelize: Sequelize) =>
-         sequelize.define(
-            'Sphere',
-            {
-               name: { type: DataTypes.STRING, validate: { len: [0, 255] } },
-               tin: {
-                  type: DataTypes.STRING,
-                  allowNull: false,
-                  validate: { args: [7, 8] },
-               },
-               sphere_code: { type: DataTypes.STRING },
-               sphere_text: { type: DataTypes.TEXT('long') },
-               is_inactive: { type: DataTypes.BOOLEAN, defaultValue: false },
-               is_blocked: { type: DataTypes.BOOLEAN, defaultValue: false },
-               is_checked: { type: DataTypes.BOOLEAN, defaultValue: false },
-               createdAt: {
-                  type: 'TIMESTAMP',
-                  defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
-                  allowNull: false,
-               },
-               updatedAt: {
-                  type: 'TIMESTAMP',
-                  defaultValue: sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
-                  allowNull: false,
-               },
-            },
-            { timestamps: false },
-         ),
    },
 ];
 
