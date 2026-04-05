@@ -13,3 +13,4 @@ export { CadastreController } from './Cadastre.controller';
 export { StatePopulationRegisterController } from './StatePopulationRegister.controller';
 export { TaxServiceController } from './TaxService.controller';
 export { CivilActsRegistrationController } from './CivilActsRegistration.controller';
+export { SektController } from './Sekt.controller';

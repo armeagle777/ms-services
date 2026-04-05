@@ -3,35 +3,23 @@ import { BadRequestException, Injectable, InternalServerErrorException } from '@
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 import qs from 'qs';
-import { XMLParser } from 'fast-xml-parser';
 import { InvestigativeCommitteeIntegration } from 'src/Infrustructure/Services/InvestigativeCommitteeIntegration/InvestigativeCommitee.integration';
-import { StatePopulationRegisterIntegration } from 'src/Infrustructure/Services/StatePopulationRegisterIntegration/StatePopulationRegister.integration';
-import { CivilActsRegistrationService } from 'src/Core/CivilActsRegistration/CivilActsRegistration.service';
 
-import { BordercrossRequestDto, QkagInfoRequestDto } from 'src/API/DTO/Persons';
+import { BordercrossRequestDto } from 'src/API/DTO/Persons';
 import {
    BordercrossResponse,
    PoliceResponse,
-   QkagDocumentResponse,
    RoadPoliceResponse,
-   TaxPayerInfo,
    VehicleSearchResponse,
    PetregistrCompanyResponse,
 } from 'src/Core/Persons/interfaces/persons.interfaces';
 
 @Injectable()
 export class PersonsService {
-   private readonly xmlParser = new XMLParser({
-      ignoreAttributes: false,
-      removeNSPrefix: true,
-   });
-
    constructor(
       private readonly httpService: HttpService,
       private readonly configService: ConfigService,
       private readonly icIntegration: InvestigativeCommitteeIntegration,
-      private readonly statePopulationRegister: StatePopulationRegisterIntegration,
-      private readonly civilActsRegistration: CivilActsRegistrationService,
    ) {}
 
    async getRoadpoliceBySsn(psn: string): Promise<RoadPoliceResponse> {
@@ -57,24 +45,6 @@ export class PersonsService {
       const vehicles = vehiclesResponse?.data?.result?.length ? vehiclesResponse.data.result : null;
 
       return { vehicles };
-   }
-
-   async getBordercrossBySsn(body: BordercrossRequestDto): Promise<BordercrossResponse> {
-      const { passportNumber, citizenship } = body || {};
-      if (!passportNumber || !citizenship) throw new BadRequestException('Missing fields');
-
-      const response = await firstValueFrom(
-         this.httpService.request(this.buildBordercrossRequest({ passportNumber, citizenship })),
-      );
-
-      const xmlData = response.data;
-      const jsonData = this.xmlParser.parse(xmlData);
-      const data = jsonData?.data;
-
-      if (!data?.status || data.status !== 'ok') return {};
-
-      const { visaList, crossingList, residencePermitList } = data;
-      return { visaList, crossingList, residencePermitList } as BordercrossResponse;
    }
 
    async getPoliceByPnum(

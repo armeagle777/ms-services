@@ -10,17 +10,12 @@ import { MinistryOfJusticeService } from './MinistryOfJustice/MinistryOfJustice.
 import { InterpolService } from './Interpol/Interpol.service';
 import { PersonsService } from './Persons/Persons.service';
 import { SphereService } from './Sphere/Sphere.service';
-import { StatisticsService } from './Statistics/Statistics.service';
 import { RevenueCommitteeService } from './RevenueCommittee/RevenueCommittee.service';
 import { TaxService } from './TaxService/TaxService.service';
 import { CivilActsRegistrationService } from './CivilActsRegistration/CivilActsRegistration.service';
+import { SektService } from './Sekt/Sekt.service';
 import { IntegrationModule } from 'src/Infrustructure/Services/Integration.module';
 import { SPHERE_MODEL, SPHERE_SEQUELIZE } from 'src/Core/Sphere/sphere.tokens';
-import {
-   SAHMANAHATUM_SEQUELIZE,
-   STATISTICS_SEQUELIZE,
-   WP_SEQUELIZE as STATISTICS_WP_SEQUELIZE,
-} from 'src/Core/Statistics/statistics.tokens';
 import { InvestigativeCommitteeService } from './InvestigativeCommittee/InvestigativeCommittee.service';
 import { AuthService } from './Auth/Auth.service';
 import { DatabaseModule } from 'src/Infrustructure/Database/Database.module';
@@ -38,10 +33,10 @@ const services = [
    RevenueCommitteeService,
    TaxService,
    CivilActsRegistrationService,
+   SektService,
    SphereService,
    MigrationCitizenService,
    InterpolService,
-   StatisticsService,
    InvestigativeCommitteeService,
    AuthService,
    RequestLoggingService,
@@ -61,22 +56,6 @@ const databaseProviders = [
          const db = configService.get<string>('ARTSAKH_DATABASE_NAME');
          const username = configService.get<string>('ARTSAKH_DATABASE_USERNAME');
          const password = configService.get<string>('ARTSAKH_DATABASE_USER_PASSWORD');
-
-         return new Sequelize(db || '', username || '', password || '', {
-            host,
-            dialect: 'mysql',
-            logging: false,
-         });
-      },
-   },
-   {
-      provide: SPHERE_SEQUELIZE,
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
-         const host = configService.get<string>('DATABASE_HOST');
-         const db = configService.get<string>('DATABASE_NAME');
-         const username = configService.get<string>('DATABASE_USERNAME');
-         const password = configService.get<string>('DATABASE_PASSWORD');
 
          return new Sequelize(db || '', username || '', password || '', {
             host,
@@ -116,54 +95,6 @@ const databaseProviders = [
             },
             { timestamps: false },
          ),
-   },
-   {
-      provide: STATISTICS_SEQUELIZE,
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
-         const host = configService.get<string>('DATABASE_HOST');
-         const db = configService.get<string>('STATISTICS_DATABASE_NAME');
-         const username = configService.get<string>('DATABASE_USERNAME');
-         const password = configService.get<string>('DATABASE_PASSWORD');
-
-         return new Sequelize(db || '', username || '', password || '', {
-            host,
-            dialect: 'mysql',
-            logging: false,
-         });
-      },
-   },
-   {
-      provide: SAHMANAHATUM_SEQUELIZE,
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
-         const host = configService.get<string>('DATABASE_HOST');
-         const db = configService.get<string>('SAHMANAHATUM_DATABASE_NAME');
-         const username = configService.get<string>('DATABASE_USERNAME');
-         const password = configService.get<string>('DATABASE_PASSWORD');
-
-         return new Sequelize(db || '', username || '', password || '', {
-            host,
-            dialect: 'mysql',
-            logging: false,
-         });
-      },
-   },
-   {
-      provide: STATISTICS_WP_SEQUELIZE,
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
-         const host = configService.get<string>('WP_DATABASE_HOST');
-         const db = configService.get<string>('WP_DATABASE_NAME');
-         const username = configService.get<string>('WP_DATABASE_USERNAME');
-         const password = configService.get<string>('WP_DATABASE_PASSWORD');
-
-         return new Sequelize(db || '', username || '', password || '', {
-            host,
-            dialect: 'mysql',
-            logging: false,
-         });
-      },
    },
 ];
 
