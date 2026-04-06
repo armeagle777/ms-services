@@ -11,6 +11,7 @@ import {
    TaxPersonObligationsResponse,
 } from './RevenueCommittee.types';
 import { RevenueCommitteeIntegration } from 'src/Infrustructure/Services/RevenueCommitteeIntegration/RevenueCommittee.integration';
+import { EmploymentContractsIntegration } from 'src/Infrustructure/Services/RevenueCommitteeEmploymentIntegration/RevenueCommitteeEmployment.integration';
 
 @Injectable()
 export class RevenueCommitteeService {
@@ -23,6 +24,7 @@ export class RevenueCommitteeService {
       private readonly httpService: HttpService,
       private readonly configService: ConfigService,
       private readonly revenueCommittee: RevenueCommitteeIntegration,
+      private readonly employeeContractsClient: EmploymentContractsIntegration,
    ) {}
 
    async getCompanyObligations(
@@ -70,7 +72,7 @@ export class RevenueCommitteeService {
 
    async getEmploymentContracts(ssn: string): Promise<EmploymentContractResponse> {
       const ekengRequestProps = { employee_ssn: ssn };
-      const options = this.revenueCommittee.buildRequestOptions(
+      const options = this.employeeContractsClient.buildRequestOptions(
          '/employment_contract/v1',
          ekengRequestProps,
       );
