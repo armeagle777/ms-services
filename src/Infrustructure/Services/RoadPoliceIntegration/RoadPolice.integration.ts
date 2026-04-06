@@ -19,16 +19,15 @@ export interface VehicleSearchRequest {
 @Injectable()
 export class RoadPoliceIntegration {
    private readonly baseUrl: string;
-   private readonly licensesPath: string;
-   private readonly vehiclesPath: string;
+
+   private readonly licensesRequestPath = 'get_driving_license_with_info';
+   private readonly vehiclesRequestPath = 'get_vehicle_info';
 
    constructor(private readonly configService: ConfigService) {
-      this.baseUrl = this.configService.get<string>('ROADPOLICE_URL');
-      this.licensesPath = this.configService.get<string>('ROADPOLICE_URL_LICENSES_PATH');
-      this.vehiclesPath = this.configService.get<string>('ROADPOLICE_URL_VEHICLES_PATH');
+      this.baseUrl = this.configService.get<string>('ROADPOLICE_API_URL');
 
       if (!this.baseUrl) {
-         throw new InternalServerErrorException('ROADPOLICE_URL is not configured');
+         throw new InternalServerErrorException('ROADPOLICE_API_URL is not configured');
       }
    }
 
@@ -38,7 +37,7 @@ export class RoadPoliceIntegration {
       const config: AxiosRequestConfig = {
          method: 'post',
          maxBodyLength: Infinity,
-         url: `${this.baseUrl}/${this.licensesPath}`,
+         url: `${this.baseUrl}/${this.licensesRequestPath}`,
          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
          data: axiosBody,
       };
@@ -53,7 +52,7 @@ export class RoadPoliceIntegration {
       const config: AxiosRequestConfig = {
          method: 'post',
          maxBodyLength: Infinity,
-         url: `${this.baseUrl}/${this.vehiclesPath}`,
+         url: `${this.baseUrl}/${this.vehiclesRequestPath}`,
          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
          data: axiosBody,
       };
@@ -68,7 +67,7 @@ export class RoadPoliceIntegration {
       const config: AxiosRequestConfig = {
          method: 'post',
          maxBodyLength: Infinity,
-         url: `${this.baseUrl}/${this.vehiclesPath}`,
+         url: `${this.baseUrl}/${this.vehiclesRequestPath}`,
          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
          data: axiosBody,
       };
