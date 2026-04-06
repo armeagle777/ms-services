@@ -9,4 +9,9 @@ export class StateRegisterController {
    getLegalEntitiesBySsn(@Param() params: { ssn: string }) {
       return this.stateRegisterService.getLegalEntitiesBySsn(params.ssn);
    }
+
+   @Get('companies/:taxId')
+   getCompanyByTaxId(@Param() params: { taxId: string }) {
+      return this.stateRegisterService.getCompanyByTaxId(params.taxId);
+   }
 }

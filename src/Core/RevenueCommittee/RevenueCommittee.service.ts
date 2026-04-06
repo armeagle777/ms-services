@@ -47,9 +47,11 @@ export class RevenueCommitteeService {
    }
 
    async getPersonObligations(ssn: string): Promise<TaxPersonObligationsResponse> {
-      const url = this.configService.get<string>('TAX_PERSON_OBLIGATIONS_URL');
+      const url = this.configService.get<string>('REVENUE_COMMITTEE_PERSONS_API_URL');
       if (!url)
-         throw new InternalServerErrorException('TAX_PERSON_OBLIGATIONS_URL is not configured');
+         throw new InternalServerErrorException(
+            'REVENUE_COMMITTEE_PERSONS_API_URL is not configured',
+         );
 
       const xmlData = this.formatObligationsXmlData(ssn);
 
@@ -59,7 +61,6 @@ export class RevenueCommitteeService {
             timeout: 10000,
          }),
       );
-      console.log('response???????', response);
       const jsonObj = this.xmlParser.parse(response.data);
       const responseBody = jsonObj?.Envelope?.Body?.Response?.ResponseBody || {};
 

@@ -4,9 +4,12 @@ export { MigrationCitizenServiceController } from './MigrationCitizenService.con
 export { InterpolController } from './Interpol.controller';
 export { MinistryOfJusticeController } from './MinistryOfJutice.controller';
 export { PersonsController } from './Persons.controller';
-export { SphereController } from './Sphere.controller';
-export { StatisticsController } from './Statistics.controller';
 export { RevenueCommitteeController } from './RevenueCommittee.controller';
 export { InvestigativeCommitteeController } from './InvestigativeCommittee.controller';
 export { StateRegisterController } from './StateRegister.controller';
 export { CadastreController } from './Cadastre.controller';
+export { StatePopulationRegisterController } from './StatePopulationRegister.controller';
+export { TaxServiceController } from './TaxService.controller';
+export { CivilActsRegistrationController } from './CivilActsRegistration.controller';
+export { SektController } from './Sekt.controller';
+export { RoadPoliceController } from './RoadPolice.controller';
