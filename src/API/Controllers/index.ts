@@ -12,3 +12,4 @@ export { StatePopulationRegisterController } from './StatePopulationRegister.con
 export { TaxServiceController } from './TaxService.controller';
 export { CivilActsRegistrationController } from './CivilActsRegistration.controller';
 export { SektController } from './Sekt.controller';
+export { RoadPoliceController } from './RoadPolice.controller';

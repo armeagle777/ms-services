@@ -21,6 +21,7 @@ import { RevenueCommitteeService } from './RevenueCommittee/RevenueCommittee.ser
 import { SektService } from './Sekt/Sekt.service';
 import { StatePopulationRegisterService } from './StatePopulationRegister/StatePopulationRegister.service';
 import { StateRegisterService } from './StateRegister/StateRegister.service';
+import { RoadPoliceService } from './RoadPolice/RoadPolice.service';
 import { TaxService } from './TaxService/TaxService.service';
 
 const services = [
@@ -38,6 +39,7 @@ const services = [
    AuthService,
    RequestLoggingService,
    StateRegisterService,
+   RoadPoliceService,
    CadastreService,
    StatePopulationRegisterService,
 ];

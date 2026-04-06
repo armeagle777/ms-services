@@ -14,6 +14,7 @@ import { TaxServiceIntegration } from './TaxServiceIntegration/TaxService.integr
 import { CivilActsRegistrationIntegration } from './CivilActsRegistrationIntegration/CivilActsRegistration.integration';
 import { SektIntegration } from './SektIntegration/Sekt.integration';
 import { StateRegisterIntegration } from './StateRegisterIntegration/StateRegister.integration';
+import { RoadPoliceIntegration } from './RoadPoliceIntegration/RoadPolice.integration';
 
 @Module({
    imports: [HttpModule],
@@ -31,6 +32,7 @@ import { StateRegisterIntegration } from './StateRegisterIntegration/StateRegist
       CivilActsRegistrationIntegration,
       SektIntegration,
       StateRegisterIntegration,
+      RoadPoliceIntegration,
    ],
    providers: [
       // EkengIntegration,
@@ -46,6 +48,7 @@ import { StateRegisterIntegration } from './StateRegisterIntegration/StateRegist
       CivilActsRegistrationIntegration,
       SektIntegration,
       StateRegisterIntegration,
+      RoadPoliceIntegration,
    ],
 })
 export class IntegrationModule {}
