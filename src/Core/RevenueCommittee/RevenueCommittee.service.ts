@@ -80,10 +80,6 @@ export class RevenueCommitteeService {
       const response = await firstValueFrom(this.httpService.request(options));
       const data = response.data;
       return data;
-
-      // return data?.ssn_obligations_response?.responseStatus?.statusCode === 1
-      //    ? (data.ssn_obligations_response as TaxObligationsResponse)
-      //    : null;
    }
 
    private formatObligationsXmlData(ssn: string) {
