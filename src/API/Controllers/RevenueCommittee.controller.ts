@@ -17,4 +17,9 @@ export class RevenueCommitteeController {
    getPersonObligations(@Param() params: SsnParamDto) {
       return this.revenueCommittee.getPersonObligations(params.ssn);
    }
+
+   @Get('employment-contracts/:ssn')
+   getEmploymentContracts(@Param() params: SsnParamDto) {
+      return this.revenueCommittee.getEmploymentContracts(params.ssn);
+   }
 }

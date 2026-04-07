@@ -6,10 +6,12 @@ import { XMLParser } from 'fast-xml-parser';
 
 import { CompanyObligationsQueryDto } from 'src/API/DTO/Tax/tax.dto';
 import {
+   EmploymentContractResponse,
    TaxObligationsResponse,
    TaxPersonObligationsResponse,
-} from 'src/Core/RevenueCommittee/interfaces/tax.interfaces';
+} from './RevenueCommittee.types';
 import { RevenueCommitteeIntegration } from 'src/Infrustructure/Services/RevenueCommitteeIntegration/RevenueCommittee.integration';
+import { EmploymentContractsIntegration } from 'src/Infrustructure/Services/RevenueCommitteeEmploymentIntegration/RevenueCommitteeEmployment.integration';
 
 @Injectable()
 export class RevenueCommitteeService {
@@ -22,6 +24,7 @@ export class RevenueCommitteeService {
       private readonly httpService: HttpService,
       private readonly configService: ConfigService,
       private readonly revenueCommittee: RevenueCommitteeIntegration,
+      private readonly employeeContractsClient: EmploymentContractsIntegration,
    ) {}
 
    async getCompanyObligations(
@@ -65,6 +68,18 @@ export class RevenueCommitteeService {
       const responseBody = jsonObj?.Envelope?.Body?.Response?.ResponseBody || {};
 
       return responseBody as TaxPersonObligationsResponse;
+   }
+
+   async getEmploymentContracts(ssn: string): Promise<EmploymentContractResponse> {
+      const ekengRequestProps = { employee_ssn: ssn };
+      const options = this.employeeContractsClient.buildRequestOptions(
+         '/employment_contract/v1',
+         ekengRequestProps,
+      );
+
+      const response = await firstValueFrom(this.httpService.request(options));
+      const data = response.data;
+      return data;
    }
 
    private formatObligationsXmlData(ssn: string) {

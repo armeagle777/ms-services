@@ -9,6 +9,7 @@ import { CadastreClientIntegration } from './CadastreClientIntegration/CadastreC
 import { MigrationCitizenServiceIntegration } from './MigrationCitizenServiceIntegration/MigrationCitizenService.integration';
 import { MinistryOfJusticeIntegration } from './MinistryOfJusticeIntegration/MinistryOfJustice.integration';
 import { RevenueCommitteeIntegration } from './RevenueCommitteeIntegration/RevenueCommittee.integration';
+import { EmploymentContractsIntegration } from './RevenueCommitteeEmploymentIntegration/RevenueCommitteeEmployment.integration';
 import { StatePopulationRegisterIntegration } from './StatePopulationRegisterIntegration/StatePopulationRegister.integration';
 import { TaxServiceIntegration } from './TaxServiceIntegration/TaxService.integration';
 import { CivilActsRegistrationIntegration } from './CivilActsRegistrationIntegration/CivilActsRegistration.integration';
@@ -27,6 +28,7 @@ import { RoadPoliceIntegration } from './RoadPoliceIntegration/RoadPolice.integr
       MigrationCitizenServiceIntegration,
       MinistryOfJusticeIntegration,
       RevenueCommitteeIntegration,
+      EmploymentContractsIntegration,
       StatePopulationRegisterIntegration,
       TaxServiceIntegration,
       CivilActsRegistrationIntegration,
@@ -43,6 +45,7 @@ import { RoadPoliceIntegration } from './RoadPoliceIntegration/RoadPolice.integr
       MigrationCitizenServiceIntegration,
       MinistryOfJusticeIntegration,
       RevenueCommitteeIntegration,
+      EmploymentContractsIntegration,
       StatePopulationRegisterIntegration,
       TaxServiceIntegration,
       CivilActsRegistrationIntegration,
