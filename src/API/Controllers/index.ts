@@ -3,7 +3,6 @@ export { KadastrController } from './Kadastr.controller';
 export { MigrationCitizenServiceController } from './MigrationCitizenService.controller';
 export { InterpolController } from './Interpol.controller';
 export { MinistryOfJusticeController } from './MinistryOfJutice.controller';
-export { PersonsController } from './Persons.controller';
 export { RevenueCommitteeController } from './RevenueCommittee.controller';
 export { InvestigativeCommitteeController } from './InvestigativeCommittee.controller';
 export { StateRegisterController } from './StateRegister.controller';

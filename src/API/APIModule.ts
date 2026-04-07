@@ -9,7 +9,6 @@ import {
    InvestigativeCommitteeController,
    InterpolController,
    KadastrController,
-   PersonsController,
    StateRegisterController,
    CadastreController,
    MigrationCitizenServiceController,
@@ -29,7 +28,6 @@ import { MinistryOfJusticeController } from './Controllers/MinistryOfJutice.cont
 @Module({
    imports: [CoreModule],
    controllers: [
-      PersonsController,
       KadastrController,
       ArtsakhController,
       MinistryOfJusticeController,
