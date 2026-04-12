@@ -12,7 +12,6 @@ import { CadastreService } from './Cadastre/Cadastre.service';
 import { CivilActsRegistrationService } from './CivilActsRegistration/CivilActsRegistration.service';
 import { InterpolService } from './Interpol/Interpol.service';
 import { InvestigativeCommitteeService } from './InvestigativeCommittee/InvestigativeCommittee.service';
-import { KadastrService } from './Kadastr/Kadastr.service';
 import { RequestLoggingService } from './Logging/RequestLogging.service';
 import { MigrationCitizenService } from './MigrationCitizenService/MigrationCitizenService.service';
 import { MinistryOfJusticeService } from './MinistryOfJustice/MinistryOfJustice.service';
@@ -24,7 +23,6 @@ import { RoadPoliceService } from './RoadPolice/RoadPolice.service';
 import { TaxService } from './TaxService/TaxService.service';
 
 const services = [
-   KadastrService,
    ArtsakhService,
    MinistryOfJusticeService,
    RevenueCommitteeService,
