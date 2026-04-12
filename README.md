@@ -74,7 +74,7 @@ Authorization: Basic base64(username:password)
 
 Access the admin panel to manage API clients and permissions:
 
-- **URL**: `http://localhost:3000/admin`
+- **URL**: `http://localhost:${PORT}/admin`
 - **Default credentials**:
    - Email: `admin@example.com`
    - Password: `admin123`
