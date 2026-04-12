@@ -16,7 +16,6 @@ import { KadastrService } from './Kadastr/Kadastr.service';
 import { RequestLoggingService } from './Logging/RequestLogging.service';
 import { MigrationCitizenService } from './MigrationCitizenService/MigrationCitizenService.service';
 import { MinistryOfJusticeService } from './MinistryOfJustice/MinistryOfJustice.service';
-import { PersonsService } from './Persons/Persons.service';
 import { RevenueCommitteeService } from './RevenueCommittee/RevenueCommittee.service';
 import { SektService } from './Sekt/Sekt.service';
 import { StatePopulationRegisterService } from './StatePopulationRegister/StatePopulationRegister.service';
@@ -25,7 +24,6 @@ import { RoadPoliceService } from './RoadPolice/RoadPolice.service';
 import { TaxService } from './TaxService/TaxService.service';
 
 const services = [
-   PersonsService,
    KadastrService,
    ArtsakhService,
    MinistryOfJusticeService,
