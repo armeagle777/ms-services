@@ -13,8 +13,8 @@ export class EmploymentContractsIntegration {
    private readonly baseUrl: string;
 
    constructor(private readonly configService: ConfigService) {
-      const keyPath = './src/API/Certificates/employee_contracts.key';
-      const certPath = './src/API/Certificates/employee_contracts.pem';
+      const keyPath = './src/API/Certificates/employee-contracts.key';
+      const certPath = './src/API/Certificates/employee-contracts.pem';
 
       this.privateKey = this.resolveAndReadCertFile(keyPath);
       this.certificate = this.resolveAndReadCertFile(certPath);
