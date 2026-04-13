@@ -1,8 +1,11 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards, UseInterceptors } from '@nestjs/common';
 
 import { StatePopulationRegisterService } from 'src/Core/StatePopulationRegister/StatePopulationRegister.service';
 import { SearchPersonsRequestDto } from 'src/API/DTO/Persons';
 import { SsnParamDto } from 'src/API/DTO/Persons/params.dto';
+import { BasicAuthGuard } from 'src/modules/auth/guards/basic-auth.guard';
+import { PermissionGuard } from 'src/modules/auth/guards/permission.guard';
+import { ProtectedRequestLoggingInterceptor } from 'src/API/Interceptors/ProtectedRequestLogging.interceptor';
 
 /**
  * Controller for State Population Register API endpoints
@@ -11,6 +14,8 @@ import { SsnParamDto } from 'src/API/DTO/Persons/params.dto';
  * - Searching persons by various criteria
  */
 @Controller('state-population-register')
+@UseGuards(BasicAuthGuard, PermissionGuard)
+@UseInterceptors(ProtectedRequestLoggingInterceptor)
 export class StatePopulationRegisterController {
    constructor(private readonly statePopulationRegisterService: StatePopulationRegisterService) {}
 

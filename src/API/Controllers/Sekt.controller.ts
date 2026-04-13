@@ -1,9 +1,14 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, UseInterceptors } from '@nestjs/common';
 
 import { SektService } from 'src/Core/Sekt/Sekt.service';
 import { BordercrossRequestDto } from 'src/API/DTO/Persons';
+import { BasicAuthGuard } from 'src/modules/auth/guards/basic-auth.guard';
+import { PermissionGuard } from 'src/modules/auth/guards/permission.guard';
+import { ProtectedRequestLoggingInterceptor } from 'src/API/Interceptors/ProtectedRequestLogging.interceptor';
 
 @Controller('sekt')
+@UseGuards(BasicAuthGuard, PermissionGuard)
+@UseInterceptors(ProtectedRequestLoggingInterceptor)
 export class SektController {
    constructor(private readonly sektService: SektService) {}
 
