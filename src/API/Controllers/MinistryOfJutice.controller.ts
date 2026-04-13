@@ -1,9 +1,15 @@
-import { Body, Controller, Post, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+   Body,
+   Controller,
+   Post,
+   UseGuards,
+   // UseInterceptors
+} from '@nestjs/common';
 
 import { MinistryOfJusticeService } from 'src/Core/MinistryOfJustice/MinistryOfJustice.service';
 import { MojCesDebtorRequestDto } from 'src/API/DTO/MojCes/moj-ces.dto';
 import { BasicAuthGuard } from 'src/API/Guards/BasicAuth.guard';
-import { ProtectedRequestLoggingInterceptor } from 'src/API/Interceptors/ProtectedRequestLogging.interceptor';
+// import { ProtectedRequestLoggingInterceptor } from 'src/API/Interceptors/ProtectedRequestLogging.interceptor';
 
 @Controller('ministry-of-justice')
 @UseGuards(BasicAuthGuard)

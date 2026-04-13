@@ -1,10 +1,18 @@
-import { Body, Controller, Get, Param, Post, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+   Body,
+   Controller,
+   Get,
+   Param,
+   Post,
+   UseGuards,
+   //  UseInterceptors
+} from '@nestjs/common';
 
 import { StatePopulationRegisterService } from 'src/Core/StatePopulationRegister/StatePopulationRegister.service';
 import { SearchPersonsRequestDto } from 'src/API/DTO/Persons';
 import { SsnParamDto } from 'src/API/DTO/Persons/params.dto';
 import { BasicAuthGuard } from 'src/API/Guards/BasicAuth.guard';
-import { ProtectedRequestLoggingInterceptor } from 'src/API/Interceptors/ProtectedRequestLogging.interceptor';
+// import { ProtectedRequestLoggingInterceptor } from 'src/API/Interceptors/ProtectedRequestLogging.interceptor';
 
 @Controller('state-population-register')
 @UseGuards(BasicAuthGuard)

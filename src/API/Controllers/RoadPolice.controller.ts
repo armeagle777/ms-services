@@ -1,7 +1,15 @@
-import { Controller, Get, Param, Post, Body, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+   Controller,
+   Get,
+   Param,
+   Post,
+   Body,
+   UseGuards,
+   // UseInterceptors
+} from '@nestjs/common';
 import { RoadPoliceService } from 'src/Core/RoadPolice/RoadPolice.service';
 import { BasicAuthGuard } from 'src/API/Guards/BasicAuth.guard';
-import { ProtectedRequestLoggingInterceptor } from 'src/API/Interceptors/ProtectedRequestLogging.interceptor';
+// import { ProtectedRequestLoggingInterceptor } from 'src/API/Interceptors/ProtectedRequestLogging.interceptor';
 
 export class VehicleSearchBodyDto {
    searchField!: string;
