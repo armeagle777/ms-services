@@ -2,13 +2,12 @@ import { Controller, Get, Param, UseGuards, UseInterceptors } from '@nestjs/comm
 
 import { ArtsakhService } from 'src/Core/Artsakh/Artsakh.service';
 import { PnumParamDto } from 'src/API/DTO/Artsakh/params.dto';
-import { BasicAuthGuard } from 'src/modules/auth/guards/basic-auth.guard';
-import { PermissionGuard } from 'src/modules/auth/guards/permission.guard';
+import { BasicAuthGuard } from 'src/API/Guards/BasicAuth.guard';
 import { ProtectedRequestLoggingInterceptor } from 'src/API/Interceptors/ProtectedRequestLogging.interceptor';
 
 @Controller('artsakh')
-@UseGuards(BasicAuthGuard, PermissionGuard)
-@UseInterceptors(ProtectedRequestLoggingInterceptor)
+@UseGuards(BasicAuthGuard)
+// @UseInterceptors(ProtectedRequestLoggingInterceptor)
 export class ArtsakhController {
    constructor(private readonly artsakhService: ArtsakhService) {}
 

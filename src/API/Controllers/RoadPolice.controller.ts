@@ -1,7 +1,6 @@
 import { Controller, Get, Param, Post, Body, UseGuards, UseInterceptors } from '@nestjs/common';
 import { RoadPoliceService } from 'src/Core/RoadPolice/RoadPolice.service';
-import { BasicAuthGuard } from 'src/modules/auth/guards/basic-auth.guard';
-import { PermissionGuard } from 'src/modules/auth/guards/permission.guard';
+import { BasicAuthGuard } from 'src/API/Guards/BasicAuth.guard';
 import { ProtectedRequestLoggingInterceptor } from 'src/API/Interceptors/ProtectedRequestLogging.interceptor';
 
 export class VehicleSearchBodyDto {
@@ -10,8 +9,8 @@ export class VehicleSearchBodyDto {
 }
 
 @Controller('road-police')
-@UseGuards(BasicAuthGuard, PermissionGuard)
-@UseInterceptors(ProtectedRequestLoggingInterceptor)
+@UseGuards(BasicAuthGuard)
+// @UseInterceptors(ProtectedRequestLoggingInterceptor)
 export class RoadPoliceController {
    constructor(private readonly roadPoliceService: RoadPoliceService) {}
 

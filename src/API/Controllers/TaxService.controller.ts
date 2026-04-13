@@ -2,13 +2,12 @@ import { Controller, Get, Param, UseGuards, UseInterceptors } from '@nestjs/comm
 
 import { TaxService } from 'src/Core/TaxService/TaxService.service';
 import { SsnParamDto } from 'src/API/DTO/Tax/params.dto';
-import { BasicAuthGuard } from 'src/modules/auth/guards/basic-auth.guard';
-import { PermissionGuard } from 'src/modules/auth/guards/permission.guard';
+import { BasicAuthGuard } from 'src/API/Guards/BasicAuth.guard';
 import { ProtectedRequestLoggingInterceptor } from 'src/API/Interceptors/ProtectedRequestLogging.interceptor';
 
 @Controller('tax-service')
-@UseGuards(BasicAuthGuard, PermissionGuard)
-@UseInterceptors(ProtectedRequestLoggingInterceptor)
+@UseGuards(BasicAuthGuard)
+// @UseInterceptors(ProtectedRequestLoggingInterceptor)
 export class TaxServiceController {
    constructor(private readonly taxService: TaxService) {}
 

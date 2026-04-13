@@ -3,13 +3,12 @@ import { Controller, Get, Param, Query, UseGuards, UseInterceptors } from '@nest
 import { RevenueCommitteeService } from 'src/Core/RevenueCommittee/RevenueCommittee.service';
 import { SsnParamDto, TinParamDto } from 'src/API/DTO/Tax/params.dto';
 import { CompanyObligationsQueryDto } from 'src/API/DTO/Tax/tax.dto';
-import { BasicAuthGuard } from 'src/modules/auth/guards/basic-auth.guard';
-import { PermissionGuard } from 'src/modules/auth/guards/permission.guard';
+import { BasicAuthGuard } from 'src/API/Guards/BasicAuth.guard';
 import { ProtectedRequestLoggingInterceptor } from 'src/API/Interceptors/ProtectedRequestLogging.interceptor';
 
 @Controller('revenue-committee')
-@UseGuards(BasicAuthGuard, PermissionGuard)
-@UseInterceptors(ProtectedRequestLoggingInterceptor)
+@UseGuards(BasicAuthGuard)
+// @UseInterceptors(ProtectedRequestLoggingInterceptor)
 export class RevenueCommitteeController {
    constructor(private readonly revenueCommittee: RevenueCommitteeService) {}
 
