@@ -1,5 +1,4 @@
 export { ArtsakhController } from './Artsakh.controller';
-export { KadastrController } from './Kadastr.controller';
 export { MigrationCitizenServiceController } from './MigrationCitizenService.controller';
 export { InterpolController } from './Interpol.controller';
 export { MinistryOfJusticeController } from './MinistryOfJutice.controller';

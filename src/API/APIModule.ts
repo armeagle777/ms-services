@@ -8,7 +8,6 @@ import {
    ArtsakhController,
    InvestigativeCommitteeController,
    InterpolController,
-   KadastrController,
    StateRegisterController,
    CadastreController,
    MigrationCitizenServiceController,
@@ -28,7 +27,6 @@ import { MinistryOfJusticeController } from './Controllers/MinistryOfJutice.cont
 @Module({
    imports: [CoreModule],
    controllers: [
-      KadastrController,
       ArtsakhController,
       MinistryOfJusticeController,
       RevenueCommitteeController,
