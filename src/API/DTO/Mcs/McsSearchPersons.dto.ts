@@ -1,9 +1,3 @@
-export class McsAddressQueryDto {
-   region?: string;
-   community?: string;
-   residence?: string;
-}
-
 export class McsSearchPersonsDto {
    addressType?: 'BIRTH' | 'LIVING';
    registrationType?: 'EVER' | 'CURRENT';
