@@ -86,7 +86,7 @@ export class InterpolService {
       return Math.min(Math.floor(numberValue), 100);
    }
 
-   private normalizeNominalSearch(body: InterpolSearchRequestDto): InterpolNominalSearchParams {
+   private normalizeNominalSearch(body: SearchPersonDto): InterpolNominalSearchParams {
       const name = this.normalizeString(body?.name);
       const forename = this.normalizeString(body?.forename);
       const identity = this.normalizeString(body?.identity);

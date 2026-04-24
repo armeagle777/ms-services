@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 
-import { McsSearchPersonsDto } from 'src/API/DTO/Mcs/mcs.dto';
+import { McsSearchPersonsDto } from 'src/API/DTO/Mcs/McsSearchPersons.dto';
 import {
    McsCatalogItem,
    McsPersonRecord,
