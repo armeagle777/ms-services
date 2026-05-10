@@ -1,12 +1,17 @@
-import { Controller, Get, Param, UseGuards, UseInterceptors } from '@nestjs/common';
-
-import { BasicAuthGuard } from 'src/API/Guards/BasicAuth.guard';
+import {
+   Controller,
+   Get,
+   Param,
+   UseGuards,
+   //  UseInterceptors
+} from '@nestjs/common';
 import { StateRegisterService } from 'src/Core/StateRegister/StateRegister.service';
-import { ProtectedRequestLoggingInterceptor } from 'src/API/Interceptors/ProtectedRequestLogging.interceptor';
+import { BasicAuthGuard } from 'src/API/Guards/BasicAuth.guard';
+// import { ProtectedRequestLoggingInterceptor } from 'src/API/Interceptors/ProtectedRequestLogging.interceptor';
 
 @Controller('state-register')
 @UseGuards(BasicAuthGuard)
-@UseInterceptors(ProtectedRequestLoggingInterceptor)
+// @UseInterceptors(ProtectedRequestLoggingInterceptor)
 export class StateRegisterController {
    constructor(private readonly stateRegisterService: StateRegisterService) {}
 

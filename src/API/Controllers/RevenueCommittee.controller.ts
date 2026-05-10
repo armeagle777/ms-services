@@ -1,14 +1,21 @@
-import { Controller, Get, Param, Query, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+   Controller,
+   Get,
+   Param,
+   Query,
+   UseGuards,
+   // UseInterceptors
+} from '@nestjs/common';
 
-import { BasicAuthGuard } from 'src/API/Guards/BasicAuth.guard';
-import { CompanyObligationsQueryDto } from 'src/API/DTO/Tax/tax.dto';
-import { SsnParamDto, TinParamDto } from 'src/API/DTO/Tax/params.dto';
 import { RevenueCommitteeService } from 'src/Core/RevenueCommittee/RevenueCommittee.service';
-import { ProtectedRequestLoggingInterceptor } from 'src/API/Interceptors/ProtectedRequestLogging.interceptor';
+import { SsnParamDto, TinParamDto } from 'src/API/DTO/Tax/params.dto';
+import { CompanyObligationsQueryDto } from 'src/API/DTO/Tax/tax.dto';
+import { BasicAuthGuard } from 'src/API/Guards/BasicAuth.guard';
+// import { ProtectedRequestLoggingInterceptor } from 'src/API/Interceptors/ProtectedRequestLogging.interceptor';
 
 @Controller('revenue-committee')
 @UseGuards(BasicAuthGuard)
-@UseInterceptors(ProtectedRequestLoggingInterceptor)
+// @UseInterceptors(ProtectedRequestLoggingInterceptor)
 export class RevenueCommitteeController {
    constructor(private readonly revenueCommittee: RevenueCommitteeService) {}
 

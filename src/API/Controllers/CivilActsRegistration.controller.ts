@@ -1,14 +1,21 @@
-import { Controller, Param, Post, Body, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+   Controller,
+   Param,
+   Post,
+   Body,
+   UseGuards,
+   // UseInterceptors
+} from '@nestjs/common';
 
-import { SsnParamDto } from 'src/API/DTO/Tax/params.dto';
-import { BasicAuthGuard } from 'src/API/Guards/BasicAuth.guard';
-import { QkagInfoRequestDto } from 'src/API/DTO/Persons/qkag-info.dto';
 import { CivilActsRegistrationService } from 'src/Core/CivilActsRegistration/CivilActsRegistration.service';
-import { ProtectedRequestLoggingInterceptor } from 'src/API/Interceptors/ProtectedRequestLogging.interceptor';
+import { SsnParamDto } from 'src/API/DTO/Tax/params.dto';
+import { QkagInfoRequestDto } from 'src/API/DTO/Persons/qkag-info.dto';
+import { BasicAuthGuard } from 'src/API/Guards/BasicAuth.guard';
+// import { ProtectedRequestLoggingInterceptor } from 'src/API/Interceptors/ProtectedRequestLogging.interceptor';
 
 @Controller('civil-acts-registration')
 @UseGuards(BasicAuthGuard)
-@UseInterceptors(ProtectedRequestLoggingInterceptor)
+// @UseInterceptors(ProtectedRequestLoggingInterceptor)
 export class CivilActsRegistrationController {
    constructor(private readonly civilActsService: CivilActsRegistrationService) {}
 
