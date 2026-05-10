@@ -11,3 +11,4 @@ export { TaxServiceController } from './TaxService.controller';
 export { CivilActsRegistrationController } from './CivilActsRegistration.controller';
 export { SektController } from './Sekt.controller';
 export { RoadPoliceController } from './RoadPolice.controller';
+export { KtakController } from './Ktak.controller';

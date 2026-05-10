@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 
 import { SearchWantedDto } from 'src/API/DTO/Ic/search-wanted.dto';
+import { PoliceVarchDto } from 'src/API/DTO/Ic/police-varch.dto';
 import { InvestigativeCommitteeService } from 'src/Core/InvestigativeCommittee/InvestigativeCommittee.service';
 // import { ProtectedRequestLoggingInterceptor } from 'src/API/Interceptors/ProtectedRequestLogging.interceptor';
 import { BasicAuthGuard } from 'src/API/Guards/BasicAuth.guard';
@@ -20,5 +21,10 @@ export class InvestigativeCommitteeController {
    @Post('persons/search')
    searchPersons(@Body() body: SearchWantedDto) {
       return this.icService.searchWantedPersons(body);
+   }
+
+   @Post('police/varch')
+   getPoliceVarch(@Body() body: PoliceVarchDto) {
+      return this.icService.getPoliceVarch(body);
    }
 }

@@ -21,6 +21,7 @@ import { StatePopulationRegisterService } from './StatePopulationRegister/StateP
 import { StateRegisterService } from './StateRegister/StateRegister.service';
 import { RoadPoliceService } from './RoadPolice/RoadPolice.service';
 import { TaxService } from './TaxService/TaxService.service';
+import { KtakService } from './Ktak/Ktak.service';
 
 const services = [
    ArtsakhService,
@@ -38,6 +39,7 @@ const services = [
    RoadPoliceService,
    CadastreService,
    StatePopulationRegisterService,
+   KtakService,
 ];
 
 const helpers = [];

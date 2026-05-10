@@ -16,6 +16,7 @@ import { CivilActsRegistrationIntegration } from './CivilActsRegistrationIntegra
 import { SektIntegration } from './SektIntegration/Sekt.integration';
 import { StateRegisterIntegration } from './StateRegisterIntegration/StateRegister.integration';
 import { RoadPoliceIntegration } from './RoadPoliceIntegration/RoadPolice.integration';
+import { KtakIntegration } from './KtakIntegration/Ktak.integration';
 
 @Module({
    imports: [HttpModule],
@@ -35,6 +36,7 @@ import { RoadPoliceIntegration } from './RoadPoliceIntegration/RoadPolice.integr
       SektIntegration,
       StateRegisterIntegration,
       RoadPoliceIntegration,
+      KtakIntegration,
    ],
    providers: [
       // EkengIntegration,
@@ -52,6 +54,7 @@ import { RoadPoliceIntegration } from './RoadPoliceIntegration/RoadPolice.integr
       SektIntegration,
       StateRegisterIntegration,
       RoadPoliceIntegration,
+      KtakIntegration,
    ],
 })
 export class IntegrationModule {}

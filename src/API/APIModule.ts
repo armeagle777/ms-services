@@ -17,6 +17,7 @@ import {
    CivilActsRegistrationController,
    SektController,
    RoadPoliceController,
+   KtakController,
 } from './Controllers';
 import { CoreModule } from 'src/Core/Core.module';
 import { BasicAuthGuard } from './Guards/BasicAuth.guard';
@@ -40,6 +41,7 @@ import { MinistryOfJusticeController } from './Controllers/MinistryOfJutice.cont
       CivilActsRegistrationController,
       SektController,
       RoadPoliceController,
+      KtakController,
    ],
    providers: [BasicAuthGuard, ProtectedRequestLoggingInterceptor],
 })

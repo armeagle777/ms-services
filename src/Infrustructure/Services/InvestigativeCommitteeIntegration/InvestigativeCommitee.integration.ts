@@ -6,6 +6,15 @@ import * as qs from 'qs';
 
 import { PoliceResponse } from 'src/Core/Persons/interfaces/persons.interfaces';
 
+export interface PoliceVarchRequest {
+   ssn?: string;
+   firstName?: string;
+   lastName?: string;
+   patronomicName?: string;
+   birthDate?: string;
+   passport?: string;
+}
+
 @Injectable()
 export class InvestigativeCommitteeIntegration {
    constructor(
@@ -56,13 +65,50 @@ export class InvestigativeCommitteeIntegration {
 
       const response = await firstValueFrom(
          this.httpService.request(
-            this.buildOptions(icApiUrl, { customer: JSON.stringify(requestBody) }),
+            this.buildOptions(`${icApiUrl}/Tex_Service_23/server2.php`, {
+               customer: JSON.stringify(requestBody),
+            }),
          ),
       );
 
       const data = response.data;
 
       return data as PoliceResponse;
+   }
+
+   async getPoliceVarch({
+      ssn,
+      firstName,
+      lastName,
+      patronomicName,
+      birthDate,
+      passport,
+   }: PoliceVarchRequest): Promise<PoliceResponse> {
+      const icApiUrl = this.configService.get<string>('IC_API_URL');
+      if (!icApiUrl) throw new InternalServerErrorException('IC_API_URL is not configured');
+
+      const requestBody = {
+         HAYR: patronomicName || '',
+         SSN: ssn || '',
+         BDATE: birthDate || '',
+         last_name: lastName || '',
+         Passport: passport || '',
+         first_name: firstName || '',
+         STUGOX: this.configService.get<string>('POLICE_REQUEST_STUGOX'),
+         User: this.configService.get<string>('POLICE_REQUEST_USER_NAME'),
+         USER_ID: this.configService.get<string>('POLICE_REQUEST_USER_ID'),
+         PASSWORD: this.configService.get<string>('POLICE_REQUEST_USER_PASSWORD'),
+      };
+
+      const response = await firstValueFrom(
+         this.httpService.request(
+            this.buildOptions(`${icApiUrl}/Tex_Service_Varch/server2_Varch.php`, {
+               customer: JSON.stringify(requestBody),
+            }),
+         ),
+      );
+
+      return (response.data || {}) as PoliceResponse;
    }
 
    buildOptions(url: string, body: Record<string, unknown>) {
