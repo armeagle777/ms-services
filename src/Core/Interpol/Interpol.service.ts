@@ -9,20 +9,21 @@ import type {
 } from 'src/Infrustructure/Services/InterpolIntegration/Models/interpol.types';
 
 import { InterpolIntegration } from 'src/Infrustructure/Services/InterpolIntegration/Interpol.integration';
-
-import { SearchPersonDto } from 'src/API/DTO/Interpol/SearchPerson.dto';
-import { SltdSearchDto } from 'src/ApI/DTO/Interpol/SltdSearch.dto';
+import {
+   InterpolSearchRequestDto,
+   InterpolSltdSearchRequestDto,
+} from 'src/API/DTO/Interpol/interpol.dto';
 
 @Injectable()
 export class InterpolService {
    constructor(private readonly interpolIntegration: InterpolIntegration) {}
 
-   async search(body: SearchPersonDto): Promise<InterpolSearchResponse> {
+   async search(body: InterpolSearchRequestDto): Promise<InterpolSearchResponse> {
       const params = this.normalizeNominalSearch(body);
       return this.interpolIntegration.search(params);
    }
 
-   async sltdSearch(body: SltdSearchDto): Promise<InterpolSltdSearchResponse> {
+   async sltdSearch(body: InterpolSltdSearchRequestDto): Promise<InterpolSltdSearchResponse> {
       const din = (body?.din || '').trim();
       const countryOfRegistration = (body?.countryOfRegistration || '').trim();
       const typeOfDocument = (body?.typeOfDocument || '').trim();
@@ -86,7 +87,7 @@ export class InterpolService {
       return Math.min(Math.floor(numberValue), 100);
    }
 
-   private normalizeNominalSearch(body: SearchPersonDto): InterpolNominalSearchParams {
+   private normalizeNominalSearch(body: InterpolSearchRequestDto): InterpolNominalSearchParams {
       const name = this.normalizeString(body?.name);
       const forename = this.normalizeString(body?.forename);
       const identity = this.normalizeString(body?.identity);
