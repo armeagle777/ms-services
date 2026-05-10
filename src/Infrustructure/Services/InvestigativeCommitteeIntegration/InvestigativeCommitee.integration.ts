@@ -32,8 +32,8 @@ export class InvestigativeCommitteeIntegration {
       const normalizedPnum = (pnum || '').trim();
       const normalizedFirstName = normalizedPnum ? '' : (firstName || '').trim();
       const normalizedLastName = normalizedPnum ? '' : (lastName || '').trim();
-      const normalizedBirthDate = normalizedPnum ? '' : (birthDate || '').trim();
       const normalizedMiddleName = normalizedPnum ? '' : (middleName || '*').trim();
+      const normalizedBirthDate = normalizedPnum ? '' : (birthDate || '').trim();
 
       if (!normalizedPnum && !normalizedFirstName && !normalizedLastName && !normalizedBirthDate) {
          throw new BadRequestException(

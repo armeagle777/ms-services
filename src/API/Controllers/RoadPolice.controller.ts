@@ -1,15 +1,8 @@
-import {
-   Controller,
-   Get,
-   Param,
-   Post,
-   Body,
-   UseGuards,
-   // UseInterceptors
-} from '@nestjs/common';
-import { RoadPoliceService } from 'src/Core/RoadPolice/RoadPolice.service';
+import { Controller, Get, Param, Post, Body, UseGuards, UseInterceptors } from '@nestjs/common';
+
 import { BasicAuthGuard } from 'src/API/Guards/BasicAuth.guard';
-// import { ProtectedRequestLoggingInterceptor } from 'src/API/Interceptors/ProtectedRequestLogging.interceptor';
+import { RoadPoliceService } from 'src/Core/RoadPolice/RoadPolice.service';
+import { ProtectedRequestLoggingInterceptor } from 'src/API/Interceptors/ProtectedRequestLogging.interceptor';
 
 export class VehicleSearchBodyDto {
    searchField!: string;
@@ -18,13 +11,13 @@ export class VehicleSearchBodyDto {
 
 @Controller('road-police')
 @UseGuards(BasicAuthGuard)
-// @UseInterceptors(ProtectedRequestLoggingInterceptor)
+@UseInterceptors(ProtectedRequestLoggingInterceptor)
 export class RoadPoliceController {
    constructor(private readonly roadPoliceService: RoadPoliceService) {}
 
-   @Get('driver-license-and-vehicles/:personId')
-   getPersonDrivingLicenseAndVehicles(@Param() params: { personId: string }) {
-      return this.roadPoliceService.getPersonDrivingLicenseAndVehicles(params.personId);
+   @Get('driver-license-and-vehicles/:ssn')
+   getPersonDrivingLicenseAndVehicles(@Param() params: { ssn: string }) {
+      return this.roadPoliceService.getPersonDrivingLicenseAndVehicles(params.ssn);
    }
 
    @Post('vehicles/search')

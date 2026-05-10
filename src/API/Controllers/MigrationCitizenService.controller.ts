@@ -1,21 +1,14 @@
-import {
-   Body,
-   Controller,
-   Get,
-   Post,
-   Query,
-   UseGuards,
-   // UseInterceptors
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards, UseInterceptors } from '@nestjs/common';
 
-import { MigrationCitizenService } from 'src/Core/MigrationCitizenService/MigrationCitizenService.service';
-import { McsAddressQueryDto, McsSearchPersonsDto } from 'src/API/DTO/Mcs/mcs.dto';
 import { BasicAuthGuard } from 'src/API/Guards/BasicAuth.guard';
-// import { ProtectedRequestLoggingInterceptor } from 'src/API/Interceptors/ProtectedRequestLogging.interceptor';
+import { McsAddressQueryDto } from '../DTO/Mcs/McsAddressQuery.dto';
+import { McsSearchPersonsDto } from '../DTO/Mcs/McsSearchPersons.dto';
+import { MigrationCitizenService } from 'src/Core/MigrationCitizenService/MigrationCitizenService.service';
+import { ProtectedRequestLoggingInterceptor } from 'src/API/Interceptors/ProtectedRequestLogging.interceptor';
 
 @Controller('migration-citizenship-service')
 @UseGuards(BasicAuthGuard)
-// @UseInterceptors(ProtectedRequestLoggingInterceptor)
+@UseInterceptors(ProtectedRequestLoggingInterceptor)
 export class MigrationCitizenServiceController {
    constructor(private readonly mcsService: MigrationCitizenService) {}
 
