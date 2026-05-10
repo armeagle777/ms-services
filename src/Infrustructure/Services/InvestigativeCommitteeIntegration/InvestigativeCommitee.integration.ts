@@ -94,10 +94,10 @@ export class InvestigativeCommitteeIntegration {
          last_name: lastName || '',
          Passport: passport || '',
          first_name: firstName || '',
-         STUGOX: this.configService.get<string>('POLICE_REQUEST_STUGOX'),
-         User: this.configService.get<string>('POLICE_REQUEST_USER_NAME'),
-         USER_ID: this.configService.get<string>('POLICE_REQUEST_USER_ID'),
-         PASSWORD: this.configService.get<string>('POLICE_REQUEST_USER_PASSWORD'),
+         STUGOX: this.configService.get<string>('IC_API_STUGOX'),
+         User: this.configService.get<string>('IC_API_USER_NAME'),
+         USER_ID: this.configService.get<string>('IC_API_USER_ID'),
+         PASSWORD: this.configService.get<string>('IC_API_USER_PASSWORD'),
       };
 
       const response = await firstValueFrom(

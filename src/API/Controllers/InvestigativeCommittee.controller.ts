@@ -23,7 +23,7 @@ export class InvestigativeCommitteeController {
       return this.icService.searchWantedPersons(body);
    }
 
-   @Post('police/varch')
+   @Post('persons/varchakan')
    getPoliceVarch(@Body() body: PoliceVarchDto) {
       return this.icService.getPoliceVarch(body);
    }

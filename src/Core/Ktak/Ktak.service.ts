@@ -5,8 +5,8 @@ import { KtakIntegration } from 'src/Infrustructure/Services/KtakIntegration/Kta
 export class KtakService {
    constructor(private readonly ktakIntegration: KtakIntegration) {}
 
-   async getStudentsDB(pnum: string): Promise<unknown[]> {
-      const data = await this.ktakIntegration.getStudentInfo({ ssn: pnum });
-      return data?.get_student_info_response?.data || [];
+   async getStudentsDB(pnum: string) {
+      const response = await this.ktakIntegration.getStudentInfo({ ssn: pnum });
+      return response;
    }
 }
