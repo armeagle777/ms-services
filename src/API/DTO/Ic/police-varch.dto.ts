@@ -1,11 +1,12 @@
 import {
-   IsNotEmpty,
-   IsOptional,
-   IsString,
-   Validate,
-   ValidationArguments,
-   ValidatorConstraint,
-   ValidatorConstraintInterface,
+    IsNotEmpty,
+    IsOptional,
+    IsString,
+    Matches,
+    Validate,
+    ValidationArguments,
+    ValidatorConstraint,
+    ValidatorConstraintInterface,
 } from 'class-validator';
 
 @ValidatorConstraint({ name: 'policeVarchSearchFields', async: false })
@@ -46,10 +47,10 @@ export class PoliceVarchDto {
    @IsNotEmpty()
    patronomicName?: string;
 
-   @IsOptional()
-   @IsString()
-   @IsNotEmpty()
-   birthDate?: string;
+@IsOptional()
+    @IsString()
+    @Matches(/^\d{4}$/, { message: 'birthDate must be a 4-digit year (e.g. "1998")' })
+    birthDate?: string;
 
    @IsOptional()
    @IsString()
