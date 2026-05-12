@@ -12,17 +12,17 @@ import {
 export class PoliceVarchSearchFields implements ValidatorConstraintInterface {
    validate(_: unknown, args: ValidationArguments) {
       const body = args.object as PoliceVarchDto;
-      const hasSsnAndPassport = this.hasValue(body.ssn) && this.hasValue(body.passport);
+      const hasPassport = this.hasValue(body.passport);
       const hasPersonalData =
          this.hasValue(body.firstName) &&
          this.hasValue(body.lastName) &&
          this.hasValue(body.birthDate);
 
-      return hasSsnAndPassport || hasPersonalData;
+      return hasPassport || hasPersonalData;
    }
 
    defaultMessage() {
-      return 'Provide either ssn and passport, or firstName, lastName and birthDate';
+      return 'Provide either  passport, or firstName, lastName and birthDate';
    }
 
    private hasValue(value?: string) {
@@ -31,11 +31,6 @@ export class PoliceVarchSearchFields implements ValidatorConstraintInterface {
 }
 
 export class PoliceVarchDto {
-   @IsOptional()
-   @IsString()
-   @IsNotEmpty()
-   ssn?: string;
-
    @IsOptional()
    @IsString()
    @IsNotEmpty()
