@@ -16,14 +16,13 @@ export class PoliceVarchSearchFields implements ValidatorConstraintInterface {
       const hasPersonalData =
          this.hasValue(body.firstName) &&
          this.hasValue(body.lastName) &&
-         this.hasValue(body.patronomicName) &&
          this.hasValue(body.birthDate);
 
       return hasSsnAndPassport || hasPersonalData;
    }
 
    defaultMessage() {
-      return 'Provide either ssn and passport, or firstName, lastName, patronomicName and birthDate';
+      return 'Provide either ssn and passport, or firstName, lastName and birthDate';
    }
 
    private hasValue(value?: string) {

@@ -88,7 +88,7 @@ export class InvestigativeCommitteeIntegration {
       if (!icApiUrl) throw new InternalServerErrorException('IC_API_URL is not configured');
 
       const requestBody = {
-         HAYR: patronomicName || '',
+         HAYR: patronomicName || '*',
          SSN: ssn || '',
          BDATE: birthDate || '',
          last_name: lastName || '',
