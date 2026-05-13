@@ -5,6 +5,7 @@ import { firstValueFrom } from 'rxjs';
 import * as qs from 'qs';
 
 import { PoliceResponse } from 'src/Core/Persons/interfaces/persons.interfaces';
+import { parseInfo } from './InvestigativeCommittee.helpers';
 
 export interface PoliceVarchRequest {
    ssn?: string;
@@ -107,6 +108,10 @@ export class InvestigativeCommitteeIntegration {
             }),
          ),
       );
+
+      if (response?.data?.INFO && typeof response.data.INFO === 'string') {
+         response.data.INFO = parseInfo(response.data.INFO);
+      }
 
       return (response.data || {}) as PoliceResponse;
    }
