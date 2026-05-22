@@ -7,6 +7,7 @@ import { XMLParser } from 'fast-xml-parser';
 import { CompanyObligationsQueryDto } from 'src/API/DTO/Tax/tax.dto';
 import {
    EmploymentContractResponse,
+   TaxSsnResponse,
    TaxObligationsResponse,
    TaxPersonObligationsResponse,
 } from './RevenueCommittee.types';
@@ -80,6 +81,17 @@ export class RevenueCommitteeService {
       const response = await firstValueFrom(this.httpService.request(options));
       const data = response.data;
       return data;
+   }
+
+   async getSsnTaxInfo(body: {
+      ssn?: string;
+      start_date?: string;
+      end_date?: string;
+   }): Promise<TaxSsnResponse> {
+      const options = this.employeeContractsClient.buildRequestOptions('/ssn/v1', body);
+
+      const response = await firstValueFrom(this.httpService.request(options));
+      return response.data;
    }
 
    private formatObligationsXmlData(ssn: string) {
