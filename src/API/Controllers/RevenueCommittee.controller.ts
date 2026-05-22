@@ -36,7 +36,7 @@ export class RevenueCommitteeController {
       return this.revenueCommittee.getEmploymentContracts(params.ssn);
    }
 
-   @Post('ssn')
+   @Post('obligations/ssn')
    getSsnTaxInfo(@Body() body: TaxSsnRequestDto) {
       return this.revenueCommittee.getSsnTaxInfo(body);
    }

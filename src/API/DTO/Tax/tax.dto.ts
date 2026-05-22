@@ -6,10 +6,9 @@ export class CompanyObligationsQueryDto {
 }
 
 export class TaxSsnRequestDto {
-   @IsOptional()
    @IsString()
    @IsNotEmpty()
-   ssn?: string;
+   ssn: string;
 
    @IsOptional()
    @IsString()
