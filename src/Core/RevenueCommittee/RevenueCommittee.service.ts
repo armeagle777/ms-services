@@ -88,7 +88,11 @@ export class RevenueCommitteeService {
       start_date?: string;
       end_date?: string;
    }): Promise<TaxSsnResponse> {
-      const options = this.employeeContractsClient.buildRequestOptions('/ssn/v1', body);
+      const ekengRequestProps = {
+         ...body,
+         start_date: body.start_date || '1970-01-01',
+      };
+      const options = this.employeeContractsClient.buildRequestOptions('/ssn/v1', ekengRequestProps);
 
       const response = await firstValueFrom(this.httpService.request(options));
       return response.data;
