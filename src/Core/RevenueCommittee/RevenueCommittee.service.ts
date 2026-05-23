@@ -110,7 +110,7 @@ export class RevenueCommitteeService {
       const ekengRequestProps = {
          ...body,
          start_date: body.start_date || '01.01.1991',
-         end_date: '20.05.2026',
+         end_date: body.end_date || this.getCurrentDateDdMmYyyy(),
       };
       const options = this.employeeContractsClient.buildRequestOptions(
          '/get_tax_info/v1',
@@ -140,5 +140,14 @@ export class RevenueCommitteeService {
    private getEkengRequestsEndDate() {
       const today = new Date();
       return today.toISOString().split('T')[0];
+   }
+
+   private getCurrentDateDdMmYyyy() {
+      const today = new Date();
+      const day = String(today.getDate()).padStart(2, '0');
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const year = today.getFullYear();
+
+      return `${day}.${month}.${year}`;
    }
 }
