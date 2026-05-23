@@ -43,3 +43,37 @@ export interface PersonInfoPeriodItem {
       civilLowContractPayments: number;
    };
 }
+
+export interface GetTaxInfoResponse {
+   PNum?: string;
+   Full_Name?: string;
+   EmployerInfo?: EmployerInfoItem[];
+   Series_Number?: string;
+   Document_Type_Name?: string;
+   [key: string]: unknown;
+}
+
+export interface EmployerInfoItem {
+   TIN?: string;
+   Salary?: MoneyAmount;
+   Address?: string;
+   Benefit?: MoneyAmount;
+   TP_NAME?: string;
+   Net_income?: MoneyAmount;
+   PositionInfo?: PositionInfoItem[];
+   Contract_revenue?: MoneyAmount;
+}
+
+export interface MoneyAmount {
+   sum?: string;
+   currency?: string;
+}
+
+export interface PositionInfoItem {
+   Position?: string;
+   Position_ID?: string;
+   Position_End_Date?: string;
+   Position_Start_Date?: string;
+   Civil_relations_EndDate?: string;
+   Civil_relations_StartDate?: string;
+}
