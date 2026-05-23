@@ -7,6 +7,7 @@ import { XMLParser } from 'fast-xml-parser';
 import { CompanyObligationsQueryDto } from 'src/API/DTO/Tax/tax.dto';
 import {
    EmploymentContractResponse,
+   GetTaxInfoResponse,
    TaxSsnResponse,
    TaxObligationsResponse,
    TaxPersonObligationsResponse,
@@ -94,6 +95,31 @@ export class RevenueCommitteeService {
       };
       const options = this.employeeContractsClient.buildRequestOptions(
          '/ssn/v1',
+         ekengRequestProps,
+      );
+
+      const response = await firstValueFrom(this.httpService.request(options));
+      return response.data;
+   }
+
+   async getTaxInfo(body: {
+      by_ssn?: {
+         ssn?: string;
+         start_date?: string;
+         end_date?: string;
+      };
+   }): Promise<GetTaxInfoResponse> {
+      const ekengRequestProps = {
+         ...body,
+         by_ssn: body.by_ssn
+            ? {
+                 ...body.by_ssn,
+                 start_date: body.by_ssn.start_date || '1970-01-01',
+              }
+            : body.by_ssn,
+      };
+      const options = this.employeeContractsClient.buildRequestOptions(
+         '/get_tax_info/v1',
          ekengRequestProps,
       );
 
