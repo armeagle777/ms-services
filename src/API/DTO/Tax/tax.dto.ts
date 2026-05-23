@@ -22,10 +22,9 @@ export class TaxSsnRequestDto {
 }
 
 export class GetTaxInfoBySsnDto {
-   @IsOptional()
    @IsString()
    @IsNotEmpty()
-   ssn?: string;
+   ssn: string;
 
    @IsOptional()
    @IsString()
@@ -36,9 +35,4 @@ export class GetTaxInfoBySsnDto {
    @IsString()
    @IsNotEmpty()
    end_date?: string;
-}
-
-export class GetTaxInfoRequestDto {
-   @IsOptional()
-   by_ssn?: GetTaxInfoBySsnDto;
 }

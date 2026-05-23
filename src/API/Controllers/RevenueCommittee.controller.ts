@@ -13,7 +13,7 @@ import { RevenueCommitteeService } from 'src/Core/RevenueCommittee/RevenueCommit
 import { SsnParamDto, TinParamDto } from 'src/API/DTO/Tax/params.dto';
 import {
    CompanyObligationsQueryDto,
-   GetTaxInfoRequestDto,
+   GetTaxInfoBySsnDto,
    TaxSsnRequestDto,
 } from 'src/API/DTO/Tax/tax.dto';
 import { BasicAuthGuard } from 'src/API/Guards/BasicAuth.guard';
@@ -45,8 +45,8 @@ export class RevenueCommitteeController {
       return this.revenueCommittee.getSsnTaxInfo(body);
    }
 
-   @Post('tax-info')
-   getTaxInfo(@Body() body: GetTaxInfoRequestDto) {
+   @Post('tax-info/ssn')
+   getTaxInfo(@Body() body: GetTaxInfoBySsnDto) {
       return this.revenueCommittee.getTaxInfo(body);
    }
 }

@@ -103,20 +103,14 @@ export class RevenueCommitteeService {
    }
 
    async getTaxInfo(body: {
-      by_ssn?: {
-         ssn?: string;
-         start_date?: string;
-         end_date?: string;
-      };
+      ssn: string;
+      start_date?: string;
+      end_date?: string;
    }): Promise<GetTaxInfoResponse> {
       const ekengRequestProps = {
          ...body,
-         by_ssn: body.by_ssn
-            ? {
-                 ...body.by_ssn,
-                 start_date: body.by_ssn.start_date || '1970-01-01',
-              }
-            : body.by_ssn,
+         start_date: body.start_date || '01.01.1991',
+         end_date: '20.05.2026',
       };
       const options = this.employeeContractsClient.buildRequestOptions(
          '/get_tax_info/v1',
