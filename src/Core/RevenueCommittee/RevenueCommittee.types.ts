@@ -45,6 +45,11 @@ export interface PersonInfoPeriodItem {
 }
 
 export interface GetTaxInfoResponse {
+   get_tax_info_response?: TaxInfoResponseBody;
+   [key: string]: unknown;
+}
+
+export interface TaxInfoResponseBody {
    PNum?: string;
    Full_Name?: string;
    EmployerInfo?: FilteredEmployerInfoItem[];

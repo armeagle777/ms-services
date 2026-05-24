@@ -11,6 +11,7 @@ import {
    FilteredEmployerInfoItem,
    GetTaxInfoResponse,
    PositionInfoItem,
+   TaxInfoResponseBody,
    TaxSsnResponse,
    TaxObligationsResponse,
    TaxPersonObligationsResponse,
@@ -125,6 +126,17 @@ export class RevenueCommitteeService {
    }
 
    private filterActualTaxInfo(data: GetTaxInfoResponse): GetTaxInfoResponse {
+      if (data?.get_tax_info_response) {
+         return {
+            ...data,
+            get_tax_info_response: this.filterActualTaxInfoBody(data.get_tax_info_response),
+         };
+      }
+
+      return this.filterActualTaxInfoBody(data as TaxInfoResponseBody);
+   }
+
+   private filterActualTaxInfoBody(data: TaxInfoResponseBody): TaxInfoResponseBody {
       return {
          ...data,
          EmployerInfo: this.filterActualEmployerInfo(data?.EmployerInfo as EmployerInfoItem[]),
