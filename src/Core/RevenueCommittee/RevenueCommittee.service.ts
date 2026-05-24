@@ -6,8 +6,11 @@ import { XMLParser } from 'fast-xml-parser';
 
 import { CompanyObligationsQueryDto } from 'src/API/DTO/Tax/tax.dto';
 import {
+   EmployerInfoItem,
    EmploymentContractResponse,
+   FilteredEmployerInfoItem,
    GetTaxInfoResponse,
+   PositionInfoItem,
    TaxSsnResponse,
    TaxObligationsResponse,
    TaxPersonObligationsResponse,
@@ -118,7 +121,42 @@ export class RevenueCommitteeService {
       );
 
       const response = await firstValueFrom(this.httpService.request(options));
-      return response.data;
+      return this.filterActualTaxInfo(response.data);
+   }
+
+   private filterActualTaxInfo(data: GetTaxInfoResponse): GetTaxInfoResponse {
+      return {
+         ...data,
+         EmployerInfo: this.filterActualEmployerInfo(data?.EmployerInfo as EmployerInfoItem[]),
+      };
+   }
+
+   private filterActualEmployerInfo(employerInfo?: EmployerInfoItem[]): FilteredEmployerInfoItem[] {
+      if (!Array.isArray(employerInfo)) return [];
+
+      return employerInfo
+         .map((employerInfoItem) => {
+            const employer = {
+               ...employerInfoItem,
+               PositionInfo: this.filterActualPositionInfo(employerInfoItem.PositionInfo),
+            };
+
+            delete employer.Salary;
+            delete employer.Benefit;
+            delete employer.Net_income;
+            delete employer.Contract_revenue;
+
+            return employer;
+         })
+         .filter((employer) => employer.PositionInfo.length > 0);
+   }
+
+   private filterActualPositionInfo(positionInfo?: PositionInfoItem[]): PositionInfoItem[] {
+      if (!Array.isArray(positionInfo)) return [];
+
+      return positionInfo.filter(
+         (position) => !!position.Position_Start_Date && !position.Position_End_Date,
+      );
    }
 
    private formatObligationsXmlData(ssn: string) {

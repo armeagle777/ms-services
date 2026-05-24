@@ -47,11 +47,16 @@ export interface PersonInfoPeriodItem {
 export interface GetTaxInfoResponse {
    PNum?: string;
    Full_Name?: string;
-   EmployerInfo?: EmployerInfoItem[];
+   EmployerInfo?: FilteredEmployerInfoItem[];
    Series_Number?: string;
    Document_Type_Name?: string;
    [key: string]: unknown;
 }
+
+export type FilteredEmployerInfoItem = Omit<
+   EmployerInfoItem,
+   'Salary' | 'Benefit' | 'Net_income' | 'Contract_revenue'
+>;
 
 export interface EmployerInfoItem {
    TIN?: string;
