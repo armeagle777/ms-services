@@ -87,3 +87,54 @@ export interface PositionInfoItem {
    Civil_relations_EndDate?: string;
    Civil_relations_StartDate?: string;
 }
+
+export interface GetTaxInfoByTinResponse {
+   get_ekeng_info_tin_response?: TaxInfoByTinResponseBody;
+   [key: string]: unknown;
+}
+
+export interface TaxInfoByTinResponseBody {
+   taxInfo?: {
+      taxTypeList?: TaxTypeInfoItem[];
+      totalBalance?: string;
+      singleAccountBalance?: string;
+   };
+   declInfo?: {
+      vatTaxDeclInfo?: string;
+      profitTaxDeclInfo?: {
+         profitWithDecreases?: string;
+         profitForReportingPeriod?: string;
+         profitCalculatedPrepayment?: string;
+         profitTaxEntrepreneurNotar?: string;
+      };
+      turnoverTaxDeclInfo?: string;
+      totalTurnoverActivitiesDeclInfo?: string;
+   };
+   taxPayerInfo?: {
+      tin?: string;
+      taxpayerName?: string;
+   };
+   responseStatus?: {
+      error?: {
+         errorcode?: string;
+         errortext?: string;
+      };
+      statusCode?: number;
+      statusText?: string;
+   };
+   singleAccountPayments?: {
+      amount?: string;
+      toDate?: string;
+      fromDate?: string;
+   };
+   [key: string]: unknown;
+}
+
+export interface TaxTypeInfoItem {
+   fine?: string;
+   name?: string;
+   penalty?: string;
+   liabilityAmount?: string;
+   responseDate?: string;
+   [key: string]: unknown;
+}

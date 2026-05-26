@@ -167,6 +167,75 @@ Only employers with active positions and only active `PositionInfo` entries are 
 
 ---
 
+### Get Tax Info By TIN
+
+```
+POST /revenue-committee/tax-info/tin
+```
+
+**Body:**
+
+```json
+{
+   "tin": "string",
+   "startDate": "string",
+   "endDate": "string",
+   "requestDate": "string"
+}
+```
+
+All request body fields are optional strings as defined by the upstream `get_info_tin/v1` contract.
+
+**Response:**
+
+```ts
+{
+   get_ekeng_info_tin_response?: {
+      taxInfo?: {
+         taxTypeList?: Array<{
+            fine?: string;
+            name?: string;
+            penalty?: string;
+            liabilityAmount?: string;
+            responseDate?: string;
+         }>;
+         totalBalance?: string;
+         singleAccountBalance?: string;
+      };
+      declInfo?: {
+         vatTaxDeclInfo?: string;
+         profitTaxDeclInfo?: {
+            profitWithDecreases?: string;
+            profitForReportingPeriod?: string;
+            profitCalculatedPrepayment?: string;
+            profitTaxEntrepreneurNotar?: string;
+         };
+         turnoverTaxDeclInfo?: string;
+         totalTurnoverActivitiesDeclInfo?: string;
+      };
+      taxPayerInfo?: {
+         tin?: string;
+         taxpayerName?: string;
+      };
+      responseStatus?: {
+         error?: {
+            errorcode?: string;
+            errortext?: string;
+         };
+         statusCode?: number;
+         statusText?: string;
+      };
+      singleAccountPayments?: {
+         amount?: string;
+         toDate?: string;
+         fromDate?: string;
+      };
+   };
+}
+```
+
+---
+
 ## Road Police
 
 ### Get Person Driving License and Vehicles

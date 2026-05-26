@@ -4,11 +4,12 @@ import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 import { XMLParser } from 'fast-xml-parser';
 
-import { CompanyObligationsQueryDto } from 'src/API/DTO/Tax/tax.dto';
+import { CompanyObligationsQueryDto, GetTaxInfoByTinDto } from 'src/API/DTO/Tax/tax.dto';
 import {
    EmployerInfoItem,
    EmploymentContractResponse,
    FilteredEmployerInfoItem,
+   GetTaxInfoByTinResponse,
    GetTaxInfoResponse,
    PositionInfoItem,
    TaxInfoResponseBody,
@@ -123,6 +124,19 @@ export class RevenueCommitteeService {
 
       const response = await firstValueFrom(this.httpService.request(options));
       return this.filterActualTaxInfo(response.data);
+   }
+
+   async getTaxInfoByTin(body: GetTaxInfoByTinDto): Promise<GetTaxInfoByTinResponse> {
+      const ekengRequestProps = { ...body };
+      const options = this.revenueCommittee.buildRequestOptions(
+         '/get_info_tin/v1',
+         ekengRequestProps,
+      );
+      const response = await firstValueFrom(
+         this.httpService.request<GetTaxInfoByTinResponse>(options),
+      );
+
+      return response.data;
    }
 
    private filterActualTaxInfo(data: GetTaxInfoResponse): GetTaxInfoResponse {

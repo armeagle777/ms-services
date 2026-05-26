@@ -48,3 +48,24 @@ export class GetTaxInfoBySsnDto {
    })
    end_date?: string;
 }
+
+export class GetTaxInfoByTinDto {
+   @IsString()
+   @IsNotEmpty()
+   tin: string;
+
+   @IsOptional()
+   @IsString()
+   @IsNotEmpty()
+   endDate?: string;
+
+   @IsOptional()
+   @IsString()
+   @IsNotEmpty()
+   startDate?: string;
+
+   @IsOptional()
+   @IsString()
+   @IsNotEmpty()
+   requestDate?: string;
+}
