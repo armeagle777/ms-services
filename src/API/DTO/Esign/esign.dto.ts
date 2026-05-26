@@ -1,3 +1,5 @@
+import { IsIn, IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator';
+
 export class CreateEsignProfileDto {
    userData!: {
       first_name_en?: string;
@@ -11,7 +13,17 @@ export class CreateEsignProfileDto {
 }
 
 export class RevokeEsignProfileDto {
+   @IsString()
+   @IsNotEmpty()
    ssn!: string;
+
+   @IsOptional()
+   @IsInt()
+   @Min(0)
    reasonCode?: number;
+
+   @IsOptional()
+   @IsInt()
+   @IsIn([0, 1])
    deleteUser?: number;
 }

@@ -557,6 +557,34 @@ GET /artsakh/displacements/:pnum
 
 ---
 
+## ESign
+
+### Revoke Profile
+
+```
+POST /esign/revoke-profile/ejbcaws
+```
+
+**Body:**
+
+```json
+{
+   "ssn": "string",
+   "reasonCode": 0,
+   "deleteUser": 1
+}
+```
+
+**Validation:**
+
+- `ssn` is required and must be a non-empty string.
+- `reasonCode` is optional, must be a non-negative integer, and defaults to `0`.
+- `deleteUser` is optional, must be `0` or `1`, and defaults to `1`.
+
+The endpoint sends the EJBCA `revokeUser` request and returns the upstream SOAP response.
+
+---
+
 ## Common HTTP Errors
 
 - `400 Bad Request`: Request body validation failed, usually because a required field is missing or a date format is invalid.

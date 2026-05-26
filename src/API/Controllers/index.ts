@@ -12,3 +12,4 @@ export { CivilActsRegistrationController } from './CivilActsRegistration.control
 export { SektController } from './Sekt.controller';
 export { RoadPoliceController } from './RoadPolice.controller';
 export { KtakController } from './Ktak.controller';
+export { EsignController } from './Esign.controller';
