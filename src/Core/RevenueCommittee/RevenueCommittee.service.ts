@@ -129,7 +129,14 @@ export class RevenueCommitteeService {
    }
 
    async getTaxInfoByTin(body: GetTaxInfoByTinDto): Promise<GetTaxInfoByTinResponse> {
-      const ekengRequestProps = { ...body };
+      const currentDate = this.getEkengRequestsEndDate();
+      const ekengRequestProps = {
+         tin: this.trimOptionalString(body.tin),
+         startDate: this.trimOptionalString(body.startDate) || '1970-01-01',
+         endDate: this.trimOptionalString(body.endDate) || currentDate,
+         requestDate: this.trimOptionalString(body.requestDate) || currentDate,
+      };
+
       const options = this.revenueCommitteeTinInfo.buildRequestOptions(
          '/get_info_tin/v1',
          ekengRequestProps,
@@ -206,6 +213,10 @@ export class RevenueCommitteeService {
    private getEkengRequestsEndDate() {
       const today = new Date();
       return today.toISOString().split('T')[0];
+   }
+
+   private trimOptionalString(value?: string) {
+      return (value || '').trim();
    }
 
    private getCurrentDateDdMmYyyy() {
