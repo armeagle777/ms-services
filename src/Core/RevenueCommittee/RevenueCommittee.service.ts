@@ -19,6 +19,7 @@ import {
 } from './RevenueCommittee.types';
 import { RevenueCommitteeIntegration } from 'src/Infrustructure/Services/RevenueCommitteeIntegration/RevenueCommittee.integration';
 import { EmploymentContractsIntegration } from 'src/Infrustructure/Services/RevenueCommitteeEmploymentIntegration/RevenueCommitteeEmployment.integration';
+import { RevenueCommitteeTinInfoIntegration } from 'src/Infrustructure/Services/RevenueCommitteeTinInfoIntegration/RevenueCommitteeTinInfo.integration';
 
 @Injectable()
 export class RevenueCommitteeService {
@@ -32,6 +33,7 @@ export class RevenueCommitteeService {
       private readonly configService: ConfigService,
       private readonly revenueCommittee: RevenueCommitteeIntegration,
       private readonly employeeContractsClient: EmploymentContractsIntegration,
+      private readonly revenueCommitteeTinInfo: RevenueCommitteeTinInfoIntegration,
    ) {}
 
    async getCompanyObligations(
@@ -128,7 +130,7 @@ export class RevenueCommitteeService {
 
    async getTaxInfoByTin(body: GetTaxInfoByTinDto): Promise<GetTaxInfoByTinResponse> {
       const ekengRequestProps = { ...body };
-      const options = this.revenueCommittee.buildRequestOptions(
+      const options = this.revenueCommitteeTinInfo.buildRequestOptions(
          '/get_info_tin/v1',
          ekengRequestProps,
       );

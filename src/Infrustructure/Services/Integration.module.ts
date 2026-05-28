@@ -9,6 +9,7 @@ import { CadastreClientIntegration } from './CadastreClientIntegration/CadastreC
 import { MigrationCitizenServiceIntegration } from './MigrationCitizenServiceIntegration/MigrationCitizenService.integration';
 import { MinistryOfJusticeIntegration } from './MinistryOfJusticeIntegration/MinistryOfJustice.integration';
 import { RevenueCommitteeIntegration } from './RevenueCommitteeIntegration/RevenueCommittee.integration';
+import { RevenueCommitteeTinInfoIntegration } from './RevenueCommitteeTinInfoIntegration/RevenueCommitteeTinInfo.integration';
 import { EmploymentContractsIntegration } from './RevenueCommitteeEmploymentIntegration/RevenueCommitteeEmployment.integration';
 import { StatePopulationRegisterIntegration } from './StatePopulationRegisterIntegration/StatePopulationRegister.integration';
 import { TaxServiceIntegration } from './TaxServiceIntegration/TaxService.integration';
@@ -30,6 +31,7 @@ import { PkiClientIntegration } from './PkiClientIntegration/PkiClient.integrati
       MigrationCitizenServiceIntegration,
       MinistryOfJusticeIntegration,
       RevenueCommitteeIntegration,
+      RevenueCommitteeTinInfoIntegration,
       EmploymentContractsIntegration,
       StatePopulationRegisterIntegration,
       TaxServiceIntegration,
@@ -49,6 +51,7 @@ import { PkiClientIntegration } from './PkiClientIntegration/PkiClient.integrati
       MigrationCitizenServiceIntegration,
       MinistryOfJusticeIntegration,
       RevenueCommitteeIntegration,
+      RevenueCommitteeTinInfoIntegration,
       EmploymentContractsIntegration,
       StatePopulationRegisterIntegration,
       TaxServiceIntegration,
