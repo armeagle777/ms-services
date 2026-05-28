@@ -134,7 +134,7 @@ export class RevenueCommitteeService {
          tin: this.trimOptionalString(body.tin),
          startDate: this.trimOptionalString(body.startDate) || '1970-01-01',
          endDate: this.trimOptionalString(body.endDate) || currentDate,
-         requestDate: this.trimOptionalString(body.requestDate) || currentDate,
+         requestDate: currentDate,
       };
 
       const options = this.revenueCommitteeTinInfo.buildRequestOptions(

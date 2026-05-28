@@ -178,13 +178,17 @@ POST /revenue-committee/tax-info/tin
 ```json
 {
    "tin": "string",
-   "startDate": "string",
-   "endDate": "string",
-   "requestDate": "string"
+   "startDate": "YYYY-MM-DD",
+   "endDate": "YYYY-MM-DD"
 }
 ```
 
-All request body fields are optional strings as defined by the upstream `get_info_tin/v1` contract.
+**Validation:**
+
+- `tin` is required and must be a non-empty string.
+- `startDate`, `endDate` are optional non-empty strings when provided.
+- Dates should use `YYYY-MM-DD` format.
+- When omitted or blank after trimming, `startDate` defaults to `1970-01-01`, and `endDate` default to the current date.
 
 **Response:**
 
@@ -609,7 +613,6 @@ The endpoint returns the `get_student_info_response.data` array from Ktak. If no
 ```
 
 ---
-
 
 ## Artsakh
 
