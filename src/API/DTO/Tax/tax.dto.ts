@@ -57,15 +57,16 @@ export class GetTaxInfoByTinDto {
    @IsOptional()
    @IsString()
    @IsNotEmpty()
+   @Matches(/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/, {
+      message: 'endDate must be in yyyy-mm-dd format',
+   })
    endDate?: string;
 
    @IsOptional()
    @IsString()
    @IsNotEmpty()
+   @Matches(/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/, {
+      message: 'startDate must be in yyyy-mm-dd format',
+   })
    startDate?: string;
-
-   @IsOptional()
-   @IsString()
-   @IsNotEmpty()
-   requestDate?: string;
 }
