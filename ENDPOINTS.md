@@ -4,6 +4,11 @@ This document describes all available API endpoints, their methods, parameters, 
 
 **Base URL:** `http://localhost:3000/api`
 
+## OpenAPI Documentation
+
+- Swagger UI: `http://localhost:3000/api/docs`
+- OpenAPI JSON: `http://localhost:3000/api/docs-json`
+
 ## Authentication
 
 All endpoints require authentication via:
