@@ -37,6 +37,48 @@ GET /revenue-committee/company/:tin/obligations
 | `startDate` | string | No | Start date (YYYY-MM-DD) |
 | `endDate` | string | No | End date (YYYY-MM-DD) |
 
+**Response:**
+
+```ts
+{
+   taxInfo?: {
+      taxTypeList?: Array<{
+         fine?: string;
+         name?: string;
+         penalty?: string;
+         liabilityAmount?: string;
+      }>;
+      responseDate?: string;
+      totalBalance?: string;
+      singleAccountBalance?: string;
+   };
+   declInfo?: {
+      vatTaxDeclInfo?: string;
+      profitTaxDeclInfo?: {
+         profitWithDecreases?: string;
+         profitForReportingPeriod?: string;
+         profitCalculatedPrepayment?: string;
+         profitTaxEntrepreneurNotar?: string;
+      };
+      turnoverTaxDeclInfo?: string;
+      totalTurnoverActivitiesDeclInfo?: string;
+   };
+   taxPayerInfo?: {
+      tin?: string;
+      taxpayerName?: string;
+   };
+   responseStatus?: {
+      statusCode?: number;
+      statusText?: string;
+   };
+   singleAccountPayments?: {
+      amount?: string;
+      toDate?: string;
+      fromDate?: string;
+   };
+}
+```
+
 ---
 
 ### Get Person Obligations
@@ -50,6 +92,50 @@ GET /revenue-committee/person/:ssn/obligations
 |-----------|------|----------|-------------|
 | `ssn` | string | Yes | Social Security Number |
 
+**Response:**
+
+```ts
+{
+   Date?: string;
+   TIN?: number;
+   PSN?: number;
+   Taxpayer?: string;
+   BirthDate?: string;
+   Result?: string;
+   JurLocation?: {
+      Region?: string;
+      Community?: string;
+      Location?: string;
+      Street?: string;
+      Building?: number;
+      Apartment?: number;
+   };
+   InFactLocation?: {
+      Region?: string;
+      Community?: string;
+      Location?: string;
+      Street?: string;
+      Building?: number;
+      Apartment?: number;
+   };
+   TaxDebts?: {
+      VAT?: TaxDebt;
+      TurnoverTax?: TaxDebt;
+      SocialFee?: TaxDebt;
+      Patent?: TaxDebt;
+      Other?: TaxDebt;
+      TotalTaxes?: TaxDebt;
+   };
+}
+
+type TaxDebt = {
+   Liability?: number;
+   Fine?: number;
+   Penalty?: number;
+   Total?: number;
+}
+```
+
 ---
 
 ### Get Employment Contracts
@@ -62,6 +148,52 @@ GET /revenue-committee/employment-contracts/:ssn
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `ssn` | string | Yes | Social Security Number |
+
+**Response:**
+
+```ts
+{
+   employment_contract?: {
+      data?: {
+         contracts?: Array<{
+            term?: string;
+            type?: string;
+            number?: string;
+            signer?: {
+               name?: string;
+               surname?: string;
+               position?: string;
+            };
+            employee?: {
+               ssn?: string;
+               name?: string;
+               email?: string;
+               surname?: string;
+               document?: string;
+               patronymic?: string;
+            };
+            employer?: {
+               tin?: string;
+               name?: string;
+               representative?: {
+                  name?: string;
+                  surname?: string;
+                  position?: string;
+               };
+            };
+            position?: string;
+            work_start_date?: string;
+            termination_order?: unknown | null;
+            amendment_agreements?: unknown | null;
+         }>;
+      };
+      errors?: unknown | null;
+      message?: string;
+      success?: boolean;
+      response_id?: string;
+   };
+}
+```
 
 ---
 
