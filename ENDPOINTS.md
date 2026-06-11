@@ -768,6 +768,56 @@ GET /artsakh/displacements/:pnum
 
 ## ESign
 
+### Create Profile
+
+```
+POST /esign/create-profile/ejbcaws
+```
+
+**Body:**
+
+```json
+{
+   "userData": {
+      "firstNameEng": "string",
+      "lastNameEng": "string",
+      "ssn": "string",
+      "firstName": "string",
+      "lastName": "string"
+   },
+   "isRaCitizen": true
+}
+```
+
+**Validation:**
+
+- `userData` is required and must be an object.
+- `userData.firstNameEng` is required and must be a non-empty string.
+- `userData.lastNameEng` is required and must be a non-empty string.
+- `userData.ssn` is required and must be a non-empty string.
+- `userData.firstName` is required and must be a non-empty string.
+- `userData.lastName` is required and must be a non-empty string.
+- `isRaCitizen` is optional and must be a boolean when provided.
+
+The endpoint creates or updates the EJBCA user through `editUser` and returns the generated password together with the upstream SOAP response.
+
+### Find Profile
+
+```
+GET /esign/find-profile/ejbcaws/:ssn
+```
+
+**Path Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `ssn` | string | Yes | Social security number used as `findUser.matchvalue` |
+
+**Validation:**
+
+- `ssn` is required and must be a non-empty string.
+
+The endpoint sends the EJBCA `findUser` request and returns the parsed SOAP response entries.
+
 ### Revoke Profile
 
 ```
