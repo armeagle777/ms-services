@@ -1,14 +1,46 @@
-import { IsIn, IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+   IsBoolean,
+   IsIn,
+   IsInt,
+   IsNotEmpty,
+   IsObject,
+   IsOptional,
+   IsString,
+   Min,
+   ValidateNested,
+} from 'class-validator';
+
+class CreateEsignUserDataDto {
+   @IsString()
+   @IsNotEmpty()
+   firstNameEng!: string;
+
+   @IsString()
+   @IsNotEmpty()
+   lastNameEng!: string;
+
+   @IsString()
+   @IsNotEmpty()
+   ssn!: string;
+
+   @IsString()
+   @IsNotEmpty()
+   firstName!: string;
+
+   @IsString()
+   @IsNotEmpty()
+   lastName!: string;
+}
 
 export class CreateEsignProfileDto {
-   userData!: {
-      first_name_en?: string;
-      last_name_en?: string;
-      ssn?: string;
-      first_name_am?: string;
-      last_name_am?: string;
-      [key: string]: unknown;
-   };
+   @IsObject()
+   @ValidateNested()
+   @Type(() => CreateEsignUserDataDto)
+   userData!: CreateEsignUserDataDto;
+
+   @IsOptional()
+   @IsBoolean()
    isRaCitizen?: boolean;
 }
 
