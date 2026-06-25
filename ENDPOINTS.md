@@ -840,7 +840,7 @@ POST /esign/revoke-profile/ejbcaws
 - `reasonCode` is optional, must be a non-negative integer, and defaults to `0`.
 - `deleteUser` is optional, must be `0` or `1`, and defaults to `1`.
 
-The endpoint sends the EJBCA `revokeUser` request and returns the upstream SOAP response.
+The endpoint sends the EJBCA `revokeUser` request and returns the ups
 
 ---
 
