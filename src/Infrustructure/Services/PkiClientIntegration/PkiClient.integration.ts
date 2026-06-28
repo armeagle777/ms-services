@@ -18,6 +18,10 @@ export interface RevokePkiUserRequest {
    deleteUser?: number;
 }
 
+export interface RevokePkiUserResponse {
+   status: 'success';
+}
+
 export interface CreatePkiUserRequest {
    userData: {
       first_name_en?: string;
@@ -54,7 +58,7 @@ export class PkiClientIntegration {
       });
    }
 
-   async revokeUser(request: RevokePkiUserRequest): Promise<string> {
+   async revokeUser(request: RevokePkiUserRequest): Promise<RevokePkiUserResponse | string> {
       if (!this.baseUrl) {
          throw new InternalServerErrorException('ESIGN_PKI_API_URL is not configured');
       }
@@ -62,7 +66,7 @@ export class PkiClientIntegration {
       const soapBody = this.buildRevokeUserSoap(request);
       const { data } = await this.postSoap<string>(soapBody);
 
-      return data;
+      return this.parseRevokeUserResponse(data);
    }
 
    async createUser(request: CreatePkiUserRequest): Promise<{ password: string; data: string }> {
@@ -100,6 +104,24 @@ export class PkiClientIntegration {
       }
 
       return this.normalizeFindUserResult(body?.findUserResponse?.return ?? []);
+   }
+
+   parseRevokeUserResponse(xml: string): RevokePkiUserResponse | string {
+      const parsed = this.xmlParser.parse(xml);
+      const body = parsed?.Envelope?.Body;
+
+      if (body?.Fault) {
+         return xml;
+      }
+
+      if (
+         body?.revokeUserResponse &&
+         !Object.prototype.hasOwnProperty.call(body.revokeUserResponse, 'return')
+      ) {
+         return { status: 'success' };
+      }
+
+      return xml;
    }
 
    buildRevokeUserSoap({ ssn, reasonCode = 0, deleteUser = 1 }: RevokePkiUserRequest): string {

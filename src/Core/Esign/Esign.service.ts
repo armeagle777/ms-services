@@ -3,6 +3,7 @@ import { CreateEsignProfileDto } from 'src/API/DTO/Esign/esign.dto';
 import {
    PkiClientIntegration,
    RevokePkiUserRequest,
+   RevokePkiUserResponse,
 } from 'src/Infrustructure/Services/PkiClientIntegration/PkiClient.integration';
 
 @Injectable()
@@ -27,7 +28,7 @@ export class EsignService {
       return this.pkiClient.parseFindUserResponse(response);
    }
 
-   revokeProfile(request: RevokePkiUserRequest): Promise<string> {
+   revokeProfile(request: RevokePkiUserRequest): Promise<RevokePkiUserResponse | string> {
       return this.pkiClient.revokeUser(request);
    }
 }
