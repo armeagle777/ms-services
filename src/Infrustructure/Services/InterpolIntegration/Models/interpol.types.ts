@@ -85,6 +85,11 @@ export type InterpolNominalSearchParams = {
    identity?: string;
    entityId?: string;
    nbRecord: number;
+   /**
+    * Maps to the `Rankthreshold` parameter of the FIND `SearchEx` operation.
+    * Higher means stricter/more relevant; 10 returns only exact matches.
+    */
+   rankThreshold: number;
 };
 
 export type InterpolDetailsResponse = BaseResponse & {

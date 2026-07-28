@@ -51,6 +51,7 @@ export class InterpolIntegration {
       identity,
       entityId,
       nbRecord,
+      rankThreshold,
    }: InterpolNominalSearchParams): Promise<InterpolSearchResponse> {
       const parts = [];
       if (name) parts.push(`<tns:Name>${this.xmlEscape(name)}</tns:Name>`);
@@ -62,12 +63,15 @@ export class InterpolIntegration {
       if (identity) parts.push(`<tns:Identity>${this.xmlEscape(identity)}</tns:Identity>`);
       if (entityId) parts.push(`<tns:EntityId>${this.xmlEscape(entityId)}</tns:EntityId>`);
       parts.push(`<tns:NbRecord>${Number(nbRecord)}</tns:NbRecord>`);
+      // SearchEx-only parameter. Keeps only the most relevant results; the Core layer
+      // guarantees a valid value here (defaulting to the strictest one).
+      parts.push(`<tns:Rankthreshold>${Number(rankThreshold)}</tns:Rankthreshold>`);
 
-      const body = `        <tns:Search>
+      const body = `        <tns:SearchEx>
             ${parts.join('')}
-        </tns:Search>`;
+        </tns:SearchEx>`;
 
-      const { status, xml } = await this.soapCall('Search', body, true, 60000);
+      const { status, xml } = await this.soapCall('SearchEx', body, true, 60000);
       const fault = this.extractSoapFault(xml);
       const basicFields = this.parseBasicFields(xml);
       const resultCodeMeta = this.evaluateResultCode(basicFields.resultCode);

@@ -14,6 +14,18 @@ import {
    InterpolSltdSearchRequestDto,
 } from 'src/API/DTO/Interpol/interpol.dto';
 
+/**
+ * Bounds for the INTERPOL FIND `Rankthreshold` (SearchEx) parameter.
+ *
+ * The FIND 1.2 nominal service reference does not publish an explicit range; it only
+ * documents that "a threshold of 10 only return exact match on name, forename and date
+ * of birth". We therefore treat 10 as the strictest/most relevant value and 0 as the
+ * loosest, and default to the strictest when the client does not supply a score.
+ */
+const RANK_THRESHOLD_MIN = 0;
+const RANK_THRESHOLD_MAX = 10;
+const RANK_THRESHOLD_DEFAULT = RANK_THRESHOLD_MAX;
+
 @Injectable()
 export class InterpolService {
    constructor(private readonly interpolIntegration: InterpolIntegration) {}
@@ -87,6 +99,33 @@ export class InterpolService {
       return Math.min(Math.floor(numberValue), 100);
    }
 
+   /**
+    * Resolves the `Rankthreshold` sent to INTERPOL.
+    *
+    * When the client supplies a score it must be an integer within
+    * [RANK_THRESHOLD_MIN, RANK_THRESHOLD_MAX] — anything else is rejected rather than
+    * silently coerced, so callers cannot accidentally widen the search. When no score is
+    * supplied we fall back to the strictest value, i.e. the most relevant search.
+    */
+   private parseRankThreshold(score?: number | string) {
+      if (score === undefined || score === null || score === '') {
+         return RANK_THRESHOLD_DEFAULT;
+      }
+
+      const numberValue = Number(score);
+      if (
+         !Number.isInteger(numberValue) ||
+         numberValue < RANK_THRESHOLD_MIN ||
+         numberValue > RANK_THRESHOLD_MAX
+      ) {
+         throw new BadRequestException(
+            `score must be an integer between ${RANK_THRESHOLD_MIN} and ${RANK_THRESHOLD_MAX}, where ${RANK_THRESHOLD_MAX} is the most relevant (exact) match.`,
+         );
+      }
+
+      return numberValue;
+   }
+
    private normalizeNominalSearch(body: InterpolSearchRequestDto): InterpolNominalSearchParams {
       const name = this.normalizeString(body?.name);
       const forename = this.normalizeString(body?.forename);
@@ -98,6 +137,7 @@ export class InterpolService {
       const ageMin = this.parseAge(body?.ageMin, 'ageMin');
       const ageMax = this.parseAge(body?.ageMax, 'ageMax');
       const nbRecord = this.parseNbRecord(body?.nbRecord ?? body?.nb);
+      const rankThreshold = this.parseRankThreshold(body?.score);
 
       const hasNameSearch = Boolean(name);
       const hasIdentitySearch = Boolean(identity);
@@ -154,6 +194,7 @@ export class InterpolService {
          identity,
          entityId,
          nbRecord,
+         rankThreshold,
       };
    }
 
