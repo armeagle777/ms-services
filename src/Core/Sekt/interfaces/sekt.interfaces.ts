@@ -26,5 +26,5 @@ export interface ExtendedBordercrossResponse {
    crossingList?: BordercrossCrossing[];
    residencePermitList?: BordercrossResidencePermit[];
    documentNumberList?: BordercrossDocumentNumber[];
-   restrictedInfo?: number;
+   restrictedInfo?: 0 | 1;
 }

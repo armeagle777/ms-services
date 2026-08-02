@@ -477,36 +477,30 @@ POST /sekt/bordercross-extended
 
 **Response:**
 
-```json
+```ts
 {
-   "crossingList": [
-      {
-         "direction": "IN",
-         "datetime": "2026-01-29T02:54:21.899+04:00",
-         "name": "ACHRAF",
-         "surname": "KARBOUCHA",
-         "birthDate": "1996-10-10T00:00:00+04:00",
-         "passport": "ZR4321412",
-         "status": "APPROVED"
-      }
-   ],
-   "residencePermitList": [
-      {
-         "type": "TEMPORARY",
-         "cardNumber": "AA09005",
-         "cardIssued": "2025-04-03T00:00:00+04:00",
-         "cardValid": "2026-04-03T00:00:00+04:00",
-         "status": "valid"
-      }
-   ],
-   "documentNumberList": [
-      {
-         "docNr": "ZR4321412",
-         "countryCode": "MAR",
-         "country": "MOROCCO"
-      }
-   ],
-   "restrictedInfo": 0
+   crossingList?: Array<{
+      direction: string;
+      datetime: string;
+      name: string;
+      surname: string;
+      birthDate: string;
+      passport: string;
+      status: string;
+   }>;
+   residencePermitList?: Array<{
+      type: string;
+      cardNumber: string;
+      cardIssued: string;
+      cardValid: string;
+      status: string;
+   }>;
+   documentNumberList?: Array<{
+      docNr: string;
+      countryCode: string;
+      country: string;
+   }>;
+   restrictedInfo?: 0 | 1;
 }
 ```
 
