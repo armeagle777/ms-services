@@ -1,9 +1,8 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import {
-   SektIntegration,
-   SektRequest,
-} from 'src/Infrustructure/Services/SektIntegration/Sekt.integration';
+import { SektIntegration } from 'src/Infrustructure/Services/SektIntegration/Sekt.integration';
+import { SektRequest } from 'src/Infrustructure/Services/SektIntegration/Models/sekt.types';
 import { BordercrossResponse } from 'src/Core/Persons/interfaces/persons.interfaces';
+import { ExtendedBordercrossResponse } from 'src/Core/Sekt/interfaces/sekt.interfaces';
 
 @Injectable()
 export class SektService {
@@ -31,5 +30,36 @@ export class SektService {
 
       const { visaList, crossingList, residencePermitList } = data;
       return { visaList, crossingList, residencePermitList } as BordercrossResponse;
+   }
+
+   async getExtendedBordercrossInfo(
+      passportNumber: string,
+      citizenship: string,
+   ): Promise<ExtendedBordercrossResponse> {
+      if (!passportNumber || !citizenship) {
+         throw new BadRequestException('Missing fields');
+      }
+
+      const request: SektRequest = {
+         passportNumber,
+         citizenship,
+      };
+
+      const jsonData = await this.sektIntegration.getExtendedBordercrossInfo(request);
+      const data = jsonData?.data as
+         | (ExtendedBordercrossResponse & { status?: string })
+         | undefined;
+
+      if (!data?.status || data.status !== 'ok') {
+         return {};
+      }
+
+      const { crossingList, residencePermitList, documentNumberList, restrictedInfo } = data;
+      return {
+         crossingList,
+         residencePermitList,
+         documentNumberList,
+         restrictedInfo,
+      } as ExtendedBordercrossResponse;
    }
 }

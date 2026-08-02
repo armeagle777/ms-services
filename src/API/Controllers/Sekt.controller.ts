@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 
 import { SektService } from 'src/Core/Sekt/Sekt.service';
-import { BordercrossRequestDto } from 'src/API/DTO/Persons';
+import { BordercrossRequestDto, ExtendedBordercrossRequestDto } from 'src/API/DTO/Persons';
 import { BasicAuthGuard } from 'src/API/Guards/BasicAuth.guard';
 // import { ProtectedRequestLoggingInterceptor } from 'src/API/Interceptors/ProtectedRequestLogging.interceptor';
 
@@ -20,5 +20,10 @@ export class SektController {
    @Post('bordercross')
    getBordercrossBySsn(@Body() body: BordercrossRequestDto) {
       return this.sektService.getBordercrossBySsn(body.passportNumber, body.citizenship);
+   }
+
+   @Post('bordercross-extended')
+   getExtendedBordercrossInfo(@Body() body: ExtendedBordercrossRequestDto) {
+      return this.sektService.getExtendedBordercrossInfo(body.passportNumber, body.citizenship);
    }
 }

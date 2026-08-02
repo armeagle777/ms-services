@@ -456,6 +456,64 @@ POST /sekt/bordercross
 
 ---
 
+### Get Extended Border Cross Data
+
+```
+POST /sekt/bordercross-extended
+```
+
+**Body:**
+
+```json
+{
+   "passportNumber": "string",
+   "citizenship": "string"
+}
+```
+
+**Validation:**
+
+`passportNumber` and `citizenship` are both required, non-empty strings.
+
+**Response:**
+
+```json
+{
+   "crossingList": [
+      {
+         "direction": "IN",
+         "datetime": "2026-01-29T02:54:21.899+04:00",
+         "name": "ACHRAF",
+         "surname": "KARBOUCHA",
+         "birthDate": "1996-10-10T00:00:00+04:00",
+         "passport": "ZR4321412",
+         "status": "APPROVED"
+      }
+   ],
+   "residencePermitList": [
+      {
+         "type": "TEMPORARY",
+         "cardNumber": "AA09005",
+         "cardIssued": "2025-04-03T00:00:00+04:00",
+         "cardValid": "2026-04-03T00:00:00+04:00",
+         "status": "valid"
+      }
+   ],
+   "documentNumberList": [
+      {
+         "docNr": "ZR4321412",
+         "countryCode": "MAR",
+         "country": "MOROCCO"
+      }
+   ],
+   "restrictedInfo": 0
+}
+```
+
+If the upstream response status is not `ok`, an empty object (`{}`) is returned.
+
+---
+
 ## Civil Acts Registration
 
 ### Get Civil Acts Info By SSN
