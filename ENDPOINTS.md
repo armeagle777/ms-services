@@ -456,6 +456,58 @@ POST /sekt/bordercross
 
 ---
 
+### Get Extended Border Cross Data
+
+```
+POST /sekt/bordercross-extended
+```
+
+**Body:**
+
+```json
+{
+   "passportNumber": "string",
+   "citizenship": "string"
+}
+```
+
+**Validation:**
+
+`passportNumber` and `citizenship` are both required, non-empty strings.
+
+**Response:**
+
+```ts
+{
+   crossingList?: Array<{
+      direction: string;
+      datetime: string;
+      name: string;
+      surname: string;
+      birthDate: string;
+      passport: string;
+      status: string;
+   }>;
+   residencePermitList?: Array<{
+      type: string;
+      cardNumber: string;
+      cardIssued: string;
+      cardValid: string;
+      status: string;
+   }>;
+   documentNumberList?: Array<{
+      docNr: string;
+      countryCode: string;
+      country: string;
+   }>;
+   restrictedInfo?: 0 | 1;
+}
+```
+
+If the upstream response status is not `ok`, an empty object (`{}`) is returned.
+
+---
+
 ## Civil Acts Registration
 
 ### Get Civil Acts Info By SSN
