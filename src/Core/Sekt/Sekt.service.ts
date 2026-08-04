@@ -54,8 +54,10 @@ export class SektService {
          return {};
       }
 
-      const { crossingList, residencePermitList, documentNumberList, restrictedInfo } = data;
+      const { visaList, crossingList, residencePermitList, documentNumberList, restrictedInfo } =
+         data;
       return {
+         visaList,
          crossingList,
          residencePermitList,
          documentNumberList,

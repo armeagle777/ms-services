@@ -1,3 +1,13 @@
+export interface BordercrossVisa {
+   visaNumber: number;
+   visaType: string;
+   code: string;
+   allowedDays: number;
+   validFrom: string;
+   validTo: string;
+   status: string;
+}
+
 export interface BordercrossCrossing {
    direction: string;
    datetime: string;
@@ -23,6 +33,7 @@ export interface BordercrossDocumentNumber {
 }
 
 export interface ExtendedBordercrossResponse {
+   visaList?: BordercrossVisa[];
    crossingList?: BordercrossCrossing[];
    residencePermitList?: BordercrossResidencePermit[];
    documentNumberList?: BordercrossDocumentNumber[];

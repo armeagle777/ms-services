@@ -479,6 +479,15 @@ POST /sekt/bordercross-extended
 
 ```ts
 {
+   visaList?: Array<{
+      visaNumber: number;
+      visaType: string;
+      code: string;
+      allowedDays: number;
+      validFrom: string;
+      validTo: string;
+      status: string;
+   }>;
    crossingList?: Array<{
       direction: string;
       datetime: string;
