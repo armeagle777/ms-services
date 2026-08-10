@@ -4,6 +4,8 @@ import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'crypto';
 import { XMLParser } from 'fast-xml-parser';
 import { firstValueFrom } from 'rxjs';
+
+import { evaluateResultCode } from './Helpers/resultCode.helper';
 import type {
    BasicFields,
    DetailFields,
@@ -16,8 +18,6 @@ import type {
    InterpolSearchResponse,
    InterpolSltdDetailsResponse,
    InterpolSltdSearchResponse,
-   KnownResultCodeKey,
-   ResultCodeKey,
    ResultCodeMeta,
    SearchHit,
    SoapCallResult,
@@ -329,141 +329,12 @@ export class InterpolIntegration {
       };
    }
 
+   /**
+    * Delegates to the shared result-code table, which the WISDM integration also uses.
+    * Kept as a method so the call sites in this class stay unchanged.
+    */
    private evaluateResultCode(resultCode: string | null): ResultCodeMeta {
-      const normalized = (resultCode || '').trim().toUpperCase();
-
-      const byString: Record<KnownResultCodeKey, number> = {
-         NO_ERROR: 0,
-         NO_ANSWER: 1,
-         INVALID_SEARCH_ERROR: 2,
-         UNEXPECTED_ERROR: 3,
-         TOO_MANY_ANSWER: 4,
-         ACCESS_DENIED: 5,
-         OTHER_ERROR_CODE: 6,
-         TIME_OUT: 7,
-      };
-
-      const byNumber: Record<number, KnownResultCodeKey> = {
-         0: 'NO_ERROR',
-         1: 'NO_ANSWER',
-         2: 'INVALID_SEARCH_ERROR',
-         3: 'UNEXPECTED_ERROR',
-         4: 'TOO_MANY_ANSWER',
-         5: 'ACCESS_DENIED',
-         6: 'OTHER_ERROR_CODE',
-         7: 'TIME_OUT',
-      };
-
-      const numericCandidate = Number(normalized);
-      const keyFromNumber =
-         normalized !== '' && Number.isFinite(numericCandidate)
-            ? byNumber[numericCandidate]
-            : undefined;
-      const keyFromString = normalized as KnownResultCodeKey;
-      const key: ResultCodeKey =
-         keyFromNumber ||
-         (Object.prototype.hasOwnProperty.call(byString, keyFromString)
-            ? keyFromString
-            : 'UNKNOWN');
-
-      const numericValue = key === 'UNKNOWN' ? null : byString[key];
-
-      switch (key) {
-         case 'NO_ERROR':
-            return {
-               key,
-               numericValue,
-               description: 'No error, request succeeded and result is not empty.',
-               retryable: false,
-               requiresQueryRefinement: false,
-               accessDenied: false,
-               isKnown: true,
-            };
-         case 'NO_ANSWER':
-            return {
-               key,
-               numericValue,
-               description: 'No error, request succeeded and result is empty.',
-               retryable: false,
-               requiresQueryRefinement: false,
-               accessDenied: false,
-               isKnown: true,
-            };
-         case 'INVALID_SEARCH_ERROR':
-            return {
-               key,
-               numericValue,
-               description:
-                  'Invalid search parameters were provided. Use requestId and timestamp for IPSG traceability.',
-               retryable: false,
-               requiresQueryRefinement: true,
-               accessDenied: false,
-               isKnown: true,
-            };
-         case 'UNEXPECTED_ERROR':
-            return {
-               key,
-               numericValue,
-               description:
-                  'Unexpected server-side error. Use requestId and timestamp to investigate with IPSG.',
-               retryable: true,
-               requiresQueryRefinement: false,
-               accessDenied: false,
-               isKnown: true,
-            };
-         case 'TOO_MANY_ANSWER':
-            return {
-               key,
-               numericValue,
-               description: 'Too many answers. Narrow search parameters to reduce result size.',
-               retryable: false,
-               requiresQueryRefinement: true,
-               accessDenied: false,
-               isKnown: true,
-            };
-         case 'ACCESS_DENIED':
-            return {
-               key,
-               numericValue,
-               description:
-                  'Access denied for this web service or data. Verify credentials and permissions.',
-               retryable: false,
-               requiresQueryRefinement: false,
-               accessDenied: true,
-               isKnown: true,
-            };
-         case 'OTHER_ERROR_CODE':
-            return {
-               key,
-               numericValue,
-               description:
-                  'Source database returned an error. Inspect resultOtherCode for additional details.',
-               retryable: false,
-               requiresQueryRefinement: false,
-               accessDenied: false,
-               isKnown: true,
-            };
-         case 'TIME_OUT':
-            return {
-               key,
-               numericValue,
-               description: 'Execution timed out while processing the request.',
-               retryable: true,
-               requiresQueryRefinement: false,
-               accessDenied: false,
-               isKnown: true,
-            };
-         default:
-            return {
-               key: 'UNKNOWN',
-               numericValue: null,
-               description: 'Unknown resultCode returned by upstream service.',
-               retryable: false,
-               requiresQueryRefinement: false,
-               accessDenied: false,
-               isKnown: false,
-            };
-      }
+      return evaluateResultCode(resultCode);
    }
 
    private async soapCall(

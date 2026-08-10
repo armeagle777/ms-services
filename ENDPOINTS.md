@@ -905,6 +905,86 @@ The endpoint sends the EJBCA `revokeUser` request and returns the ups
 
 ---
 
+## Interpol WISDM (SLTD/SAD data management)
+
+Write side of INTERPOL SLTD: insert, update, delete and report on **Armenia's own**
+records through the WISDM interface. Separate upstream service from the FIND/SLTD search
+endpoints, with its own credentials (`INTERPOL_WISDM_*`).
+
+Reference: *WISDM SLTD/SAD Functional description* v1.2 (17/08/2016); section numbers below
+point at that document.
+
+### Shared conventions
+
+| Field | Format |
+|-------|--------|
+| `din` | Document Identification Number. 5–25 characters `[A-Za-z0-9]` after cleaning (upper-cased, non-alphanumeric stripped). |
+| `typeOfDocument` | Code from the `IPSGT_Document_Type` reference table, e.g. `PAS`. |
+| `fraudType` | `STOLEN` \| `LOST` \| `STOLEN_BLANK` \| `REVOKED`. |
+| `documentClass` | `STD` (travel) \| `SAD` (administrative). Optional; enables the local retention-period check. |
+| `countryOfTheft` | 2–3 letter ICPO country code, e.g. `ARM`. |
+| dates | `YYYYMMDD`. |
+| periods | `YYYYMM`. |
+
+Every response carries `ok`, `httpStatus`, `resultCode`, `resultCodeMeta` and
+`functionalError` (the §3.1.1 error catalogue, or `null`).
+
+### Record management
+
+```
+POST   /interpol/wisdm/records              §3.1.1  Create a record
+PATCH  /interpol/wisdm/records              §3.1.2  Update a record
+PATCH  /interpol/wisdm/records/retention    §3.1.2  Extend the retention date
+DELETE /interpol/wisdm/records              §3.1.3  Delete a record
+GET    /interpol/wisdm/records              §3.2.1  Read a record's properties
+```
+
+**Create body:** `din`, `typeOfDocument`, `fraudType`, `countryOfTheft` are required;
+`stolenBatchIdentifier` (stolen blank only), `dateOfTheft`, `documentIssuanceDate`,
+`documentExpiryDate`, `nationalReferenceNumber`, `ncbReferenceNumber`,
+`additionalInformation`, `recordRetentionDate`, `documentClass` are optional.
+
+**Update body:** same shape minus `fraudType` (not updatable). At least one updatable field
+must be present; changing `recordRetentionDate` also requires `extensionReason`.
+
+**Delete / read query:** `din`, `typeOfDocument`.
+
+### Statistics and reference data
+
+```
+GET    /interpol/wisdm/statistics/count      §3.2.2  Total records for a document type
+GET    /interpol/wisdm/statistics/activity   §3.2.3  Monthly ADD/UPD/DEL/ERD counters
+GET    /interpol/wisdm/reference-tables      §5.3.1  Pull an IPSGT_* reference table
+GET    /interpol/wisdm/alerts/expiring       §3.2.5  Records expiring within N months
+```
+
+`activity` accepts `typeOfDocument`, `from`, `to` (`YYYYMM`). `reference-tables` accepts
+`table` (`IPSGT_Document_Type` \| `IPSGT_Theft_Type` \| `IPSGT_ICPO_Countries` \|
+`IPSGT_Extension_Reason`). `alerts/expiring` accepts `monthsAhead` (1–24, default 6) and
+`typeOfDocument`. Statistics are recomputed once a day upstream.
+
+### Bulk load and initialization (§3.2.4)
+
+```
+POST   /interpol/wisdm/records/bulk          Bulk insert (sequential, per-record failures)
+POST   /interpol/wisdm/initialization        InitAllRecords → bulk insert → (optional) FinalizeInit
+POST   /interpol/wisdm/initialization/finalize  Commit a re-initialization started earlier
+```
+
+> **Destructive.** `InitAllRecords` marks every national record for removal; anything not
+> re-inserted is deleted once finalized. Previous records stay searchable until finalize,
+> so an aborted run is recoverable. `confirm: true` is mandatory, `finalize` defaults to
+> `false`, and finalize is skipped automatically if any record fails to insert.
+
+### Validation
+
+Field-level rules (DIN length, real calendar dates, past/future constraints, expiry after
+issuance, free-text lengths) are enforced by `class-validator` and return `400` before any
+SOAP call. Rules needing INTERPOL state (authorized reference values, duplicate DIN) are
+enforced upstream and surface as `functionalError`.
+
+---
+
 ## Common HTTP Errors
 
 - `400 Bad Request`: Request body validation failed, usually because a required field is missing or a date format is invalid.
