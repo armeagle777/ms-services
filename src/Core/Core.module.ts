@@ -23,6 +23,7 @@ import { RoadPoliceService } from './RoadPolice/RoadPolice.service';
 import { TaxService } from './TaxService/TaxService.service';
 import { KtakService } from './Ktak/Ktak.service';
 import { EsignService } from './Esign/Esign.service';
+import { WisdmService } from './Wisdm/Wisdm.service';
 
 const services = [
    ArtsakhService,
@@ -42,6 +43,7 @@ const services = [
    StatePopulationRegisterService,
    KtakService,
    EsignService,
+   WisdmService,
 ];
 
 const helpers = [];
