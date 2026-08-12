@@ -31,3 +31,20 @@ export enum WisdmReferenceTable {
    COUNTRIES = 'IPSGT_ICPO_Countries',
    EXTENSION_REASON = 'IPSGT_Extension_Reason',
 }
+
+/** Documented schema operations exposed by `infos.asmx`. */
+export enum WisdmInfosDocumentedSchemaOperation {
+   SEARCH = 'GetSLTDSearchSchema',
+   SEARCH_RESULT = 'GetSLTDSearchResultSchema',
+   RECORD = 'GetSLTDRecordSchema',
+   REVIEW_DATE = 'GetSLTDReviewDateSchema',
+   STATISTICS = 'GetSLTDStatisticsSchema',
+   ACTIONS = 'GetSLTDActionsSchema',
+}
+
+/** Output variants exposed by the key-based Infos schema methods. */
+export enum WisdmInfosSchemaFormat {
+   XML = 'xml',
+   XML_2 = 'xml2',
+   HTML = 'html',
+}

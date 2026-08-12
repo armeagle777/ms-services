@@ -6,6 +6,8 @@ import {
    WisdmCountQueryDto,
    WisdmCreateRecordDto,
    WisdmExtendRetentionDto,
+   WisdmInfosDocumentedSchemaQueryDto,
+   WisdmInfosSchemaByKeyQueryDto,
    WisdmInitializeDto,
    WisdmRecordQueryDto,
    WisdmReferenceTableQueryDto,
@@ -18,12 +20,14 @@ import {
    normalizeOptional,
    normalizeUpdatable,
 } from 'src/Core/Wisdm/Helpers/wisdm.helpers';
+import { WisdmInfosSchemaFormat } from 'src/Core/Wisdm/Enums/wisdm.enums';
 import { WisdmIntegration } from 'src/Infrustructure/Services/WisdmIntegration/Wisdm.integration';
 import type {
    WisdmActivityResponse,
    WisdmCountResponse,
    WisdmDocumentResponse,
    WisdmExpiryAlertsResponse,
+   WisdmInfosSchemaResponse,
    WisdmInitializationResult,
    WisdmInitStepResponse,
    WisdmMutationResponse,
@@ -143,6 +147,31 @@ export class WisdmService {
    /** §3.2.5 — records due to expire within the window, plus records already purged. */
    async getExpiryAlerts(): Promise<WisdmExpiryAlertsResponse> {
       return this.wisdmIntegration.getExpiryAlerts();
+   }
+
+   /** Exact `ListOfSchema` operation from the supplied Infos WSDL. */
+   async listInfosSchemas(): Promise<WisdmInfosSchemaResponse> {
+      return this.wisdmIntegration.listSchemas();
+   }
+
+   /** Exact documented `GetSLTD*Schema` operations from the supplied Infos WSDL. */
+   async getInfosDocumentedSchema(
+      query: WisdmInfosDocumentedSchemaQueryDto,
+   ): Promise<WisdmInfosSchemaResponse> {
+      return this.wisdmIntegration.getDocumentedSchema(
+         query.operation,
+         query.documentation ?? true,
+      );
+   }
+
+   /** Exact `GetSchema`, `GetSchema2`, and `GetHtmlSchema` operations from Infos WSDL. */
+   async getInfosSchemaByKey(
+      query: WisdmInfosSchemaByKeyQueryDto,
+   ): Promise<WisdmInfosSchemaResponse> {
+      return this.wisdmIntegration.getSchemaByKey(
+         normalizeOptional(query.key),
+         query.format ?? WisdmInfosSchemaFormat.XML,
+      );
    }
 
    /* ---------------------------------------------------------------------- */

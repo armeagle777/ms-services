@@ -20,7 +20,11 @@ import {
    WISDM_NCB_REFERENCE_MAX_LENGTH,
    WISDM_STOLEN_BATCH_IDENTIFIER_MAX_LENGTH,
 } from 'src/Core/Wisdm/Constants/wisdm.rules.constants';
-import { WisdmReferenceTable } from 'src/Core/Wisdm/Enums/wisdm.enums';
+import {
+   WisdmInfosDocumentedSchemaOperation,
+   WisdmInfosSchemaFormat,
+   WisdmReferenceTable,
+} from 'src/Core/Wisdm/Enums/wisdm.enums';
 import {
    IsAfterWisdmDate,
    IsFutureWisdmDate,
@@ -249,6 +253,38 @@ export class WisdmReferenceTableQueryDto {
    /** Which reference table to fetch. */
    @IsEnum(WisdmReferenceTable)
    table!: WisdmReferenceTable;
+}
+
+/** Selects one of the six documented schema calls from the supplied Infos WSDL. */
+export class WisdmInfosDocumentedSchemaQueryDto {
+   /** Exact WSDL operation whose schema should be returned. */
+   @IsEnum(WisdmInfosDocumentedSchemaOperation)
+   operation!: WisdmInfosDocumentedSchemaOperation;
+
+   /** Ask Infos to include human-readable documentation. Defaults to `true`. */
+   @IsOptional()
+   @IsBoolean()
+   @Transform(({ value }) => {
+      if (typeof value !== 'string') return value;
+      if (value.toLowerCase() === 'true') return true;
+      if (value.toLowerCase() === 'false') return false;
+      return value;
+   })
+   documentation?: boolean;
+}
+
+/** Selects one of the WSDL's key-based schema representations. */
+export class WisdmInfosSchemaByKeyQueryDto {
+   /** Schema key returned by `ListOfSchema`; optional in the upstream WSDL. */
+   @IsOptional()
+   @IsString()
+   @trim()
+   key?: string;
+
+   /** `GetSchema`, `GetSchema2`, or `GetHtmlSchema`. Defaults to `xml`. */
+   @IsOptional()
+   @IsEnum(WisdmInfosSchemaFormat)
+   format?: WisdmInfosSchemaFormat;
 }
 
 /** Bulk insert used on its own or as the middle step of the initialization sequence. */

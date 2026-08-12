@@ -23,11 +23,12 @@ export const XSD_NAMESPACE = 'http://www.w3.org/2001/XMLSchema';
 /** Default `UsernameToken` version attribute. */
 export const WISDM_USERNAME_TOKEN_VERSION_DEFAULT = '1.0';
 
+/** Exact namespace published by the supplied `infos.asmx?WSDL`. */
+export const WISDM_INFOS_NAMESPACE = 'http://tempuri.org/';
+
 /** Which upstream `.asmx` service an operation belongs to. */
 export enum WisdmService {
-   /** `.../wisdm/sltd/1.0/sltd.asmx` — record management. */
    SLTD = 'SLTD',
-   /** `.../wisdm/sltd/1.0/infos.asmx` — reference tables and statistics. */
    INFOS = 'INFOS',
 }
 
@@ -37,7 +38,6 @@ export enum WisdmService {
  * implements, so the mapping can be re-checked against the WSDL later.
  */
 export const WISDM_OPERATIONS = {
-   /** §3.2 / 5.3.1 — Get INTERPOL reference table. */
    GET_REFERENCE_TABLE: 'ReferenceTable',
    /** §3.1.1 / 5.3.2 — Create a new SLTD record. */
    CREATE_RECORD: 'Create',
@@ -49,26 +49,26 @@ export const WISDM_OPERATIONS = {
    DELETE_RECORD: 'Delete',
    /** §3.2.1 / 7.5 — Retrieve the properties of a particular document. */
    SEARCH_DOCUMENT: 'SearchDocument',
-   /** §3.2.2 / 5.3.8 — Total number of existing documents by document type. */
    GET_STATISTICS: 'Statistics',
-   /** §3.2.3 / 7.9 — Data-management activity per document type and month. */
    GET_ACTIONS: 'Actions',
    /** §3.2.4 / 5.3.5 — Start the re-initialization of all national records. */
    INIT_ALL_RECORDS: 'InitAllRecords',
    /** §3.2.4 / 5.3.5 — Commit the re-initialization; unreinserted records are removed. */
    FINALIZE_INIT: 'FinalizeInit',
-   /** §3.2.5 / 7.9 — Records due to expire within six months; verify name against WSDL. */
    GET_EXPIRY_ALERTS: 'ExpiringRecords',
 } as const;
 
 export type WisdmOperation = (typeof WISDM_OPERATIONS)[keyof typeof WISDM_OPERATIONS];
 
-/** Routes each operation to the `.asmx` service that exposes it. */
+/**
+ * Business operations use `sltd.asmx`. The supplied `infos.asmx` WSDL exposes only
+ * schema-discovery methods and rejects actions such as `Statistics`.
+ */
 export const WISDM_OPERATION_SERVICE: Record<WisdmOperation, WisdmService> = {
-   [WISDM_OPERATIONS.GET_REFERENCE_TABLE]: WisdmService.INFOS,
-   [WISDM_OPERATIONS.GET_STATISTICS]: WisdmService.INFOS,
-   [WISDM_OPERATIONS.GET_ACTIONS]: WisdmService.INFOS,
-   [WISDM_OPERATIONS.GET_EXPIRY_ALERTS]: WisdmService.INFOS,
+   [WISDM_OPERATIONS.GET_REFERENCE_TABLE]: WisdmService.SLTD,
+   [WISDM_OPERATIONS.GET_STATISTICS]: WisdmService.SLTD,
+   [WISDM_OPERATIONS.GET_ACTIONS]: WisdmService.SLTD,
+   [WISDM_OPERATIONS.GET_EXPIRY_ALERTS]: WisdmService.SLTD,
    [WISDM_OPERATIONS.CREATE_RECORD]: WisdmService.SLTD,
    [WISDM_OPERATIONS.UPDATE_RECORD]: WisdmService.SLTD,
    [WISDM_OPERATIONS.EXTEND_RETENTION]: WisdmService.SLTD,
@@ -77,6 +77,31 @@ export const WISDM_OPERATION_SERVICE: Record<WisdmOperation, WisdmService> = {
    [WISDM_OPERATIONS.INIT_ALL_RECORDS]: WisdmService.SLTD,
    [WISDM_OPERATIONS.FINALIZE_INIT]: WisdmService.SLTD,
 };
+
+/** Exact operations published by the supplied `infos.asmx?WSDL`. */
+export const WISDM_INFOS_OPERATIONS = {
+   GET_SEARCH_SCHEMA: 'GetSLTDSearchSchema',
+   GET_SEARCH_RESULT_SCHEMA: 'GetSLTDSearchResultSchema',
+   GET_RECORD_SCHEMA: 'GetSLTDRecordSchema',
+   GET_REVIEW_DATE_SCHEMA: 'GetSLTDReviewDateSchema',
+   GET_STATISTICS_SCHEMA: 'GetSLTDStatisticsSchema',
+   GET_ACTIONS_SCHEMA: 'GetSLTDActionsSchema',
+   LIST_SCHEMAS: 'ListOfSchema',
+   GET_HTML_SCHEMA: 'GetHtmlSchema',
+   GET_SCHEMA: 'GetSchema',
+   GET_SCHEMA_2: 'GetSchema2',
+} as const;
+
+export type WisdmInfosOperation =
+   (typeof WISDM_INFOS_OPERATIONS)[keyof typeof WISDM_INFOS_OPERATIONS];
+
+/** SOAP 1.1 actions are explicit in the WSDL and must not be guessed. */
+export const WISDM_INFOS_SOAP_ACTIONS: Record<WisdmInfosOperation, string> = Object.fromEntries(
+   Object.values(WISDM_INFOS_OPERATIONS).map((operation) => [
+      operation,
+      `${WISDM_INFOS_NAMESPACE}${operation}`,
+   ]),
+) as Record<WisdmInfosOperation, string>;
 
 /**
  * XML element names for the record payload. Kept separate from the DTO field names so the
@@ -98,14 +123,13 @@ export const WISDM_RECORD_ELEMENTS = {
    extensionReason: 'ReasonForExtension',
 } as const;
 
-/** Element names used by the read/statistics operations. */
+/** Element names used by the legacy read/statistics operations. */
 export const WISDM_QUERY_ELEMENTS = {
    referenceTableName: 'TableName',
    yearMonthFrom: 'FromMonth',
    yearMonthTo: 'ToMonth',
 } as const;
 
-/** Wire names of the reference tables exposed by the `infos` service. */
 export const WISDM_REFERENCE_TABLE_CODES: Record<WisdmReferenceTable, string> = {
    [WisdmReferenceTable.DOCUMENT_TYPE]: 'IPSGT_Document_Type',
    [WisdmReferenceTable.THEFT_TYPE]: 'IPSGT_Theft_Type',
@@ -126,6 +150,5 @@ export const WISDM_ENV = {
    WS_USERINFO_USERNAME: 'INTERPOL_WISDM_WS_USERINFO_USERNAME',
    USERNAME_TOKEN_VERSION: 'INTERPOL_WISDM_WS_USERNAME_VERSION',
    SLTD_NAMESPACE: 'INTERPOL_WISDM_SLTD_NAMESPACE',
-   INFOS_NAMESPACE: 'INTERPOL_WISDM_INFOS_NAMESPACE',
    XML_PREFIX: 'INTERPOL_WISDM_XML_PREFIX',
 } as const;
