@@ -1,28 +1,24 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import {
+   Injectable,
+   InternalServerErrorException,
+   Logger,
+   ServiceUnavailableException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { randomUUID } from 'crypto';
 import { firstValueFrom } from 'rxjs';
 
 import { WISDM_EXPIRY_ALERT_WINDOW_MONTHS } from 'src/Core/Wisdm/Constants/wisdm.rules.constants';
-import {
-   WisdmExtensionReason,
-   WisdmFraudType,
-   WisdmReferenceTable,
-   WisdmStatisticsAction,
-} from 'src/Core/Wisdm/Enums/wisdm.enums';
+import { WisdmReferenceTable, WisdmStatisticsAction } from 'src/Core/Wisdm/Enums/wisdm.enums';
 import { evaluateResultCode } from 'src/Infrustructure/Services/InterpolIntegration/Helpers/resultCode.helper';
 import {
    WISDM_ENV,
-   WISDM_EXTENSION_REASON_CODES,
-   WISDM_FRAUD_TYPE_CODES,
-   WISDM_INFOS_NAMESPACE_DEFAULT,
    WISDM_OPERATION_SERVICE,
    WISDM_OPERATIONS,
    WISDM_QUERY_ELEMENTS,
    WISDM_RECORD_ELEMENTS,
-   WISDM_REFERENCE_IN_COUNTRY_DEFAULT,
    WISDM_REFERENCE_TABLE_CODES,
-   WISDM_SLTD_NAMESPACE_DEFAULT,
    WISDM_TIMEOUT_DEFAULT_MS,
    WISDM_USERNAME_TOKEN_VERSION_DEFAULT,
    WISDM_XML_PREFIX_DEFAULT,
@@ -119,11 +115,7 @@ export class WisdmIntegration {
                WISDM_RECORD_ELEMENTS.recordRetentionDate,
                params.recordRetentionDate,
             ),
-            buildElement(
-               prefix,
-               WISDM_RECORD_ELEMENTS.extensionReason,
-               this.toExtensionReasonCode(params.extensionReason),
-            ),
+            buildElement(prefix, WISDM_RECORD_ELEMENTS.extensionReason, params.extensionReason),
          ]),
       );
 
@@ -241,26 +233,15 @@ export class WisdmIntegration {
    }
 
    /** §3.2.5 — own records due to expire within the window, and records already purged. */
-   async getExpiryAlerts(query: {
-      monthsAhead?: number;
-      typeOfDocument?: string;
-   }): Promise<WisdmExpiryAlertsResponse> {
-      const prefix = this.getXmlPrefix();
-      const monthsAhead = query.monthsAhead ?? WISDM_EXPIRY_ALERT_WINDOW_MONTHS;
-      const body = this.buildOperationBody(
-         WISDM_OPERATIONS.GET_EXPIRY_ALERTS,
-         buildElements([
-            buildElement(prefix, WISDM_QUERY_ELEMENTS.monthsAhead, monthsAhead),
-            buildElement(prefix, WISDM_RECORD_ELEMENTS.typeOfDocument, query.typeOfDocument),
-         ]),
-      );
+   async getExpiryAlerts(): Promise<WisdmExpiryAlertsResponse> {
+      const body = this.buildOperationBody(WISDM_OPERATIONS.GET_EXPIRY_ALERTS, '');
 
       const { status, xml } = await this.call(WISDM_OPERATIONS.GET_EXPIRY_ALERTS, body);
       const base = this.mapBaseResponse(status, xml);
 
       return {
          ...base,
-         monthsAhead,
+         monthsAhead: WISDM_EXPIRY_ALERT_WINDOW_MONTHS,
          records: base.ok ? this.parseExpiringRecords(xml) : [],
          alarmMessage: firstTagValue(xml, 'AlarmMessage') ?? firstTagValue(xml, 'Alarm'),
       };
@@ -311,11 +292,7 @@ export class WisdmIntegration {
          buildElement(prefix, WISDM_RECORD_ELEMENTS.din, params.din),
          buildElement(prefix, WISDM_RECORD_ELEMENTS.typeOfDocument, params.typeOfDocument),
          options.includeFraudType
-            ? buildElement(
-                 prefix,
-                 WISDM_RECORD_ELEMENTS.fraudType,
-                 this.toFraudTypeCode(params.fraudType),
-              )
+            ? buildElement(prefix, WISDM_RECORD_ELEMENTS.fraudType, params.fraudType)
             : '',
          buildElement(
             prefix,
@@ -346,11 +323,7 @@ export class WisdmIntegration {
             WISDM_RECORD_ELEMENTS.recordRetentionDate,
             params.recordRetentionDate,
          ),
-         buildElement(
-            prefix,
-            WISDM_RECORD_ELEMENTS.extensionReason,
-            this.toExtensionReasonCode(params.extensionReason),
-         ),
+         buildElement(prefix, WISDM_RECORD_ELEMENTS.extensionReason, params.extensionReason),
       ]);
    }
 
@@ -386,12 +359,7 @@ export class WisdmIntegration {
       } catch (err) {
          const message = err instanceof Error ? err.message : String(err);
          this.logger.error(`WISDM ${operation} transport failure: ${message}`);
-
-         return {
-            status: 599,
-            xml: `<faultstring>${message}</faultstring>`,
-            requestXml: envelope,
-         };
+         throw new ServiceUnavailableException(`WISDM ${operation} is unavailable: ${message}`);
       }
    }
 
@@ -405,8 +373,7 @@ export class WisdmIntegration {
          namespace: this.getNamespace(service),
          bodyXml,
          userInfoUsername,
-         referenceInCountry:
-            this.getConfig(WISDM_ENV.REFERENCE_IN_COUNTRY) || WISDM_REFERENCE_IN_COUNTRY_DEFAULT,
+         referenceInCountry: this.generateRequestIdentifier(),
          username,
          password,
          usernameTokenVersion:
@@ -617,13 +584,17 @@ export class WisdmIntegration {
 
    private getNamespace(service: WisdmService): string {
       if (service === WisdmService.INFOS) {
-         return this.getConfig(WISDM_ENV.INFOS_NAMESPACE) || WISDM_INFOS_NAMESPACE_DEFAULT;
+         return this.getRequiredConfig(WISDM_ENV.INFOS_NAMESPACE);
       }
-      return this.getConfig(WISDM_ENV.SLTD_NAMESPACE) || WISDM_SLTD_NAMESPACE_DEFAULT;
+      return this.getRequiredConfig(WISDM_ENV.SLTD_NAMESPACE);
    }
 
    private getXmlPrefix(): string {
       return this.getConfig(WISDM_ENV.XML_PREFIX) || WISDM_XML_PREFIX_DEFAULT;
+   }
+
+   private generateRequestIdentifier(): string {
+      return `ARM-${randomUUID()}`;
    }
 
    private getConfig(key: string): string {
@@ -636,14 +607,6 @@ export class WisdmIntegration {
          throw new InternalServerErrorException(`${key} is missing in environment variables`);
       }
       return value;
-   }
-
-   private toFraudTypeCode(fraudType: WisdmFraudType | undefined): string | undefined {
-      return fraudType ? WISDM_FRAUD_TYPE_CODES[fraudType] : undefined;
-   }
-
-   private toExtensionReasonCode(reason: WisdmExtensionReason | undefined): string | undefined {
-      return reason ? WISDM_EXTENSION_REASON_CODES[reason] : undefined;
    }
 
    private toTableCode(table: WisdmReferenceTable): string {

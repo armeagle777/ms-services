@@ -2,9 +2,7 @@ import {
    WISDM_DATE_PATTERN,
    WISDM_DIN_MAX_LENGTH,
    WISDM_DIN_MIN_LENGTH,
-   WISDM_RETENTION_YEARS,
 } from 'src/Core/Wisdm/Constants/wisdm.rules.constants';
-import { WisdmDocumentClass, WisdmFraudType } from 'src/Core/Wisdm/Enums/wisdm.enums';
 
 /**
  * Pure helpers for the WISDM slice. No Nest dependencies and no exceptions thrown here —
@@ -55,24 +53,19 @@ export const parseWisdmDate = (value: string | undefined | null): Date | null =>
    return isRoundTrip ? date : null;
 };
 
-/** Formats a Date as `YYYYMMDD` in UTC. */
-export const formatWisdmDate = (date: Date): string => {
-   const year = String(date.getUTCFullYear()).padStart(4, '0');
-   const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-   const day = String(date.getUTCDate()).padStart(2, '0');
-   return `${year}${month}${day}`;
-};
-
 /** Today at 00:00 UTC — the reference point for all past/future comparisons. */
 export const startOfTodayUtc = (): Date => {
    const now = new Date();
    return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
 };
 
-/** True when the date is strictly before today (§3.1.1 "must be in the past"). */
+/**
+ * True when the date is today or earlier. The field table says these dates must not be
+ * greater than the insertion date, so a document reported or issued today is valid.
+ */
 export const isPastWisdmDate = (value: string | undefined | null): boolean => {
    const date = parseWisdmDate(value);
-   return date !== null && date.getTime() < startOfTodayUtc().getTime();
+   return date !== null && date.getTime() <= startOfTodayUtc().getTime();
 };
 
 /** True when the date is strictly after today (§3.1.1 "should be in the future"). */
@@ -92,50 +85,20 @@ export const compareWisdmDates = (
    return leftDate.getTime() - rightDate.getTime();
 };
 
-/** Adds whole years to a date, staying in UTC. */
-export const addYears = (date: Date, years: number): Date =>
-   new Date(Date.UTC(date.getUTCFullYear() + years, date.getUTCMonth(), date.getUTCDate()));
-
-/** Adds whole months to a date, staying in UTC. */
-export const addMonths = (date: Date, months: number): Date =>
-   new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + months, date.getUTCDate()));
-
-/**
- * Initial retention period in years for a record, per the 5/30/10 rule.
- * Returns `null` when the document class is unknown — in that case we do not second-guess
- * INTERPOL and let the upstream service apply its own retention rules.
- */
-export const resolveRetentionYears = (
-   documentClass: WisdmDocumentClass | undefined,
-   fraudType: WisdmFraudType | undefined,
-): number | null => {
-   if (!documentClass) return null;
-
-   const periods = WISDM_RETENTION_YEARS[documentClass];
-   if (!periods) return null;
-
-   const byFraudType = fraudType ? periods[fraudType] : undefined;
-   return byFraudType ?? periods.default;
-};
-
-/**
- * Latest retention date a record may carry, as `YYYYMMDD`, or `null` when it cannot be
- * determined locally. Computed from the date of insertion (today), matching the manual's
- * "date of insertion + N years".
- */
-export const resolveMaxRetentionDate = (
-   documentClass: WisdmDocumentClass | undefined,
-   fraudType: WisdmFraudType | undefined,
-): string | null => {
-   const years = resolveRetentionYears(documentClass, fraudType);
-   if (years === null) return null;
-   return formatWisdmDate(addYears(startOfTodayUtc(), years));
-};
-
 /** Trims a value and returns `undefined` for empty strings, so optional XML nodes are skipped. */
 export const normalizeOptional = (value: string | undefined | null): string | undefined => {
    const trimmed = (value || '').trim();
    return trimmed === '' ? undefined : trimmed;
+};
+
+/**
+ * Normalizes an update field while preserving an explicit empty string. WISDM allows the
+ * optional record fields to be updated; retaining `''` lets the SOAP layer distinguish
+ * "clear this value" from an omitted field meaning "leave it unchanged".
+ */
+export const normalizeUpdatable = (value: string | undefined | null): string | undefined => {
+   if (value === undefined || value === null) return undefined;
+   return value.trim();
 };
 
 /** Normalizes an ICPO country code to the upper-case form INTERPOL expects. */

@@ -1,5 +1,3 @@
-import { WisdmDocumentClass, WisdmFraudType } from 'src/Core/Wisdm/Enums/wisdm.enums';
-
 /**
  * Business rules taken from "WISDM SLTD/SAD Functional description" (v1.2, 17/08/2016),
  * section 3. Everything that is a *rule* (lengths, formats, retention periods) lives
@@ -20,9 +18,6 @@ export const WISDM_NATIONAL_REFERENCE_MAX_LENGTH = 25;
 export const WISDM_NCB_REFERENCE_MAX_LENGTH = 25;
 export const WISDM_ADDITIONAL_INFORMATION_MAX_LENGTH = 40;
 
-/** Type of document codes are short mnemonics from `IPSGT_Document_Type` (e.g. `PAS`). */
-export const WISDM_DOCUMENT_TYPE_MAX_LENGTH = 10;
-
 /** ICPO country codes from `IPSGT_ICPO_Countries` (e.g. `ARM`, `FRA`). */
 export const WISDM_COUNTRY_CODE_PATTERN = /^[A-Z]{2,3}$/;
 
@@ -42,27 +37,6 @@ export const WISDM_DATE_PATTERN = /^\d{8}$/;
 export const WISDM_RETENTION_YEARS_TRAVEL_DOCUMENT = 5;
 export const WISDM_RETENTION_YEARS_STOLEN_BLANK = 30;
 export const WISDM_RETENTION_YEARS_ADMINISTRATIVE = 10;
-
-/**
- * Retention period lookup used to reject a `recordRetentionDate` that exceeds the
- * country/initial retention period before the request ever leaves us.
- * Only applied when the caller tells us the document class — otherwise INTERPOL decides.
- */
-export const WISDM_RETENTION_YEARS: Record<
-   WisdmDocumentClass,
-   Partial<Record<WisdmFraudType, number>> & { default: number }
-> = {
-   [WisdmDocumentClass.STD]: {
-      default: WISDM_RETENTION_YEARS_TRAVEL_DOCUMENT,
-      [WisdmFraudType.STOLEN]: WISDM_RETENTION_YEARS_TRAVEL_DOCUMENT,
-      [WisdmFraudType.LOST]: WISDM_RETENTION_YEARS_TRAVEL_DOCUMENT,
-      [WisdmFraudType.REVOKED]: WISDM_RETENTION_YEARS_TRAVEL_DOCUMENT,
-      [WisdmFraudType.STOLEN_BLANK]: WISDM_RETENTION_YEARS_STOLEN_BLANK,
-   },
-   [WisdmDocumentClass.SAD]: {
-      default: WISDM_RETENTION_YEARS_ADMINISTRATIVE,
-   },
-};
 
 /** §3.2.5 — the alert window for records approaching their retention date. */
 export const WISDM_EXPIRY_ALERT_WINDOW_MONTHS = 6;

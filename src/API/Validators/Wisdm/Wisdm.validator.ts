@@ -86,11 +86,11 @@ class IsPastWisdmDateConstraint implements ValidatorConstraintInterface {
    }
 
    defaultMessage(args: ValidationArguments): string {
-      return `${args.property} must be a ${WISDM_DATE_FORMAT} date in the past.`;
+      return `${args.property} must be a ${WISDM_DATE_FORMAT} date that is not in the future.`;
    }
 }
 
-/** §3.1.1 — date of theft and document issuance date must be in the past. */
+/** §3.1.1 — date of theft and document issuance date cannot exceed insertion date. */
 export function IsPastWisdmDate(validationOptions?: ValidationOptions) {
    return function (object: object, propertyName: string) {
       registerDecorator({

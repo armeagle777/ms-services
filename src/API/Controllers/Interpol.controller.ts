@@ -25,7 +25,6 @@ import {
    WisdmBulkCreateDto,
    WisdmCountQueryDto,
    WisdmCreateRecordDto,
-   WisdmExpiryAlertsQueryDto,
    WisdmExtendRetentionDto,
    WisdmFinalizeInitDto,
    WisdmInitializeDto,
@@ -125,8 +124,8 @@ export class InterpolController {
 
    /** §3.2.5 — our records due to expire within six months, plus those already purged. */
    @Get('wisdm/alerts/expiring')
-   wisdmGetExpiryAlerts(@Query() query: WisdmExpiryAlertsQueryDto) {
-      return this.wisdmService.getExpiryAlerts(query);
+   wisdmGetExpiryAlerts() {
+      return this.wisdmService.getExpiryAlerts();
    }
 
    /** Bulk insert, for a first data load or for re-loading during initialization. */
