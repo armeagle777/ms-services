@@ -1,12 +1,6 @@
 import type { ResultCodeMeta } from 'src/Infrustructure/Services/InterpolIntegration/Models/interpol.types';
 import type { WisdmFunctionalErrorKey } from 'src/Core/Wisdm/Constants/wisdm.rules.constants';
-import type {
-   WisdmDocumentClass,
-   WisdmExtensionReason,
-   WisdmFraudType,
-   WisdmReferenceTable,
-   WisdmStatisticsAction,
-} from 'src/Core/Wisdm/Enums/wisdm.enums';
+import type { WisdmReferenceTable, WisdmStatisticsAction } from 'src/Core/Wisdm/Enums/wisdm.enums';
 
 /** Raw outcome of a WISDM SOAP round trip. */
 export type WisdmSoapCallResult = {
@@ -43,8 +37,7 @@ export type WisdmRecordParams = {
    /** Cleaned DIN: uppercased, non-alphanumeric characters stripped. */
    din: string;
    typeOfDocument: string;
-   fraudType?: WisdmFraudType;
-   documentClass?: WisdmDocumentClass;
+   fraudType?: string;
    stolenBatchIdentifier?: string;
    countryOfTheft?: string;
    /** `YYYYMMDD`. */
@@ -58,7 +51,7 @@ export type WisdmRecordParams = {
    additionalInformation?: string;
    /** `YYYYMMDD`. Omitted means "let INTERPOL apply the default retention rules". */
    recordRetentionDate?: string;
-   extensionReason?: WisdmExtensionReason;
+   extensionReason?: string;
 };
 
 /** Identity of a single record: DIN plus type of document (§3.1.3). */
@@ -71,7 +64,7 @@ export type WisdmRecordIdentifier = {
 export type WisdmRetentionParams = WisdmRecordIdentifier & {
    /** `YYYYMMDD`, must be in the future. */
    recordRetentionDate: string;
-   extensionReason: WisdmExtensionReason;
+   extensionReason: string;
 };
 
 /** Result of create/update/delete/extend — the manual guarantees an immediate answer. */

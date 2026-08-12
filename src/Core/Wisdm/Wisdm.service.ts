@@ -5,21 +5,18 @@ import {
    WisdmBulkCreateDto,
    WisdmCountQueryDto,
    WisdmCreateRecordDto,
-   WisdmExpiryAlertsQueryDto,
    WisdmExtendRetentionDto,
    WisdmInitializeDto,
    WisdmRecordQueryDto,
    WisdmReferenceTableQueryDto,
    WisdmUpdateRecordDto,
 } from 'src/API/DTO/Interpol/wisdm.dto';
-import { WISDM_EXPIRY_ALERT_WINDOW_MONTHS } from 'src/Core/Wisdm/Constants/wisdm.rules.constants';
-import { WisdmFraudType } from 'src/Core/Wisdm/Enums/wisdm.enums';
 import {
    cleanDin,
    compareWisdmDates,
    normalizeCountryCode,
    normalizeOptional,
-   resolveMaxRetentionDate,
+   normalizeUpdatable,
 } from 'src/Core/Wisdm/Helpers/wisdm.helpers';
 import { WisdmIntegration } from 'src/Infrustructure/Services/WisdmIntegration/Wisdm.integration';
 import type {
@@ -54,9 +51,7 @@ export class WisdmService {
 
    /** §3.1.1 — insert a new SLTD/SAD record. */
    async createRecord(body: WisdmCreateRecordDto): Promise<WisdmMutationResponse> {
-      const params = this.toRecordParams(body, { fraudType: body.fraudType });
-      this.assertStolenBatchIdentifierRule(params);
-      this.assertRetentionWithinPeriod(params);
+      const params = this.toRecordParams(body, 'create', { fraudType: body.fraudType });
 
       return this.wisdmIntegration.createRecord(params);
    }
@@ -67,7 +62,9 @@ export class WisdmService {
     * retention-date change must carry a reason for extension.
     */
    async updateRecord(body: WisdmUpdateRecordDto): Promise<WisdmMutationResponse> {
-      const params = this.toRecordParams(body, { extensionReason: body.extensionReason });
+      const params = this.toRecordParams(body, 'update', {
+         extensionReason: body.extensionReason,
+      });
 
       if (params.recordRetentionDate && !params.extensionReason) {
          throw new BadRequestException(
@@ -75,8 +72,6 @@ export class WisdmService {
          );
       }
 
-      this.assertStolenBatchIdentifierRule(params);
-      this.assertRetentionWithinPeriod(params);
       this.assertHasUpdatableField(body);
 
       return this.wisdmIntegration.updateRecord(params);
@@ -86,14 +81,6 @@ export class WisdmService {
    async extendRetention(body: WisdmExtendRetentionDto): Promise<WisdmMutationResponse> {
       const din = this.requireCleanDin(body.din);
       const typeOfDocument = this.requireTypeOfDocument(body.typeOfDocument);
-
-      this.assertRetentionWithinPeriod({
-         din,
-         typeOfDocument,
-         documentClass: body.documentClass,
-         fraudType: body.fraudType,
-         recordRetentionDate: body.recordRetentionDate,
-      });
 
       return this.wisdmIntegration.extendRetention({
          din,
@@ -154,11 +141,8 @@ export class WisdmService {
    }
 
    /** §3.2.5 — records due to expire within the window, plus records already purged. */
-   async getExpiryAlerts(query: WisdmExpiryAlertsQueryDto): Promise<WisdmExpiryAlertsResponse> {
-      return this.wisdmIntegration.getExpiryAlerts({
-         monthsAhead: query.monthsAhead ?? WISDM_EXPIRY_ALERT_WINDOW_MONTHS,
-         typeOfDocument: normalizeOptional(query.typeOfDocument),
-      });
+   async getExpiryAlerts(): Promise<WisdmExpiryAlertsResponse> {
+      return this.wisdmIntegration.getExpiryAlerts();
    }
 
    /* ---------------------------------------------------------------------- */
@@ -178,12 +162,9 @@ export class WisdmService {
       let succeeded = 0;
 
       for (const record of body.records) {
-         const params = this.toRecordParams(record, { fraudType: record.fraudType });
+         const params = this.toRecordParams(record, 'create', { fraudType: record.fraudType });
 
          try {
-            this.assertStolenBatchIdentifierRule(params);
-            this.assertRetentionWithinPeriod(params);
-
             const response = await this.wisdmIntegration.createRecord(params);
 
             if (response.ok) {
@@ -314,24 +295,27 @@ export class WisdmService {
 
    private toRecordParams(
       body: WisdmCreateRecordDto | WisdmUpdateRecordDto,
-      extras: Pick<WisdmRecordParams, 'fraudType' | 'extensionReason'>,
+      mode: 'create' | 'update',
+      extras: Partial<Pick<WisdmRecordParams, 'fraudType' | 'extensionReason'>>,
    ): WisdmRecordParams {
+      const normalizeField = mode === 'update' ? normalizeUpdatable : normalizeOptional;
+      const countryOfTheft =
+         mode === 'update'
+            ? normalizeUpdatable(body.countryOfTheft)?.toUpperCase()
+            : normalizeCountryCode(body.countryOfTheft);
+
       const params: WisdmRecordParams = {
          din: this.requireCleanDin(body.din),
          typeOfDocument: this.requireTypeOfDocument(body.typeOfDocument),
          fraudType: extras.fraudType,
-         documentClass: body.documentClass,
-         stolenBatchIdentifier: normalizeOptional(body.stolenBatchIdentifier),
-         countryOfTheft: normalizeCountryCode(
-            (body as WisdmCreateRecordDto).countryOfTheft ??
-               (body as WisdmUpdateRecordDto).countryOfTheft,
-         ),
-         dateOfTheft: normalizeOptional(body.dateOfTheft),
-         documentIssuanceDate: normalizeOptional(body.documentIssuanceDate),
-         documentExpiryDate: normalizeOptional(body.documentExpiryDate),
-         nationalReferenceNumber: normalizeOptional(body.nationalReferenceNumber),
-         ncbReferenceNumber: normalizeOptional(body.ncbReferenceNumber),
-         additionalInformation: normalizeOptional(body.additionalInformation),
+         stolenBatchIdentifier: normalizeField(body.stolenBatchIdentifier),
+         countryOfTheft,
+         dateOfTheft: normalizeField(body.dateOfTheft),
+         documentIssuanceDate: normalizeField(body.documentIssuanceDate),
+         documentExpiryDate: normalizeField(body.documentExpiryDate),
+         nationalReferenceNumber: normalizeField(body.nationalReferenceNumber),
+         ncbReferenceNumber: normalizeField(body.ncbReferenceNumber),
+         additionalInformation: normalizeField(body.additionalInformation),
          recordRetentionDate: normalizeOptional(body.recordRetentionDate),
          extensionReason: extras.extensionReason,
       };
@@ -356,23 +340,6 @@ export class WisdmService {
       return normalized;
    }
 
-   /**
-    * §3.1.1 — the stolen batch identifier is "the national identifier of the lot of stolen
-    * documents" and is only meaningful for stolen blank documents. Sending it otherwise is
-    * a documented functional error, so we stop it here.
-    */
-   private assertStolenBatchIdentifierRule(params: WisdmRecordParams): void {
-      if (!params.stolenBatchIdentifier) return;
-
-      // On update the fraud type is not resubmitted, so it may legitimately be unknown;
-      // in that case only INTERPOL can decide and we let the request through.
-      if (params.fraudType && params.fraudType !== WisdmFraudType.STOLEN_BLANK) {
-         throw new BadRequestException(
-            'stolenBatchIdentifier can only be provided when fraudType is STOLEN_BLANK.',
-         );
-      }
-   }
-
    /** Date consistency that spans fields; each date's own format is validated by the DTO. */
    private assertDateOrdering(params: WisdmRecordParams): void {
       const theftVsIssuance = compareWisdmDates(params.dateOfTheft, params.documentIssuanceDate);
@@ -389,45 +356,21 @@ export class WisdmService {
       }
    }
 
-   /**
-    * Rejects a retention date beyond the initial retention period (5 / 30 / 10 years)
-    * before the request is sent. Only enforced when the caller supplied `documentClass`;
-    * without it the period cannot be resolved locally and INTERPOL remains the authority.
-    */
-   private assertRetentionWithinPeriod(
-      params: Pick<
-         WisdmRecordParams,
-         'recordRetentionDate' | 'documentClass' | 'fraudType' | 'din' | 'typeOfDocument'
-      >,
-   ): void {
-      if (!params.recordRetentionDate) return;
-
-      const maxDate = resolveMaxRetentionDate(params.documentClass, params.fraudType);
-      if (!maxDate) return;
-
-      const comparison = compareWisdmDates(params.recordRetentionDate, maxDate);
-      if (comparison !== null && comparison > 0) {
-         throw new BadRequestException(
-            `recordRetentionDate ${params.recordRetentionDate} exceeds the retention period for this document; the latest allowed value is ${maxDate}.`,
-         );
-      }
-   }
-
-   /** An update with nothing to update is a wasted round trip to Lyon. */
+   /** An update with no supplied updatable field is a wasted round trip to Lyon. */
    private assertHasUpdatableField(body: WisdmUpdateRecordDto): void {
-      const updatable = [
-         body.stolenBatchIdentifier,
-         body.countryOfTheft,
-         body.dateOfTheft,
-         body.documentIssuanceDate,
-         body.documentExpiryDate,
-         body.nationalReferenceNumber,
-         body.ncbReferenceNumber,
-         body.additionalInformation,
-         body.recordRetentionDate,
+      const updatable: Array<keyof WisdmUpdateRecordDto> = [
+         'stolenBatchIdentifier',
+         'countryOfTheft',
+         'dateOfTheft',
+         'documentIssuanceDate',
+         'documentExpiryDate',
+         'nationalReferenceNumber',
+         'ncbReferenceNumber',
+         'additionalInformation',
+         'recordRetentionDate',
       ];
 
-      if (updatable.every((value) => normalizeOptional(value) === undefined)) {
+      if (updatable.every((field) => !Object.prototype.hasOwnProperty.call(body, field))) {
          throw new BadRequestException(
             'At least one updatable field must be provided: stolenBatchIdentifier, countryOfTheft, dateOfTheft, documentIssuanceDate, documentExpiryDate, nationalReferenceNumber, ncbReferenceNumber, additionalInformation or recordRetentionDate.',
          );

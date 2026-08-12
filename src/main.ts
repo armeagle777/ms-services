@@ -10,7 +10,7 @@ async function bootstrap() {
    const PORT = process.env.PORT || 3000;
    const app = await NestFactory.create(AppModule);
    app.setGlobalPrefix(API_GLOBAL_PREFIX);
-   app.useGlobalPipes(new ValidationPipe({}));
+   app.useGlobalPipes(new ValidationPipe({ transform: true }));
    app.use(morgan('combined'));
    setupSwagger(app);
 

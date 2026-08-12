@@ -37,13 +37,16 @@ export const decodeXmlEntities = (value: string): string =>
       .replace(/&apos;/g, "'")
       .replace(/&amp;/g, '&');
 
-/** Builds `<prefix:Name>value</prefix:Name>`, or `''` when the value is empty. */
+/**
+ * Builds `<prefix:Name>value</prefix:Name>`. `undefined`/`null` omit the field, while an
+ * explicit empty string emits an empty element so update requests can clear optional data.
+ */
 export const buildElement = (
    prefix: string,
    name: string,
    value: string | number | undefined | null,
 ): string => {
-   if (value === undefined || value === null || value === '') return '';
+   if (value === undefined || value === null) return '';
    return `<${prefix}:${name}>${xmlEscape(value)}</${prefix}:${name}>`;
 };
 

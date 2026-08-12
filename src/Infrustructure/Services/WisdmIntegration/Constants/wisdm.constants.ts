@@ -1,8 +1,4 @@
-import {
-   WisdmExtensionReason,
-   WisdmFraudType,
-   WisdmReferenceTable,
-} from 'src/Core/Wisdm/Enums/wisdm.enums';
+import { WisdmReferenceTable } from 'src/Core/Wisdm/Enums/wisdm.enums';
 
 /**
  * WISDM SOAP protocol constants.
@@ -17,21 +13,12 @@ import {
  * ─────────────────────────────────────────────────────────────────────────────────────
  */
 
-/** Default namespace of the WISDM SLTD data-management service (`sltd.asmx`). */
-export const WISDM_SLTD_NAMESPACE_DEFAULT = 'urn:interpol:ws:wisdm:sltd';
-
-/** Default namespace of the WISDM information/statistics service (`infos.asmx`). */
-export const WISDM_INFOS_NAMESPACE_DEFAULT = 'urn:interpol:ws:wisdm:infos';
-
 /** XML prefix used for WISDM elements when none is configured. */
 export const WISDM_XML_PREFIX_DEFAULT = 'tns';
 
 export const SOAP_ENVELOPE_NAMESPACE = 'http://schemas.xmlsoap.org/soap/envelope/';
 export const XSI_NAMESPACE = 'http://www.w3.org/2001/XMLSchema-instance';
 export const XSD_NAMESPACE = 'http://www.w3.org/2001/XMLSchema';
-
-/** Default `ReferenceInCountry` sent in the SOAP header when not configured. */
-export const WISDM_REFERENCE_IN_COUNTRY_DEFAULT = 'YEREVAN';
 
 /** Default `UsernameToken` version attribute. */
 export const WISDM_USERNAME_TOKEN_VERSION_DEFAULT = '1.0';
@@ -70,7 +57,7 @@ export const WISDM_OPERATIONS = {
    INIT_ALL_RECORDS: 'InitAllRecords',
    /** §3.2.4 / 5.3.5 — Commit the re-initialization; unreinserted records are removed. */
    FINALIZE_INIT: 'FinalizeInit',
-   /** §3.2.5 / 7.9 — Records due to expire within six months. */
+   /** §3.2.5 / 7.9 — Records due to expire within six months; verify name against WSDL. */
    GET_EXPIRY_ALERTS: 'ExpiringRecords',
 } as const;
 
@@ -116,25 +103,7 @@ export const WISDM_QUERY_ELEMENTS = {
    referenceTableName: 'TableName',
    yearMonthFrom: 'FromMonth',
    yearMonthTo: 'ToMonth',
-   monthsAhead: 'MonthsAhead',
 } as const;
-
-/**
- * Wire codes for the client-facing fraud types. Replace the right-hand side with the real
- * `IPSGT_Theft_Type` codes as soon as the reference table has been pulled once; the rest
- * of the codebase only ever deals with the {@link WisdmFraudType} enum.
- */
-export const WISDM_FRAUD_TYPE_CODES: Record<WisdmFraudType, string> = {
-   [WisdmFraudType.STOLEN]: 'STOLEN',
-   [WisdmFraudType.LOST]: 'LOST',
-   [WisdmFraudType.STOLEN_BLANK]: 'STOLEN_BLANK',
-   [WisdmFraudType.REVOKED]: 'REVOKED',
-};
-
-/** Wire codes for the `IPSGT_Extension_Reason` reference table. */
-export const WISDM_EXTENSION_REASON_CODES: Record<WisdmExtensionReason, string> = {
-   [WisdmExtensionReason.PURPOSE_NOT_ACHIEVED]: 'PURPOSE_NOT_ACHIEVED',
-};
 
 /** Wire names of the reference tables exposed by the `infos` service. */
 export const WISDM_REFERENCE_TABLE_CODES: Record<WisdmReferenceTable, string> = {
@@ -155,10 +124,8 @@ export const WISDM_ENV = {
    USERNAME: 'INTERPOL_WISDM_USERNAME',
    PASSWORD: 'INTERPOL_WISDM_PASSWORD',
    WS_USERINFO_USERNAME: 'INTERPOL_WISDM_WS_USERINFO_USERNAME',
-   REFERENCE_IN_COUNTRY: 'INTERPOL_WISDM_REFERENCE_IN_COUNTRY',
    USERNAME_TOKEN_VERSION: 'INTERPOL_WISDM_WS_USERNAME_VERSION',
    SLTD_NAMESPACE: 'INTERPOL_WISDM_SLTD_NAMESPACE',
    INFOS_NAMESPACE: 'INTERPOL_WISDM_INFOS_NAMESPACE',
    XML_PREFIX: 'INTERPOL_WISDM_XML_PREFIX',
-   COUNTRY_OF_REGISTRATION: 'INTERPOL_WISDM_COUNTRY_OF_REGISTRATION',
 } as const;

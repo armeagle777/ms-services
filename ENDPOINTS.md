@@ -914,14 +914,31 @@ endpoints, with its own credentials (`INTERPOL_WISDM_*`).
 Reference: *WISDM SLTD/SAD Functional description* v1.2 (17/08/2016); section numbers below
 point at that document.
 
+### Upstream configuration
+
+The integration requires `INTERPOL_WISDM_SLTD_ENDPOINT`, `INTERPOL_WISDM_INFOS_ENDPOINT`,
+`INTERPOL_WISDM_USERNAME`, `INTERPOL_WISDM_PASSWORD`, `INTERPOL_WISDM_SLTD_NAMESPACE` and
+`INTERPOL_WISDM_INFOS_NAMESPACE`. Namespace values must come from the corresponding WSDL;
+the application deliberately does not fall back to guessed namespaces.
+
+`INTERPOL_WISDM_WS_USERINFO_USERNAME` defaults to the authentication username,
+`INTERPOL_WISDM_WS_USERNAME_VERSION` defaults to `1.0`, and
+`INTERPOL_WISDM_XML_PREFIX` defaults to `tns`. Each request receives a unique
+`ReferenceInCountry` value (`ARM-<UUID>`), following the existing FIND integration. Country
+of registration is not configured or sent: INTERPOL derives it from the authenticated
+country account.
+
+Do not commit issued WISDM passwords. The operation and XML element names must be checked
+against the separate technical-services reference/WSDL before connecting to an INTERPOL
+environment; the functional manual does not publish that wire contract.
+
 ### Shared conventions
 
 | Field | Format |
 |-------|--------|
 | `din` | Document Identification Number. 5–25 characters `[A-Za-z0-9]` after cleaning (upper-cased, non-alphanumeric stripped). |
 | `typeOfDocument` | Code from the `IPSGT_Document_Type` reference table, e.g. `PAS`. |
-| `fraudType` | `STOLEN` \| `LOST` \| `STOLEN_BLANK` \| `REVOKED`. |
-| `documentClass` | `STD` (travel) \| `SAD` (administrative). Optional; enables the local retention-period check. |
+| `fraudType` | Exact code from the current `IPSGT_Theft_Type` reference table. |
 | `countryOfTheft` | 2–3 letter ICPO country code, e.g. `ARM`. |
 | dates | `YYYYMMDD`. |
 | periods | `YYYYMM`. |
@@ -939,10 +956,11 @@ DELETE /interpol/wisdm/records              §3.1.3  Delete a record
 GET    /interpol/wisdm/records              §3.2.1  Read a record's properties
 ```
 
-**Create body:** `din`, `typeOfDocument`, `fraudType`, `countryOfTheft` are required;
+**Create body:** `din`, `typeOfDocument` and `fraudType` are required. INTERPOL requires
+`countryOfTheft` unless the supplied reference-table code means stolen blank. Optional fields are
 `stolenBatchIdentifier` (stolen blank only), `dateOfTheft`, `documentIssuanceDate`,
 `documentExpiryDate`, `nationalReferenceNumber`, `ncbReferenceNumber`,
-`additionalInformation`, `recordRetentionDate`, `documentClass` are optional.
+`additionalInformation` and `recordRetentionDate`.
 
 **Update body:** same shape minus `fraudType` (not updatable). At least one updatable field
 must be present; changing `recordRetentionDate` also requires `extensionReason`.
@@ -955,13 +973,13 @@ must be present; changing `recordRetentionDate` also requires `extensionReason`.
 GET    /interpol/wisdm/statistics/count      §3.2.2  Total records for a document type
 GET    /interpol/wisdm/statistics/activity   §3.2.3  Monthly ADD/UPD/DEL/ERD counters
 GET    /interpol/wisdm/reference-tables      §5.3.1  Pull an IPSGT_* reference table
-GET    /interpol/wisdm/alerts/expiring       §3.2.5  Records expiring within N months
+GET    /interpol/wisdm/alerts/expiring       §3.2.5  Records in the six-month alert window
 ```
 
 `activity` accepts `typeOfDocument`, `from`, `to` (`YYYYMM`). `reference-tables` accepts
 `table` (`IPSGT_Document_Type` \| `IPSGT_Theft_Type` \| `IPSGT_ICPO_Countries` \|
-`IPSGT_Extension_Reason`). `alerts/expiring` accepts `monthsAhead` (1–24, default 6) and
-`typeOfDocument`. Statistics are recomputed once a day upstream.
+`IPSGT_Extension_Reason`). `alerts/expiring` uses INTERPOL's fixed six-month window.
+Statistics are recomputed once a day upstream.
 
 ### Bulk load and initialization (§3.2.4)
 

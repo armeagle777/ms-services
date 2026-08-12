@@ -5,30 +5,22 @@ import {
    IsArray,
    IsBoolean,
    IsEnum,
-   IsInt,
    IsNotEmpty,
    IsOptional,
    IsString,
-   Max,
    MaxLength,
-   Min,
+   ValidateIf,
    ValidateNested,
 } from 'class-validator';
 
 import {
    WISDM_ADDITIONAL_INFORMATION_MAX_LENGTH,
    WISDM_BULK_MAX_RECORDS,
-   WISDM_DOCUMENT_TYPE_MAX_LENGTH,
    WISDM_NATIONAL_REFERENCE_MAX_LENGTH,
    WISDM_NCB_REFERENCE_MAX_LENGTH,
    WISDM_STOLEN_BATCH_IDENTIFIER_MAX_LENGTH,
 } from 'src/Core/Wisdm/Constants/wisdm.rules.constants';
-import {
-   WisdmDocumentClass,
-   WisdmExtensionReason,
-   WisdmFraudType,
-   WisdmReferenceTable,
-} from 'src/Core/Wisdm/Enums/wisdm.enums';
+import { WisdmReferenceTable } from 'src/Core/Wisdm/Enums/wisdm.enums';
 import {
    IsAfterWisdmDate,
    IsFutureWisdmDate,
@@ -71,7 +63,6 @@ export class WisdmRecordIdentifierDto {
    /** Type of document code from the `IPSGT_Document_Type` reference table (e.g. `PAS`). */
    @IsString()
    @IsNotEmpty()
-   @MaxLength(WISDM_DOCUMENT_TYPE_MAX_LENGTH)
    @upper()
    typeOfDocument!: string;
 }
@@ -82,25 +73,19 @@ export class WisdmRecordIdentifierDto {
  */
 class WisdmRecordBaseDto extends WisdmRecordIdentifierDto {
    /**
-    * Class of the record, when known. Supplying it lets us verify the retention date
-    * against the 5/30/10 rule locally; omit it and INTERPOL's own rules apply.
+    * National identifier of the lot of stolen documents. INTERPOL accepts it only for
+    * the stolen-blank code from `IPSGT_Theft_Type`.
     */
    @IsOptional()
-   @IsEnum(WisdmDocumentClass)
-   documentClass?: WisdmDocumentClass;
-
-   /**
-    * National identifier of the lot of stolen documents.
-    * Accepted only when `fraudType` is `STOLEN_BLANK`.
-    */
-   @IsOptional()
+   @ValidateIf((_, value) => value !== '')
    @IsString()
    @MaxLength(WISDM_STOLEN_BATCH_IDENTIFIER_MAX_LENGTH)
    @trim()
    stolenBatchIdentifier?: string;
 
-   /** Date the document was reported stolen, lost or revoked. `YYYYMMDD`, in the past. */
+   /** Date the document was reported stolen, lost or revoked. `YYYYMMDD`, not after today. */
    @IsOptional()
+   @ValidateIf((_, value) => value !== '')
    @IsString()
    @IsWisdmDate()
    @IsPastWisdmDate()
@@ -108,8 +93,9 @@ class WisdmRecordBaseDto extends WisdmRecordIdentifierDto {
    @trim()
    dateOfTheft?: string;
 
-   /** Issuance date of the document. `YYYYMMDD`, in the past. */
+   /** Issuance date of the document. `YYYYMMDD`, not after today. */
    @IsOptional()
+   @ValidateIf((_, value) => value !== '')
    @IsString()
    @IsWisdmDate()
    @IsPastWisdmDate()
@@ -118,6 +104,7 @@ class WisdmRecordBaseDto extends WisdmRecordIdentifierDto {
 
    /** Expiry date of the document. `YYYYMMDD`, after the issuance date. Omit if it never expires. */
    @IsOptional()
+   @ValidateIf((_, value) => value !== '')
    @IsString()
    @IsWisdmDate()
    @IsAfterWisdmDate('documentIssuanceDate')
@@ -126,6 +113,7 @@ class WisdmRecordBaseDto extends WisdmRecordIdentifierDto {
 
    /** Reference number of the police case. Free text, not transliterated. */
    @IsOptional()
+   @ValidateIf((_, value) => value !== '')
    @IsString()
    @MaxLength(WISDM_NATIONAL_REFERENCE_MAX_LENGTH)
    @trim()
@@ -133,6 +121,7 @@ class WisdmRecordBaseDto extends WisdmRecordIdentifierDto {
 
    /** Reference number of the operation at NCB level. Free text, not transliterated. */
    @IsOptional()
+   @ValidateIf((_, value) => value !== '')
    @IsString()
    @MaxLength(WISDM_NCB_REFERENCE_MAX_LENGTH)
    @trim()
@@ -143,6 +132,7 @@ class WisdmRecordBaseDto extends WisdmRecordIdentifierDto {
     * Do NOT put personal data here — INTERPOL SLTD holds no personal information.
     */
    @IsOptional()
+   @ValidateIf((_, value) => value !== '')
    @IsString()
    @MaxLength(WISDM_ADDITIONAL_INFORMATION_MAX_LENGTH)
    @trim()
@@ -162,16 +152,22 @@ class WisdmRecordBaseDto extends WisdmRecordIdentifierDto {
 
 /** §3.1.1 — create a new SLTD/SAD record. */
 export class WisdmCreateRecordDto extends WisdmRecordBaseDto {
-   /** Why the document is recorded: stolen, lost, stolen blank or revoked. Mandatory. */
-   @IsEnum(WisdmFraudType)
-   fraudType!: WisdmFraudType;
-
-   /** ICPO code of the country where the document was lost or stolen. Mandatory. */
+   /** Exact reason code from `IPSGT_Theft_Type`. */
    @IsString()
    @IsNotEmpty()
+   @trim()
+   fraudType!: string;
+
+   /**
+    * ICPO code of the country where the document was lost or stolen. INTERPOL requires it
+    * unless `fraudType` is the stolen-blank reference-table code (§3.1.1).
+    */
+   @IsOptional()
+   @ValidateIf((_, value) => value !== '')
+   @IsString()
    @IsIcpoCountryCode()
    @upper()
-   countryOfTheft!: string;
+   countryOfTheft?: string;
 }
 
 /**
@@ -182,6 +178,7 @@ export class WisdmCreateRecordDto extends WisdmRecordBaseDto {
 export class WisdmUpdateRecordDto extends WisdmRecordBaseDto {
    /** ICPO code of the country where the document was lost or stolen. */
    @IsOptional()
+   @ValidateIf((_, value) => value !== '')
    @IsString()
    @IsIcpoCountryCode()
    @upper()
@@ -189,8 +186,10 @@ export class WisdmUpdateRecordDto extends WisdmRecordBaseDto {
 
    /** Required when `recordRetentionDate` is being extended. */
    @IsOptional()
-   @IsEnum(WisdmExtensionReason)
-   extensionReason?: WisdmExtensionReason;
+   @IsString()
+   @IsNotEmpty()
+   @trim()
+   extensionReason?: string;
 }
 
 /** §3.1.2 (administrative part) — extend only the retention date of a record. */
@@ -204,18 +203,10 @@ export class WisdmExtendRetentionDto extends WisdmRecordIdentifierDto {
    recordRetentionDate!: string;
 
    /** Reason from `IPSGT_Extension_Reason`. Currently a single allowed value. */
-   @IsEnum(WisdmExtensionReason)
-   extensionReason!: WisdmExtensionReason;
-
-   /** Class of the record, when known — enables the local retention-period check. */
-   @IsOptional()
-   @IsEnum(WisdmDocumentClass)
-   documentClass?: WisdmDocumentClass;
-
-   /** Type of fraud, when known — a stolen blank document may be retained for 30 years. */
-   @IsOptional()
-   @IsEnum(WisdmFraudType)
-   fraudType?: WisdmFraudType;
+   @IsString()
+   @IsNotEmpty()
+   @trim()
+   extensionReason!: string;
 }
 
 /** §3.1.3 / §3.2.1 — delete a record, or read its properties. */
@@ -226,7 +217,6 @@ export class WisdmCountQueryDto {
    /** Type of document code from `IPSGT_Document_Type`. */
    @IsString()
    @IsNotEmpty()
-   @MaxLength(WISDM_DOCUMENT_TYPE_MAX_LENGTH)
    @upper()
    typeOfDocument!: string;
 }
@@ -236,7 +226,6 @@ export class WisdmActivityQueryDto {
    /** Restrict to one document type. Omit for every type the country records. */
    @IsOptional()
    @IsString()
-   @MaxLength(WISDM_DOCUMENT_TYPE_MAX_LENGTH)
    @upper()
    typeOfDocument?: string;
 
@@ -253,27 +242,6 @@ export class WisdmActivityQueryDto {
    @IsWisdmMonth()
    @trim()
    to?: string;
-}
-
-/** §3.2.5 — records due to expire, and records already removed for expiry. */
-export class WisdmExpiryAlertsQueryDto {
-   /**
-    * Size of the look-ahead window in months. Defaults to 6, the period INTERPOL's
-    * periodic assessment of data (PAD) process is built around.
-    */
-   @IsOptional()
-   @IsInt()
-   @Min(1)
-   @Max(24)
-   @Transform(({ value }) => (value === undefined || value === '' ? undefined : Number(value)))
-   monthsAhead?: number;
-
-   /** Restrict to one document type. */
-   @IsOptional()
-   @IsString()
-   @MaxLength(WISDM_DOCUMENT_TYPE_MAX_LENGTH)
-   @upper()
-   typeOfDocument?: string;
 }
 
 /** §5.3.1 — pull one of the INTERPOL reference tables. */
