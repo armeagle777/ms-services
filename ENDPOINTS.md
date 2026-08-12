@@ -918,8 +918,8 @@ point at that document.
 
 The integration requires `INTERPOL_WISDM_SLTD_ENDPOINT`, `INTERPOL_WISDM_INFOS_ENDPOINT`,
 `INTERPOL_WISDM_USERNAME`, `INTERPOL_WISDM_PASSWORD`, `INTERPOL_WISDM_SLTD_NAMESPACE` and
-`INTERPOL_WISDM_INFOS_NAMESPACE`. Namespace values must come from the corresponding WSDL;
-the application deliberately does not fall back to guessed namespaces.
+the WSDL-derived SLTD namespace. The Infos namespace is fixed by its supplied WSDL as
+`http://tempuri.org/`; there is no `INTERPOL_WISDM_INFOS_NAMESPACE` setting.
 
 `INTERPOL_WISDM_WS_USERINFO_USERNAME` defaults to the authentication username,
 `INTERPOL_WISDM_WS_USERNAME_VERSION` defaults to `1.0`, and
@@ -931,6 +931,24 @@ country account.
 Do not commit issued WISDM passwords. The operation and XML element names must be checked
 against the separate technical-services reference/WSDL before connecting to an INTERPOL
 environment; the functional manual does not publish that wire contract.
+
+The supplied Infos WSDL publishes schema-discovery operations, not a `Statistics` business
+operation. The implementation sends its exact SOAP 1.1 actions and the WSDL-declared
+`UsernameToken` header (without the SLTD-only `UserInformation` header):
+
+```
+GET /interpol/wisdm/infos/schemas
+GET /interpol/wisdm/infos/schemas/documented?operation=GetSLTDStatisticsSchema&documentation=true
+GET /interpol/wisdm/infos/schemas/by-key?key=<ListOfSchema-key>&format=xml
+```
+
+`operation` accepts `GetSLTDSearchSchema`, `GetSLTDSearchResultSchema`,
+`GetSLTDRecordSchema`, `GetSLTDReviewDateSchema`, `GetSLTDStatisticsSchema`, or
+`GetSLTDActionsSchema`. `format` accepts `xml`, `xml2`, or `html`.
+
+Record, statistics, activity, reference-table, initialization, and expiry business calls
+are sent to `INTERPOL_WISDM_SLTD_ENDPOINT`. They are not sent to `infos.asmx`, whose WSDL
+does not declare those actions.
 
 ### Shared conventions
 

@@ -1,6 +1,7 @@
 import type { ResultCodeMeta } from 'src/Infrustructure/Services/InterpolIntegration/Models/interpol.types';
 import type { WisdmFunctionalErrorKey } from 'src/Core/Wisdm/Constants/wisdm.rules.constants';
 import type { WisdmReferenceTable, WisdmStatisticsAction } from 'src/Core/Wisdm/Enums/wisdm.enums';
+import type { WisdmInfosOperation } from 'src/Infrustructure/Services/WisdmIntegration/Constants/wisdm.constants';
 
 /** Raw outcome of a WISDM SOAP round trip. */
 export type WisdmSoapCallResult = {
@@ -26,6 +27,30 @@ export type WisdmBaseResponse = {
       key: WisdmFunctionalErrorKey;
       message: string;
    } | null;
+};
+
+/** One entry returned by the Infos `ListOfSchema` operation. */
+export type WisdmInfosSchemaDescriptor = {
+   key: string;
+   description: string;
+   direction: string;
+   method: string;
+};
+
+/** Normalized response shared by the exact schema-discovery operations in Infos WSDL. */
+export type WisdmInfosSchemaResponse = {
+   ok: boolean;
+   httpStatus: number;
+   fault: string | null;
+   operation: WisdmInfosOperation;
+   resultCode: string | null;
+   resultOtherCode: string | null;
+   requestId: string | null;
+   referenceInCountry: string | null;
+   /** Text or mixed XML carried by the operation's result element. */
+   payload: string | null;
+   xmlData: Record<string, unknown> | null;
+   schemas: WisdmInfosSchemaDescriptor[];
 };
 
 /* -------------------------------------------------------------------------- */

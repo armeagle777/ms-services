@@ -10,10 +10,18 @@ import { randomUUID } from 'crypto';
 import { firstValueFrom } from 'rxjs';
 
 import { WISDM_EXPIRY_ALERT_WINDOW_MONTHS } from 'src/Core/Wisdm/Constants/wisdm.rules.constants';
-import { WisdmReferenceTable, WisdmStatisticsAction } from 'src/Core/Wisdm/Enums/wisdm.enums';
+import {
+   WisdmInfosDocumentedSchemaOperation,
+   WisdmInfosSchemaFormat,
+   WisdmReferenceTable,
+   WisdmStatisticsAction,
+} from 'src/Core/Wisdm/Enums/wisdm.enums';
 import { evaluateResultCode } from 'src/Infrustructure/Services/InterpolIntegration/Helpers/resultCode.helper';
 import {
    WISDM_ENV,
+   WISDM_INFOS_NAMESPACE,
+   WISDM_INFOS_OPERATIONS,
+   WISDM_INFOS_SOAP_ACTIONS,
    WISDM_OPERATION_SERVICE,
    WISDM_OPERATIONS,
    WISDM_QUERY_ELEMENTS,
@@ -22,6 +30,7 @@ import {
    WISDM_TIMEOUT_DEFAULT_MS,
    WISDM_USERNAME_TOKEN_VERSION_DEFAULT,
    WISDM_XML_PREFIX_DEFAULT,
+   WisdmInfosOperation,
    WisdmOperation,
    WisdmService,
 } from './Constants/wisdm.constants';
@@ -30,8 +39,11 @@ import {
    buildElement,
    buildElements,
    buildWisdmEnvelope,
+   buildWisdmInfosEnvelope,
+   decodeXmlEntities,
    extractSoapFault,
    extractXmlDataRaw,
+   firstTagInner,
    firstTagValue,
    matchFunctionalError,
    parseXmlDataToJson,
@@ -46,6 +58,8 @@ import type {
    WisdmDocumentResponse,
    WisdmExpiringRecord,
    WisdmExpiryAlertsResponse,
+   WisdmInfosSchemaDescriptor,
+   WisdmInfosSchemaResponse,
    WisdmInitStepResponse,
    WisdmMutationResponse,
    WisdmRecordIdentifier,
@@ -163,14 +177,13 @@ export class WisdmIntegration {
       };
    }
 
-   /** §3.2.2 — total number of records held for a document type. Recomputed daily upstream. */
+   /** Legacy count call retained until its schema is retrieved and implemented. */
    async getDocumentCount(typeOfDocument: string): Promise<WisdmCountResponse> {
       const prefix = this.getXmlPrefix();
       const body = this.buildOperationBody(
          WISDM_OPERATIONS.GET_STATISTICS,
          buildElement(prefix, WISDM_RECORD_ELEMENTS.typeOfDocument, typeOfDocument),
       );
-
       const { status, xml } = await this.call(WISDM_OPERATIONS.GET_STATISTICS, body);
       const base = this.mapBaseResponse(status, xml);
 
@@ -189,7 +202,7 @@ export class WisdmIntegration {
       };
    }
 
-   /** §3.2.3 — monthly ADD/UPD/DEL/ERD counters per document type. */
+   /** Legacy activity call retained until its schema is retrieved and implemented. */
    async getActivity(query: {
       typeOfDocument?: string;
       from?: string;
@@ -204,38 +217,28 @@ export class WisdmIntegration {
             buildElement(prefix, WISDM_QUERY_ELEMENTS.yearMonthTo, query.to),
          ]),
       );
-
       const { status, xml } = await this.call(WISDM_OPERATIONS.GET_ACTIONS, body);
       const base = this.mapBaseResponse(status, xml);
 
-      return {
-         ...base,
-         entries: base.ok ? this.parseActivityEntries(xml) : [],
-      };
+      return { ...base, entries: base.ok ? this.parseActivityEntries(xml) : [] };
    }
 
-   /** §5.3.1 — pull an INTERPOL reference table so the country can refresh its local copy. */
+   /** Legacy reference-table call retained until its schema is retrieved and implemented. */
    async getReferenceTable(table: WisdmReferenceTable): Promise<WisdmReferenceTableResponse> {
       const prefix = this.getXmlPrefix();
       const body = this.buildOperationBody(
          WISDM_OPERATIONS.GET_REFERENCE_TABLE,
          buildElement(prefix, WISDM_QUERY_ELEMENTS.referenceTableName, this.toTableCode(table)),
       );
-
       const { status, xml } = await this.call(WISDM_OPERATIONS.GET_REFERENCE_TABLE, body);
       const base = this.mapBaseResponse(status, xml);
 
-      return {
-         ...base,
-         table,
-         entries: base.ok ? this.parseReferenceEntries(xml) : [],
-      };
+      return { ...base, table, entries: base.ok ? this.parseReferenceEntries(xml) : [] };
    }
 
-   /** §3.2.5 — own records due to expire within the window, and records already purged. */
+   /** Legacy expiry call retained until its schema is retrieved and implemented. */
    async getExpiryAlerts(): Promise<WisdmExpiryAlertsResponse> {
       const body = this.buildOperationBody(WISDM_OPERATIONS.GET_EXPIRY_ALERTS, '');
-
       const { status, xml } = await this.call(WISDM_OPERATIONS.GET_EXPIRY_ALERTS, body);
       const base = this.mapBaseResponse(status, xml);
 
@@ -245,6 +248,42 @@ export class WisdmIntegration {
          records: base.ok ? this.parseExpiringRecords(xml) : [],
          alarmMessage: firstTagValue(xml, 'AlarmMessage') ?? firstTagValue(xml, 'Alarm'),
       };
+   }
+
+   /* ---------------------------------------------------------------------- */
+   /*  Exact Infos schema-discovery contract                                 */
+   /* ---------------------------------------------------------------------- */
+
+   /** Calls one of the six `GetSLTD*Schema` operations published by Infos WSDL. */
+   async getDocumentedSchema(
+      operation: WisdmInfosDocumentedSchemaOperation,
+      documentation = true,
+   ): Promise<WisdmInfosSchemaResponse> {
+      const prefix = this.getXmlPrefix();
+      const body = this.buildInfosOperationBody(
+         operation,
+         buildElement(prefix, 'Documentation', documentation ? 'true' : 'false'),
+      );
+
+      return this.callAndMapInfos(operation, body);
+   }
+
+   /** Calls the exact `ListOfSchema` operation from Infos WSDL. */
+   async listSchemas(): Promise<WisdmInfosSchemaResponse> {
+      const operation = WISDM_INFOS_OPERATIONS.LIST_SCHEMAS;
+      return this.callAndMapInfos(operation, this.buildInfosOperationBody(operation, ''));
+   }
+
+   /** Calls `GetSchema`, `GetSchema2`, or `GetHtmlSchema` with the optional WSDL `sKey`. */
+   async getSchemaByKey(
+      key?: string,
+      format: WisdmInfosSchemaFormat = WisdmInfosSchemaFormat.XML,
+   ): Promise<WisdmInfosSchemaResponse> {
+      const operation = this.getSchemaOperationForFormat(format);
+      const prefix = this.getXmlPrefix();
+      const body = this.buildInfosOperationBody(operation, buildElement(prefix, 'sKey', key));
+
+      return this.callAndMapInfos(operation, body);
    }
 
    /* ---------------------------------------------------------------------- */
@@ -276,6 +315,13 @@ export class WisdmIntegration {
    /* ---------------------------------------------------------------------- */
 
    private buildOperationBody(operation: WisdmOperation, innerXml: string): string {
+      const prefix = this.getXmlPrefix();
+      return `        <${prefix}:${operation}>
+            ${innerXml}
+        </${prefix}:${operation}>`;
+   }
+
+   private buildInfosOperationBody(operation: WisdmInfosOperation, innerXml: string): string {
       const prefix = this.getXmlPrefix();
       return `        <${prefix}:${operation}>
             ${innerXml}
@@ -340,7 +386,7 @@ export class WisdmIntegration {
       const headers = {
          'Content-Type': 'text/xml; charset=utf-8',
          Accept: 'text/xml; charset=utf-8',
-         SOAPAction: `"${namespace}/${operation}"`,
+         SOAPAction: `"${namespace.replace(/\/$/, '')}/${operation}"`,
       };
 
       try {
@@ -360,6 +406,50 @@ export class WisdmIntegration {
          const message = err instanceof Error ? err.message : String(err);
          this.logger.error(`WISDM ${operation} transport failure: ${message}`);
          throw new ServiceUnavailableException(`WISDM ${operation} is unavailable: ${message}`);
+      }
+   }
+
+   private async callInfos(
+      operation: WisdmInfosOperation,
+      bodyXml: string,
+   ): Promise<WisdmSoapCallResult> {
+      const endpoint = this.getRequiredConfig(WISDM_ENV.INFOS_ENDPOINT);
+      const envelope = buildWisdmInfosEnvelope({
+         prefix: this.getXmlPrefix(),
+         namespace: WISDM_INFOS_NAMESPACE,
+         bodyXml,
+         username: this.getRequiredConfig(WISDM_ENV.USERNAME),
+         password: this.getRequiredConfig(WISDM_ENV.PASSWORD),
+         usernameTokenVersion:
+            this.getConfig(WISDM_ENV.USERNAME_TOKEN_VERSION) ||
+            WISDM_USERNAME_TOKEN_VERSION_DEFAULT,
+      });
+
+      const headers = {
+         'Content-Type': 'text/xml; charset=utf-8',
+         Accept: 'text/xml; charset=utf-8',
+         SOAPAction: `"${WISDM_INFOS_SOAP_ACTIONS[operation]}"`,
+      };
+
+      try {
+         const response = await firstValueFrom(
+            this.httpService.post(endpoint, envelope, {
+               headers,
+               timeout: WISDM_TIMEOUT_DEFAULT_MS,
+               validateStatus: () => true,
+            }),
+         );
+
+         const xml =
+            typeof response.data === 'string' ? response.data : JSON.stringify(response.data || {});
+
+         return { status: response.status, xml, requestXml: envelope };
+      } catch (err) {
+         const message = err instanceof Error ? err.message : String(err);
+         this.logger.error(`WISDM Infos ${operation} transport failure: ${message}`);
+         throw new ServiceUnavailableException(
+            `WISDM Infos ${operation} is unavailable: ${message}`,
+         );
       }
    }
 
@@ -385,6 +475,59 @@ export class WisdmIntegration {
    /* ---------------------------------------------------------------------- */
    /*  Response mapping                                                      */
    /* ---------------------------------------------------------------------- */
+
+   private async callAndMapInfos(
+      operation: WisdmInfosOperation,
+      bodyXml: string,
+   ): Promise<WisdmInfosSchemaResponse> {
+      const { status, xml } = await this.callInfos(operation, bodyXml);
+      const fault = extractSoapFault(xml);
+      const resultCode = firstTagValue(xml, 'resultCode');
+      const resultCodeMeta = resultCode ? evaluateResultCode(resultCode) : null;
+      const responseElement = `${operation}Result`;
+      const rawPayload = firstTagValue(xml, 'data') ?? firstTagInner(xml, responseElement);
+
+      return {
+         ok:
+            status < 400 &&
+            !fault &&
+            (!resultCodeMeta ||
+               resultCodeMeta.key === 'NO_ERROR' ||
+               resultCodeMeta.key === 'NO_ANSWER'),
+         httpStatus: status,
+         fault,
+         operation,
+         resultCode,
+         resultOtherCode: firstTagValue(xml, 'resultOtherCode'),
+         requestId: firstTagValue(xml, 'requestId'),
+         referenceInCountry: firstTagValue(xml, 'referenceInCountry'),
+         payload: rawPayload ? decodeXmlEntities(rawPayload) : null,
+         xmlData: parseXmlDataToJson(xml),
+         schemas: this.parseSchemaDescriptors(xml),
+      };
+   }
+
+   private parseSchemaDescriptors(xml: string): WisdmInfosSchemaDescriptor[] {
+      const exactBlocks = allTagBlocks(xml, 'SChemaDesc');
+      const blocks = exactBlocks.length > 0 ? exactBlocks : allTagBlocks(xml, 'SchemaDesc');
+
+      return blocks.map((block) => ({
+         key: firstTagValue(block, 'Key') ?? '',
+         description: firstTagValue(block, 'Description') ?? '',
+         direction: firstTagValue(block, 'Direction') ?? '',
+         method: firstTagValue(block, 'Method') ?? '',
+      }));
+   }
+
+   private getSchemaOperationForFormat(format: WisdmInfosSchemaFormat): WisdmInfosOperation {
+      if (format === WisdmInfosSchemaFormat.HTML) {
+         return WISDM_INFOS_OPERATIONS.GET_HTML_SCHEMA;
+      }
+      if (format === WisdmInfosSchemaFormat.XML_2) {
+         return WISDM_INFOS_OPERATIONS.GET_SCHEMA_2;
+      }
+      return WISDM_INFOS_OPERATIONS.GET_SCHEMA;
+   }
 
    private mapBaseResponse(status: number, xml: string): WisdmBaseResponse {
       const fault = extractSoapFault(xml);
@@ -456,15 +599,9 @@ export class WisdmIntegration {
       };
    }
 
-   /**
-    * Activity statistics arrive as `ACTIONS_<action>_FOR_<documentType>` keys (§2.4).
-    * Both the flat key form and a structured element form are handled, since the two
-    * WISDM services are not consistent about which one they use.
-    */
    private parseActivityEntries(xml: string): WisdmActivityEntry[] {
       const payload = extractXmlDataRaw(xml) || xml;
       const entries: WisdmActivityEntry[] = [];
-
       const keyPattern =
          /<(?:\w+:)?(?:Key|Name)>\s*ACTIONS_(ADD|UPD|DEL|ERD)_FOR_(\w+)\s*<\/(?:\w+:)?(?:Key|Name)>[\s\S]*?<(?:\w+:)?(?:Value|Total|Count)>\s*(\d+)\s*<\/(?:\w+:)?(?:Value|Total|Count)>/gi;
 
@@ -485,7 +622,6 @@ export class WisdmIntegration {
          if (!Object.values(WisdmStatisticsAction).includes(action as WisdmStatisticsAction)) {
             continue;
          }
-
          entries.push({
             period: firstTagValue(block, 'Period') ?? firstTagValue(block, 'Month') ?? '',
             typeOfDocument: (
@@ -502,7 +638,6 @@ export class WisdmIntegration {
    private parseReferenceEntries(xml: string): WisdmReferenceEntry[] {
       const payload = extractXmlDataRaw(xml) || xml;
       const entries: WisdmReferenceEntry[] = [];
-
       const blocks = [
          ...allTagBlocks(payload, 'Row'),
          ...allTagBlocks(payload, 'Entry'),
@@ -519,7 +654,6 @@ export class WisdmIntegration {
          const attributes: Record<string, string> = {};
          const attributePattern = /<(?:\w+:)?(\w+)[^>]*>([^<]*)<\/(?:\w+:)?\1>/g;
          let attributeMatch: RegExpExecArray | null;
-
          while ((attributeMatch = attributePattern.exec(block)) !== null) {
             attributes[attributeMatch[1]] = attributeMatch[2].trim();
          }
@@ -541,7 +675,6 @@ export class WisdmIntegration {
    private parseExpiringRecords(xml: string): WisdmExpiringRecord[] {
       const payload = extractXmlDataRaw(xml) || xml;
       const records: WisdmExpiringRecord[] = [];
-
       const blocks = [
          ...allTagBlocks(payload, 'Record'),
          ...allTagBlocks(payload, 'Document'),
@@ -551,7 +684,6 @@ export class WisdmIntegration {
       for (const block of blocks) {
          const din = firstTagValue(block, WISDM_RECORD_ELEMENTS.din);
          if (!din) continue;
-
          const deletedFlag = (
             firstTagValue(block, 'Deleted') ??
             firstTagValue(block, 'IsDeleted') ??
@@ -577,16 +709,15 @@ export class WisdmIntegration {
    /* ---------------------------------------------------------------------- */
 
    private getEndpoint(service: WisdmService): string {
-      const key =
-         service === WisdmService.INFOS ? WISDM_ENV.INFOS_ENDPOINT : WISDM_ENV.SLTD_ENDPOINT;
-      return this.getRequiredConfig(key);
+      return this.getRequiredConfig(
+         service === WisdmService.INFOS ? WISDM_ENV.INFOS_ENDPOINT : WISDM_ENV.SLTD_ENDPOINT,
+      );
    }
 
    private getNamespace(service: WisdmService): string {
-      if (service === WisdmService.INFOS) {
-         return this.getRequiredConfig(WISDM_ENV.INFOS_NAMESPACE);
-      }
-      return this.getRequiredConfig(WISDM_ENV.SLTD_NAMESPACE);
+      return service === WisdmService.INFOS
+         ? WISDM_INFOS_NAMESPACE
+         : this.getRequiredConfig(WISDM_ENV.SLTD_NAMESPACE);
    }
 
    private getXmlPrefix(): string {

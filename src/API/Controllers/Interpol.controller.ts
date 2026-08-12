@@ -27,6 +27,8 @@ import {
    WisdmCreateRecordDto,
    WisdmExtendRetentionDto,
    WisdmFinalizeInitDto,
+   WisdmInfosDocumentedSchemaQueryDto,
+   WisdmInfosSchemaByKeyQueryDto,
    WisdmInitializeDto,
    WisdmRecordQueryDto,
    WisdmReferenceTableQueryDto,
@@ -126,6 +128,24 @@ export class InterpolController {
    @Get('wisdm/alerts/expiring')
    wisdmGetExpiryAlerts() {
       return this.wisdmService.getExpiryAlerts();
+   }
+
+   /** Exact Infos `ListOfSchema` operation from the supplied WSDL. */
+   @Get('wisdm/infos/schemas')
+   wisdmListInfosSchemas() {
+      return this.wisdmService.listInfosSchemas();
+   }
+
+   /** Exact Infos `GetSLTD*Schema` operations from the supplied WSDL. */
+   @Get('wisdm/infos/schemas/documented')
+   wisdmGetInfosDocumentedSchema(@Query() query: WisdmInfosDocumentedSchemaQueryDto) {
+      return this.wisdmService.getInfosDocumentedSchema(query);
+   }
+
+   /** Exact Infos `GetSchema`, `GetSchema2`, and `GetHtmlSchema` operations. */
+   @Get('wisdm/infos/schemas/by-key')
+   wisdmGetInfosSchemaByKey(@Query() query: WisdmInfosSchemaByKeyQueryDto) {
+      return this.wisdmService.getInfosSchemaByKey(query);
    }
 
    /** Bulk insert, for a first data load or for re-loading during initialization. */

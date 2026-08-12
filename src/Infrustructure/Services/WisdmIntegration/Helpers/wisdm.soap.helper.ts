@@ -64,6 +64,11 @@ type EnvelopeParams = {
    usernameTokenVersion: string;
 };
 
+type InfosEnvelopeParams = Pick<
+   EnvelopeParams,
+   'prefix' | 'namespace' | 'bodyXml' | 'username' | 'password' | 'usernameTokenVersion'
+>;
+
 /**
  * Builds the WISDM SOAP envelope. Authentication is header-based login/password, the same
  * principle as the FIND method already used by the Interpol integration (§2.2).
@@ -88,6 +93,36 @@ export const buildWisdmEnvelope = ({
             <${prefix}:ReferenceInCountry>${xmlEscape(referenceInCountry)}</${prefix}:ReferenceInCountry>
         </${prefix}:UserInformation>
 
+        <${prefix}:UsernameToken Version="${xmlEscape(usernameTokenVersion)}">
+            <${prefix}:Username>${xmlEscape(username)}</${prefix}:Username>
+            <${prefix}:Password>${xmlEscape(password)}</${prefix}:Password>
+        </${prefix}:UsernameToken>
+    </soap:Header>
+
+    <soap:Body>
+${bodyXml}
+    </soap:Body>
+</soap:Envelope>
+`;
+
+/**
+ * Builds the header published by the supplied `infos.asmx?WSDL`. Unlike the unverified
+ * SLTD service contract, Infos declares only `UsernameToken`; sending `UserInformation`
+ * here would add an element that is not part of its binding.
+ */
+export const buildWisdmInfosEnvelope = ({
+   prefix,
+   namespace,
+   bodyXml,
+   username,
+   password,
+   usernameTokenVersion,
+}: InfosEnvelopeParams): string => `<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="${SOAP_ENVELOPE_NAMESPACE}"
+               xmlns:xsi="${XSI_NAMESPACE}"
+               xmlns:xsd="${XSD_NAMESPACE}"
+               xmlns:${prefix}="${namespace}">
+    <soap:Header>
         <${prefix}:UsernameToken Version="${xmlEscape(usernameTokenVersion)}">
             <${prefix}:Username>${xmlEscape(username)}</${prefix}:Username>
             <${prefix}:Password>${xmlEscape(password)}</${prefix}:Password>
@@ -141,6 +176,17 @@ export const allTagBlocks = (xml: string, tagName: string): string[] => {
    }
 
    return blocks;
+};
+
+/** Inner XML/text of the first matching element, including nested markup. */
+export const firstTagInner = (xml: string, tagName: string): string | null => {
+   const pattern = new RegExp(
+      `<(?:\\w+:)?${tagName}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/(?:\\w+:)?${tagName}>`,
+      'i',
+   );
+   const match = xml.match(pattern);
+   const value = match ? match[1].trim() : '';
+   return value === '' ? null : value;
 };
 
 /** Inner content of `<xmlData>`, which WISDM uses to wrap payloads (often escaped). */
