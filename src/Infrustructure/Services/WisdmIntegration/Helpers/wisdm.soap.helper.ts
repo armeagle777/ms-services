@@ -53,6 +53,10 @@ export const buildElement = (
 /** Joins non-empty elements produced by {@link buildElement}. */
 export const buildElements = (elements: string[]): string => elements.filter(Boolean).join('');
 
+/** Joins a SOAP namespace and operation with exactly one slash. */
+export const buildSoapAction = (namespace: string, operation: string): string =>
+   `${namespace.replace(/\/+$/, '')}/${operation.replace(/^\/+/, '')}`;
+
 type EnvelopeParams = {
    prefix: string;
    namespace: string;

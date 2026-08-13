@@ -948,7 +948,9 @@ GET /interpol/wisdm/infos/schemas/by-key?key=<ListOfSchema-key>&format=xml
 
 Record, statistics, activity, reference-table, initialization, and expiry business calls
 are sent to `INTERPOL_WISDM_SLTD_ENDPOINT`. They are not sent to `infos.asmx`, whose WSDL
-does not declare those actions.
+does not declare those actions. The application rejects an SLTD endpoint ending in
+`infos.asmx` so this configuration mistake fails locally instead of reaching INTERPOL as an
+unrecognized `SOAPAction` fault.
 
 ### Shared conventions
 
