@@ -917,9 +917,9 @@ point at that document.
 ### Upstream configuration
 
 The integration requires `INTERPOL_WISDM_SLTD_ENDPOINT`, `INTERPOL_WISDM_INFOS_ENDPOINT`,
-`INTERPOL_WISDM_USERNAME`, `INTERPOL_WISDM_PASSWORD`, `INTERPOL_WISDM_SLTD_NAMESPACE` and
-the WSDL-derived SLTD namespace. The Infos namespace is fixed by its supplied WSDL as
-`http://tempuri.org/`; there is no `INTERPOL_WISDM_INFOS_NAMESPACE` setting.
+`INTERPOL_WISDM_USERNAME`, and `INTERPOL_WISDM_PASSWORD`. The supplied WSDL fixes the SLTD
+namespace as `urn:interpol:ws:wisdm:sltd` and the Infos namespace as `http://tempuri.org/`;
+neither namespace is an environment setting.
 
 `INTERPOL_WISDM_WS_USERINFO_USERNAME` defaults to the authentication username,
 `INTERPOL_WISDM_WS_USERNAME_VERSION` defaults to `1.0`, and
@@ -928,9 +928,9 @@ the WSDL-derived SLTD namespace. The Infos namespace is fixed by its supplied WS
 of registration is not configured or sent: INTERPOL derives it from the authenticated
 country account.
 
-Do not commit issued WISDM passwords. The operation and XML element names must be checked
-against the separate technical-services reference/WSDL before connecting to an INTERPOL
-environment; the functional manual does not publish that wire contract.
+Do not commit issued WISDM passwords. The outer operation names and SOAP actions are taken
+from the supplied `sltd.asmx?WSDL`. The nested record vocabulary in `XMLDatas` is controlled
+by the separately published `sltd_record` application schema.
 
 The supplied Infos WSDL publishes schema-discovery operations, not a `Statistics` business
 operation. The implementation sends its exact SOAP 1.1 actions and the WSDL-declared
@@ -942,6 +942,9 @@ GET /interpol/wisdm/infos/schemas/documented?operation=GetSLTDStatisticsSchema&d
 GET /interpol/wisdm/infos/schemas/by-key?key=<ListOfSchema-key>&format=xml
 ```
 
+Schema XML returned inside the upstream `xmlData` element is exposed as a parsed object in
+the response's `payload` field; the raw SOAP/XML wrapper is not returned.
+
 `operation` accepts `GetSLTDSearchSchema`, `GetSLTDSearchResultSchema`,
 `GetSLTDRecordSchema`, `GetSLTDReviewDateSchema`, `GetSLTDStatisticsSchema`, or
 `GetSLTDActionsSchema`. `format` accepts `xml`, `xml2`, or `html`.
@@ -951,6 +954,11 @@ are sent to `INTERPOL_WISDM_SLTD_ENDPOINT`. They are not sent to `infos.asmx`, w
 does not declare those actions. The application rejects an SLTD endpoint ending in
 `infos.asmx` so this configuration mistake fails locally instead of reaching INTERPOL as an
 unrecognized `SOAPAction` fault.
+
+The supplied SLTD WSDL does **not** declare reference-table or no-argument expiry-alert
+operations. Those two REST endpoints therefore return `501 Not Implemented` instead of
+sending invented SOAP actions. Retrieve the reference-table technical contract and the
+`actions` / `review_date_sltd` schemas before enabling them.
 
 ### Shared conventions
 

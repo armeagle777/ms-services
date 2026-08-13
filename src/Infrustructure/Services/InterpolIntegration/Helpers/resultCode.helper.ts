@@ -99,7 +99,9 @@ const DESCRIPTIONS: Record<
 
 /** Resolves a raw `resultCode` (numeric or symbolic) into structured metadata. */
 export const evaluateResultCode = (resultCode: string | null): ResultCodeMeta => {
-   const normalized = (resultCode || '').trim().toUpperCase();
+   const rawNormalized = (resultCode || '').trim().toUpperCase();
+   // WISDM WSDL uses the plural form; FIND historically used the singular form.
+   const normalized = rawNormalized === 'TOO_MANY_ANSWERS' ? 'TOO_MANY_ANSWER' : rawNormalized;
 
    const numericCandidate = Number(normalized);
    const keyFromNumber =

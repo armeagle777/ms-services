@@ -47,9 +47,8 @@ export type WisdmInfosSchemaResponse = {
    resultOtherCode: string | null;
    requestId: string | null;
    referenceInCountry: string | null;
-   /** Text or mixed XML carried by the operation's result element. */
-   payload: string | null;
-   xmlData: Record<string, unknown> | null;
+   /** Parsed `xmlData` when present; otherwise plain text returned by the Infos operation. */
+   payload: Record<string, unknown> | string | null;
    schemas: WisdmInfosSchemaDescriptor[];
 };
 

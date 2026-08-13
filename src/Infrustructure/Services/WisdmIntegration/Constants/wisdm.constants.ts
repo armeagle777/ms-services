@@ -1,15 +1,10 @@
-import { WisdmReferenceTable } from 'src/Core/Wisdm/Enums/wisdm.enums';
-
 /**
  * WISDM SOAP protocol constants.
  *
  * ── IMPORTANT ────────────────────────────────────────────────────────────────────────
- * The operation names, XML element names and namespaces below are derived from the
- * *functional* description (use-case titles in §3 and §5.3/§7.x cross-references) because
- * the technical reference manual `CV01700_WISDM_SLTD_technical_services_reference` and
- * the SOAPUI mockups (http://i247.ip/publitec/) were not available when this integration
- * was written. They are deliberately isolated in this one file: once the WSDL is on hand,
- * correcting the values here is sufficient — no other file needs to change.
+ * The service namespaces, operation names, SOAP actions and outer request elements below
+ * come from the supplied `infos.asmx?WSDL` and `sltd.asmx?WSDL`. XML nested inside the
+ * SLTD `XMLDatas` element is governed by the separately published `sltd_record` schema.
  * ─────────────────────────────────────────────────────────────────────────────────────
  */
 
@@ -26,11 +21,14 @@ export const WISDM_USERNAME_TOKEN_VERSION_DEFAULT = '1.0';
 /** Exact namespace published by the supplied `infos.asmx?WSDL`. */
 export const WISDM_INFOS_NAMESPACE = 'http://tempuri.org/';
 
-/** Which upstream `.asmx` service an operation belongs to. */
-export enum WisdmService {
-   SLTD = 'SLTD',
-   INFOS = 'INFOS',
-}
+/** Exact target namespace published by the supplied `sltd.asmx?WSDL`. */
+export const WISDM_SLTD_NAMESPACE = 'urn:interpol:ws:wisdm:sltd';
+
+/** Application namespace used by the separately published `sltd_record` schema. */
+export const WISDM_SLTD_RECORD_NAMESPACE = 'urn:application:ws:sltd:record';
+
+/** Single application element carried by the WSDL's `XMLDatas/xs:any` slot. */
+export const WISDM_SLTD_RECORD_ROOT = 'record';
 
 /**
  * SOAP operation names, one per functional feature.
@@ -38,45 +36,34 @@ export enum WisdmService {
  * implements, so the mapping can be re-checked against the WSDL later.
  */
 export const WISDM_OPERATIONS = {
-   GET_REFERENCE_TABLE: 'ReferenceTable',
+   CLEAR: 'Clear',
    /** §3.1.1 / 5.3.2 — Create a new SLTD record. */
-   CREATE_RECORD: 'Create',
+   CREATE_OR_UPDATE_RECORD: 'CreateOrUpdateSLTDRecord',
    /** §3.1.2 / 5.3.3 — Update an existing SLTD record. */
-   UPDATE_RECORD: 'Update',
+   RETRIEVE_RECORD: 'RetrieveSLTDRecord',
    /** §3.1.2 — Update the retention date (update carrying an extension reason). */
-   EXTEND_RETENTION: 'ExtendRetentionDate',
+   CHANGE_RETENTION_DATE: 'ChangeRetentionDate',
    /** §3.1.3 / 5.3.4 — Delete an SLTD record. */
-   DELETE_RECORD: 'Delete',
+   DELETE_RECORD: 'DeleteSLTDRecord',
    /** §3.2.1 / 7.5 — Retrieve the properties of a particular document. */
    SEARCH_DOCUMENT: 'SearchDocument',
-   GET_STATISTICS: 'Statistics',
-   GET_ACTIONS: 'Actions',
+   GET_STATISTICS: 'GetStatistics',
+   ACTIONS: 'Actions',
    /** §3.2.4 / 5.3.5 — Start the re-initialization of all national records. */
-   INIT_ALL_RECORDS: 'InitAllRecords',
+   START_INIT: 'StartInit',
    /** §3.2.4 / 5.3.5 — Commit the re-initialization; unreinserted records are removed. */
    FINALIZE_INIT: 'FinalizeInit',
-   GET_EXPIRY_ALERTS: 'ExpiringRecords',
 } as const;
 
 export type WisdmOperation = (typeof WISDM_OPERATIONS)[keyof typeof WISDM_OPERATIONS];
 
-/**
- * Business operations use `sltd.asmx`. The supplied `infos.asmx` WSDL exposes only
- * schema-discovery methods and rejects actions such as `Statistics`.
- */
-export const WISDM_OPERATION_SERVICE: Record<WisdmOperation, WisdmService> = {
-   [WISDM_OPERATIONS.GET_REFERENCE_TABLE]: WisdmService.SLTD,
-   [WISDM_OPERATIONS.GET_STATISTICS]: WisdmService.SLTD,
-   [WISDM_OPERATIONS.GET_ACTIONS]: WisdmService.SLTD,
-   [WISDM_OPERATIONS.GET_EXPIRY_ALERTS]: WisdmService.SLTD,
-   [WISDM_OPERATIONS.CREATE_RECORD]: WisdmService.SLTD,
-   [WISDM_OPERATIONS.UPDATE_RECORD]: WisdmService.SLTD,
-   [WISDM_OPERATIONS.EXTEND_RETENTION]: WisdmService.SLTD,
-   [WISDM_OPERATIONS.DELETE_RECORD]: WisdmService.SLTD,
-   [WISDM_OPERATIONS.SEARCH_DOCUMENT]: WisdmService.SLTD,
-   [WISDM_OPERATIONS.INIT_ALL_RECORDS]: WisdmService.SLTD,
-   [WISDM_OPERATIONS.FINALIZE_INIT]: WisdmService.SLTD,
-};
+/** Exact SOAP 1.1 actions published by `sltd.asmx?WSDL`. */
+export const WISDM_SLTD_SOAP_ACTIONS: Record<WisdmOperation, string> = Object.fromEntries(
+   Object.values(WISDM_OPERATIONS).map((operation) => [
+      operation,
+      `${WISDM_SLTD_NAMESPACE}/${operation}`,
+   ]),
+) as Record<WisdmOperation, string>;
 
 /** Exact operations published by the supplied `infos.asmx?WSDL`. */
 export const WISDM_INFOS_OPERATIONS = {
@@ -123,20 +110,6 @@ export const WISDM_RECORD_ELEMENTS = {
    extensionReason: 'ReasonForExtension',
 } as const;
 
-/** Element names used by the legacy read/statistics operations. */
-export const WISDM_QUERY_ELEMENTS = {
-   referenceTableName: 'TableName',
-   yearMonthFrom: 'FromMonth',
-   yearMonthTo: 'ToMonth',
-} as const;
-
-export const WISDM_REFERENCE_TABLE_CODES: Record<WisdmReferenceTable, string> = {
-   [WisdmReferenceTable.DOCUMENT_TYPE]: 'IPSGT_Document_Type',
-   [WisdmReferenceTable.THEFT_TYPE]: 'IPSGT_Theft_Type',
-   [WisdmReferenceTable.COUNTRIES]: 'IPSGT_ICPO_Countries',
-   [WisdmReferenceTable.EXTENSION_REASON]: 'IPSGT_Extension_Reason',
-};
-
 /** Request timeouts, in milliseconds. */
 export const WISDM_TIMEOUT_DEFAULT_MS = 60_000;
 export const WISDM_TIMEOUT_BULK_MS = 180_000;
@@ -149,6 +122,5 @@ export const WISDM_ENV = {
    PASSWORD: 'INTERPOL_WISDM_PASSWORD',
    WS_USERINFO_USERNAME: 'INTERPOL_WISDM_WS_USERINFO_USERNAME',
    USERNAME_TOKEN_VERSION: 'INTERPOL_WISDM_WS_USERNAME_VERSION',
-   SLTD_NAMESPACE: 'INTERPOL_WISDM_SLTD_NAMESPACE',
    XML_PREFIX: 'INTERPOL_WISDM_XML_PREFIX',
 } as const;
