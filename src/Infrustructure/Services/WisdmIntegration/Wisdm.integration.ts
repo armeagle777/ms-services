@@ -38,6 +38,7 @@ import {
    allTagBlocks,
    buildElement,
    buildElements,
+   buildSoapAction,
    buildWisdmEnvelope,
    buildWisdmInfosEnvelope,
    decodeXmlEntities,
@@ -386,7 +387,7 @@ export class WisdmIntegration {
       const headers = {
          'Content-Type': 'text/xml; charset=utf-8',
          Accept: 'text/xml; charset=utf-8',
-         SOAPAction: `"${namespace.replace(/\/$/, '')}/${operation}"`,
+         SOAPAction: `"${buildSoapAction(namespace, operation)}"`,
       };
 
       try {
@@ -709,9 +710,17 @@ export class WisdmIntegration {
    /* ---------------------------------------------------------------------- */
 
    private getEndpoint(service: WisdmService): string {
-      return this.getRequiredConfig(
-         service === WisdmService.INFOS ? WISDM_ENV.INFOS_ENDPOINT : WISDM_ENV.SLTD_ENDPOINT,
-      );
+      const configKey =
+         service === WisdmService.INFOS ? WISDM_ENV.INFOS_ENDPOINT : WISDM_ENV.SLTD_ENDPOINT;
+      const endpoint = this.getRequiredConfig(configKey);
+
+      if (service === WisdmService.SLTD && /\/infos\.asmx(?:[/?#]|$)/i.test(endpoint)) {
+         throw new InternalServerErrorException(
+            `${WISDM_ENV.SLTD_ENDPOINT} must point to the SLTD business service, not infos.asmx`,
+         );
+      }
+
+      return endpoint;
    }
 
    private getNamespace(service: WisdmService): string {
