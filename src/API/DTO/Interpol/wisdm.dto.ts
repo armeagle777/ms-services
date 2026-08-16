@@ -255,6 +255,16 @@ export class WisdmReferenceTableQueryDto {
    table!: WisdmReferenceTable;
 }
 
+/** §3.2.5 / technical reference §7.9 — retrieve the result of an Actions movement. */
+export class WisdmExpiryAlertsQueryDto {
+   /** Movement identifier issued by WISDM for the Actions request/result. */
+   @IsString()
+   @IsNotEmpty()
+   @MaxLength(128)
+   @trim()
+   movementId!: string;
+}
+
 /** Selects one of the six documented schema calls from the supplied Infos WSDL. */
 export class WisdmInfosDocumentedSchemaQueryDto {
    /** Exact WSDL operation whose schema should be returned. */
@@ -333,6 +343,13 @@ export class WisdmInitializeDto extends WisdmBulkCreateDto {
 /** Explicit confirmation for the standalone finalize step. */
 export class WisdmFinalizeInitDto {
    /** Must be `true`; finalizing permanently removes records that were not re-inserted. */
+   @IsBoolean()
+   confirm!: boolean;
+}
+
+/** Explicit confirmation for deleting every national record through the WSDL `Clear` operation. */
+export class WisdmClearRecordsDto {
+   /** Must be `true`; clearing removes all records owned by the authenticated country. */
    @IsBoolean()
    confirm!: boolean;
 }

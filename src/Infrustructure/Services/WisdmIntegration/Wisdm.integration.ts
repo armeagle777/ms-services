@@ -4,6 +4,7 @@ import {
    Injectable,
    InternalServerErrorException,
    Logger,
+   NotFoundException,
    NotImplementedException,
    ServiceUnavailableException,
 } from '@nestjs/common';
@@ -171,11 +172,19 @@ export class WisdmIntegration {
       };
    }
 
+   /** Deletes every record owned by the country authenticated at WISDM. */
+   async clearAllRecords(): Promise<WisdmInitStepResponse> {
+      const body = this.buildOperationBody(WISDM_OPERATIONS.CLEAR, '');
+      const { status, xml } = await this.call(WISDM_OPERATIONS.CLEAR, body);
+
+      return { ...this.mapBaseResponse(status, xml), xmlData: parseXmlDataToJson(xml) };
+   }
+
    /** Reads the no-argument `GetStatistics` payload and selects the requested document type. */
    async getDocumentCount(typeOfDocument: string): Promise<WisdmCountResponse> {
       const body = this.buildOperationBody(WISDM_OPERATIONS.GET_STATISTICS, '');
       const { status, xml } = await this.call(WISDM_OPERATIONS.GET_STATISTICS, body);
-      const base = this.mapBaseResponse(status, xml);
+      const base = this.mapBaseResponse(status, xml, true);
       const indicator = this.parseStatisticsIndicators(xml).find(({ type }) => {
          const normalized = type.toUpperCase();
          const documentType = typeOfDocument.toUpperCase();
@@ -203,7 +212,7 @@ export class WisdmIntegration {
    }): Promise<WisdmActivityResponse> {
       const body = this.buildOperationBody(WISDM_OPERATIONS.GET_STATISTICS, '');
       const { status, xml } = await this.call(WISDM_OPERATIONS.GET_STATISTICS, body);
-      const base = this.mapBaseResponse(status, xml);
+      const base = this.mapBaseResponse(status, xml, true);
       const entries = base.ok
          ? this.parseStatisticsIndicators(xml)
               .map((indicator) => this.toActivityEntry(indicator))
@@ -227,11 +236,24 @@ export class WisdmIntegration {
       );
    }
 
-   /** Legacy expiry call retained until its schema is retrieved and implemented. */
-   async getExpiryAlerts(): Promise<WisdmExpiryAlertsResponse> {
-      throw new NotImplementedException(
-         `The supplied SLTD WSDL exposes Actions(MovementId), not a no-argument expiry-alert operation. The actions and review-date schemas are required to map this endpoint safely (configured window: ${WISDM_EXPIRY_ALERT_WINDOW_MONTHS} months).`,
+   /** §3.2.5 / §7.9 — retrieve expiry alerts through the WSDL's Actions(MovementId) call. */
+   async getExpiryAlerts(movementId: string): Promise<WisdmExpiryAlertsResponse> {
+      const prefix = this.getXmlPrefix();
+      const body = this.buildOperationBody(
+         WISDM_OPERATIONS.ACTIONS,
+         buildElement(prefix, 'MovementId', movementId),
       );
+      const { status, xml } = await this.call(WISDM_OPERATIONS.ACTIONS, body);
+      const base = this.mapBaseResponse(status, xml, true);
+
+      return {
+         ...base,
+         movementId,
+         monthsAhead: WISDM_EXPIRY_ALERT_WINDOW_MONTHS,
+         records: base.ok ? this.parseExpiringRecords(xml) : [],
+         alarmMessage: firstTagValue(xml, 'AlarmMessage') ?? firstTagValue(xml, 'Alarm'),
+         xmlData: parseXmlDataToJson(xml),
+      };
    }
 
    /* ---------------------------------------------------------------------- */
@@ -383,7 +405,13 @@ export class WisdmIntegration {
          ]),
       );
       const { status, xml } = await this.call(WISDM_OPERATIONS.SEARCH_DOCUMENT, body);
-      const base = this.mapBaseResponse(status, xml);
+      const base = this.mapBaseResponse(status, xml, true);
+
+      if (base.resultCodeMeta.key === 'NO_ANSWER') {
+         throw new NotFoundException(
+            `WISDM record ${params.din}/${params.typeOfDocument} was not found.`,
+         );
+      }
 
       if (!base.ok) {
          throw new BadGatewayException(
@@ -562,22 +590,33 @@ export class WisdmIntegration {
       return WISDM_INFOS_OPERATIONS.GET_SCHEMA;
    }
 
-   private mapBaseResponse(status: number, xml: string): WisdmBaseResponse {
+   private mapBaseResponse(status: number, xml: string, allowNoAnswer = false): WisdmBaseResponse {
       const fault = extractSoapFault(xml);
       const resultCode = firstTagValue(xml, 'resultCode');
       const resultOtherCode = firstTagValue(xml, 'resultOtherCode');
       const resultCodeMeta = evaluateResultCode(resultCode);
-      const errorText =
+      const xmlDataRaw = extractXmlDataRaw(xml);
+      const upstreamMessage =
          firstTagValue(xml, 'ErrorMessage') ??
          firstTagValue(xml, 'errorMessage') ??
-         firstTagValue(xml, 'Reason');
+         firstTagValue(xml, 'Reason') ??
+         firstTagValue(xmlDataRaw, 'ErrorMessage') ??
+         firstTagValue(xmlDataRaw, 'errorMessage') ??
+         firstTagValue(xmlDataRaw, 'Message') ??
+         firstTagValue(xmlDataRaw, 'Reason');
 
-      const functionalError = matchFunctionalError(fault, resultOtherCode, errorText);
+      const functionalError = matchFunctionalError(
+         fault,
+         resultOtherCode,
+         upstreamMessage,
+         xmlDataRaw,
+      );
       const ok =
          status < 400 &&
          !fault &&
          !functionalError &&
-         (resultCodeMeta.key === 'NO_ERROR' || resultCodeMeta.key === 'NO_ANSWER');
+         (resultCodeMeta.key === 'NO_ERROR' ||
+            (allowNoAnswer && resultCodeMeta.key === 'NO_ANSWER'));
 
       return {
          ok,
@@ -585,6 +624,13 @@ export class WisdmIntegration {
          fault,
          resultCode,
          resultOtherCode,
+         requestId: firstTagValue(xml, 'requestId'),
+         referenceInCountry: firstTagValue(xml, 'referenceInCountry'),
+         timestamp:
+            firstTagValue(xml, 'timestamp') ??
+            firstTagValue(xml, 'Timestamp') ??
+            firstTagValue(xml, 'requestTimestamp'),
+         upstreamMessage,
          resultCodeMeta,
          functionalError,
       };

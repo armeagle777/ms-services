@@ -23,9 +23,11 @@ import {
 import {
    WisdmActivityQueryDto,
    WisdmBulkCreateDto,
+   WisdmClearRecordsDto,
    WisdmCountQueryDto,
    WisdmCreateRecordDto,
    WisdmExtendRetentionDto,
+   WisdmExpiryAlertsQueryDto,
    WisdmFinalizeInitDto,
    WisdmInfosDocumentedSchemaQueryDto,
    WisdmInfosSchemaByKeyQueryDto,
@@ -106,6 +108,12 @@ export class InterpolController {
       return this.wisdmService.getDocument(query);
    }
 
+   /** §3.2 — remove all records owned by the authenticated country. */
+   @Post('wisdm/records/clear')
+   wisdmClearRecords(@Body() body: WisdmClearRecordsDto) {
+      return this.wisdmService.clearAllRecords(body.confirm);
+   }
+
    /** §3.2.2 — total number of our records for a given document type. */
    @Get('wisdm/statistics/count')
    wisdmGetCount(@Query() query: WisdmCountQueryDto) {
@@ -124,10 +132,10 @@ export class InterpolController {
       return this.wisdmService.getReferenceTable(query);
    }
 
-   /** §3.2.5 — our records due to expire within six months, plus those already purged. */
+   /** §3.2.5 / §7.9 — retrieve expiry alerts for a WISDM Actions movement. */
    @Get('wisdm/alerts/expiring')
-   wisdmGetExpiryAlerts() {
-      return this.wisdmService.getExpiryAlerts();
+   wisdmGetExpiryAlerts(@Query() query: WisdmExpiryAlertsQueryDto) {
+      return this.wisdmService.getExpiryAlerts(query);
    }
 
    /** Exact Infos `ListOfSchema` operation from the supplied WSDL. */

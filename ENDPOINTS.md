@@ -955,24 +955,25 @@ does not declare those actions. The application rejects an SLTD endpoint ending 
 `infos.asmx` so this configuration mistake fails locally instead of reaching INTERPOL as an
 unrecognized `SOAPAction` fault.
 
-The supplied SLTD WSDL does **not** declare reference-table or no-argument expiry-alert
-operations. Those two REST endpoints therefore return `501 Not Implemented` instead of
-sending invented SOAP actions. Retrieve the reference-table technical contract and the
-`actions` / `review_date_sltd` schemas before enabling them.
+The supplied SLTD WSDL does **not** declare a reference-table operation, so that REST endpoint
+returns `501 Not Implemented` instead of sending an invented SOAP action. Retrieve the
+reference-table technical contract before enabling it. Expiry alerts use the WSDL-declared
+`Actions` operation and therefore require its `MovementId` request value.
 
 ### Shared conventions
 
 | Field | Format |
 |-------|--------|
 | `din` | Document Identification Number. 5–25 characters `[A-Za-z0-9]` after cleaning (upper-cased, non-alphanumeric stripped). |
-| `typeOfDocument` | Code from the `IPSGT_Document_Type` reference table, e.g. `PAS`. |
+| `typeOfDocument` | Code from the `IPSGT_Document_Type` reference table, e.g. ICAO `P`, `I`, or `V`. |
 | `fraudType` | Exact code from the current `IPSGT_Theft_Type` reference table. |
 | `countryOfTheft` | 2–3 letter ICPO country code, e.g. `ARM`. |
 | dates | `YYYYMMDD`. |
 | periods | `YYYYMM`. |
 
-Every response carries `ok`, `httpStatus`, `resultCode`, `resultCodeMeta` and
-`functionalError` (the §3.1.1 error catalogue, or `null`).
+Every response carries `ok`, `httpStatus`, `resultCode`, `resultCodeMeta`, `requestId`,
+`referenceInCountry`, `timestamp`, `upstreamMessage`, and `functionalError` (the §3.1.1 error
+catalogue, or `null`).
 
 ### Record management
 
@@ -982,10 +983,12 @@ PATCH  /interpol/wisdm/records              §3.1.2  Update a record
 PATCH  /interpol/wisdm/records/retention    §3.1.2  Extend the retention date
 DELETE /interpol/wisdm/records              §3.1.3  Delete a record
 GET    /interpol/wisdm/records              §3.2.1  Read a record's properties
+POST   /interpol/wisdm/records/clear        §3.2    Delete all records owned by the country
 ```
 
 **Create body:** `din`, `typeOfDocument` and `fraudType` are required. INTERPOL requires
-`countryOfTheft` unless the supplied reference-table code means stolen blank. Optional fields are
+`countryOfTheft` when the supplied reference-table code means stolen blank. Because the wire code
+is reference-data driven, INTERPOL enforces this conditional rule. Optional fields are
 `stolenBatchIdentifier` (stolen blank only), `dateOfTheft`, `documentIssuanceDate`,
 `documentExpiryDate`, `nationalReferenceNumber`, `ncbReferenceNumber`,
 `additionalInformation` and `recordRetentionDate`.
@@ -1001,12 +1004,14 @@ must be present; changing `recordRetentionDate` also requires `extensionReason`.
 GET    /interpol/wisdm/statistics/count      §3.2.2  Total records for a document type
 GET    /interpol/wisdm/statistics/activity   §3.2.3  Monthly ADD/UPD/DEL/ERD counters
 GET    /interpol/wisdm/reference-tables      §5.3.1  Pull an IPSGT_* reference table
-GET    /interpol/wisdm/alerts/expiring       §3.2.5  Records in the six-month alert window
+GET    /interpol/wisdm/alerts/expiring       §3.2.5  Actions result for the six-month alert window
 ```
 
 `activity` accepts `typeOfDocument`, `from`, `to` (`YYYYMM`). `reference-tables` accepts
 `table` (`IPSGT_Document_Type` \| `IPSGT_Theft_Type` \| `IPSGT_ICPO_Countries` \|
-`IPSGT_Extension_Reason`). `alerts/expiring` uses INTERPOL's fixed six-month window.
+`IPSGT_Extension_Reason`). `alerts/expiring` requires `movementId` and uses INTERPOL's fixed
+six-month window. Its response includes the complete parsed `xmlData` payload in addition to
+the normalized alert fields, so no schema fields are discarded.
 Statistics are recomputed once a day upstream.
 
 ### Bulk load and initialization (§3.2.4)

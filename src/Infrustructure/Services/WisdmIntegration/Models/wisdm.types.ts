@@ -21,6 +21,14 @@ export type WisdmBaseResponse = {
    fault: string | null;
    resultCode: string | null;
    resultOtherCode: string | null;
+   /** INTERPOL trace identifier returned by the SOAP service, when present. */
+   requestId: string | null;
+   /** Country-side request reference echoed by INTERPOL, when present. */
+   referenceInCountry: string | null;
+   /** Upstream processing timestamp, when present. */
+   timestamp: string | null;
+   /** Human-readable upstream error text extracted from the SOAP wrapper or xmlData. */
+   upstreamMessage: string | null;
    resultCodeMeta: ResultCodeMeta;
    /** Populated when upstream rejected the request for a documented functional reason. */
    functionalError: {
@@ -171,10 +179,13 @@ export type WisdmExpiringRecord = {
 };
 
 export type WisdmExpiryAlertsResponse = WisdmBaseResponse & {
+   movementId: string;
    monthsAhead: number;
    records: WisdmExpiringRecord[];
    /** The alarm text returned alongside the list, when present. */
    alarmMessage: string | null;
+   /** Complete parsed Actions payload, retained until the deployed response schema is verified. */
+   xmlData: Record<string, unknown> | null;
 };
 
 /* -------------------------------------------------------------------------- */

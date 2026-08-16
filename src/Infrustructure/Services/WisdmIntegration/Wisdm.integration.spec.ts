@@ -45,6 +45,45 @@ const statisticsSchemaResponseXml = `
    </soap:Body>
 </soap:Envelope>`;
 
+const noAnswerResponseXml = `
+<soap:Envelope>
+   <soap:Body>
+      <resultCode>NO_ANSWER</resultCode>
+   </soap:Body>
+</soap:Envelope>`;
+
+const actionsResponseXml = `
+<soap:Envelope>
+   <soap:Body>
+      <resultCode>NO_ERROR</resultCode>
+      <xmlData>
+         <alerts>
+            <Record>
+               <DIN>ARMTEST202600001</DIN>
+               <TypeOfDocument>P</TypeOfDocument>
+               <RecordRetentionDate>20270101</RecordRetentionDate>
+               <Deleted>false</Deleted>
+            </Record>
+            <AlarmMessage>One record expires within six months.</AlarmMessage>
+         </alerts>
+      </xmlData>
+   </soap:Body>
+</soap:Envelope>`;
+
+const tracedErrorResponseXml = `
+<soap:Envelope>
+   <soap:Body>
+      <resultCode>UNEXPECTED_ERROR</resultCode>
+      <resultOtherCode>0</resultOtherCode>
+      <requestId>request-42</requestId>
+      <referenceInCountry>ARM-reference-42</referenceInCountry>
+      <timestamp>2026-08-16T10:11:12Z</timestamp>
+      <xmlData>
+         &lt;error&gt;&lt;ErrorMessage&gt;Provided Type of fraud is invalid&lt;/ErrorMessage&gt;&lt;/error&gt;
+      </xmlData>
+   </soap:Body>
+</soap:Envelope>`;
+
 const createIntegration = (
    overrides: Record<string, string> = {},
    upstreamResponseXml = responseXml,
@@ -104,6 +143,93 @@ describe('WisdmIntegration SOAP routing', () => {
             headers: expect.objectContaining({
                SOAPAction: '"urn:interpol:ws:wisdm:sltd/CreateOrUpdateSLTDRecord"',
             }),
+         }),
+      );
+   });
+
+   it('does not treat an empty mutation answer as a successful write', async () => {
+      const { integration } = createIntegration({}, noAnswerResponseXml);
+
+      const response = await integration.createRecord({
+         din: 'ARMTEST202600001',
+         typeOfDocument: 'P',
+         fraudType: 'LOST',
+      });
+
+      expect(response.ok).toBe(false);
+      expect(response.resultCodeMeta.key).toBe('NO_ANSWER');
+   });
+
+   it('preserves trace fields and maps functional error text carried inside xmlData', async () => {
+      const { integration } = createIntegration({}, tracedErrorResponseXml);
+
+      const response = await integration.createRecord({
+         din: 'ARMTEST202600001',
+         typeOfDocument: 'P',
+         fraudType: 'INVALID',
+      });
+
+      expect(response).toEqual(
+         expect.objectContaining({
+            ok: false,
+            requestId: 'request-42',
+            referenceInCountry: 'ARM-reference-42',
+            timestamp: '2026-08-16T10:11:12Z',
+            upstreamMessage: 'Provided Type of fraud is invalid',
+            functionalError: {
+               key: 'FRAUD_TYPE_INVALID',
+               message: 'The type of fraud does not belong to the authorized values.',
+            },
+         }),
+      );
+   });
+
+   it('sends the destructive Clear operation without invented request fields', async () => {
+      const { integration, post } = createIntegration();
+
+      await integration.clearAllRecords();
+
+      const requestXml = post.mock.calls[0][1] as string;
+      expect(requestXml).toContain('<tns:Clear>');
+      expect(requestXml).toContain('</tns:Clear>');
+      expect(post.mock.calls[0][2]).toEqual(
+         expect.objectContaining({
+            headers: expect.objectContaining({
+               SOAPAction: '"urn:interpol:ws:wisdm:sltd/Clear"',
+            }),
+         }),
+      );
+   });
+
+   it('sends the required MovementId to Actions and maps expiry records', async () => {
+      const { integration, post } = createIntegration({}, actionsResponseXml);
+
+      const response = await integration.getExpiryAlerts('movement-123');
+
+      const requestXml = post.mock.calls[0][1] as string;
+      expect(requestXml).toContain('<tns:Actions>');
+      expect(requestXml).toContain('<tns:MovementId>movement-123</tns:MovementId>');
+      expect(post.mock.calls[0][2]).toEqual(
+         expect.objectContaining({
+            headers: expect.objectContaining({
+               SOAPAction: '"urn:interpol:ws:wisdm:sltd/Actions"',
+            }),
+         }),
+      );
+      expect(response).toEqual(
+         expect.objectContaining({
+            ok: true,
+            movementId: 'movement-123',
+            monthsAhead: 6,
+            alarmMessage: 'One record expires within six months.',
+            records: [
+               {
+                  din: 'ARMTEST202600001',
+                  typeOfDocument: 'P',
+                  recordRetentionDate: '20270101',
+                  alreadyDeleted: false,
+               },
+            ],
          }),
       );
    });

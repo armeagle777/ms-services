@@ -6,6 +6,7 @@ import {
    WisdmCountQueryDto,
    WisdmCreateRecordDto,
    WisdmExtendRetentionDto,
+   WisdmExpiryAlertsQueryDto,
    WisdmInfosDocumentedSchemaQueryDto,
    WisdmInfosSchemaByKeyQueryDto,
    WisdmInitializeDto,
@@ -114,6 +115,17 @@ export class WisdmService {
       });
    }
 
+   /** §3.2 — delete all records owned by the authenticated country. */
+   async clearAllRecords(confirm: boolean): Promise<WisdmInitStepResponse> {
+      if (confirm !== true) {
+         throw new BadRequestException(
+            'confirm must be true: clearing permanently removes every national record.',
+         );
+      }
+
+      return this.wisdmIntegration.clearAllRecords();
+   }
+
    /** §3.2.2 — total number of records for a document type. */
    async getDocumentCount(query: WisdmCountQueryDto): Promise<WisdmCountResponse> {
       return this.wisdmIntegration.getDocumentCount(
@@ -145,8 +157,8 @@ export class WisdmService {
    }
 
    /** §3.2.5 — records due to expire within the window, plus records already purged. */
-   async getExpiryAlerts(): Promise<WisdmExpiryAlertsResponse> {
-      return this.wisdmIntegration.getExpiryAlerts();
+   async getExpiryAlerts(query: WisdmExpiryAlertsQueryDto): Promise<WisdmExpiryAlertsResponse> {
+      return this.wisdmIntegration.getExpiryAlerts(query.movementId);
    }
 
    /** Exact `ListOfSchema` operation from the supplied Infos WSDL. */
