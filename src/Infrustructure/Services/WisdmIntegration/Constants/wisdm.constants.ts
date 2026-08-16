@@ -36,6 +36,7 @@ export const WISDM_SLTD_RECORD_ROOT = 'record';
  * implements, so the mapping can be re-checked against the WSDL later.
  */
 export const WISDM_OPERATIONS = {
+   /** §3.2 — delete every record owned by the authenticated country. */
    CLEAR: 'Clear',
    /** §3.1.1 / 5.3.2 — Create a new SLTD record. */
    CREATE_OR_UPDATE_RECORD: 'CreateOrUpdateSLTDRecord',
@@ -48,6 +49,7 @@ export const WISDM_OPERATIONS = {
    /** §3.2.1 / 7.5 — Retrieve the properties of a particular document. */
    SEARCH_DOCUMENT: 'SearchDocument',
    GET_STATISTICS: 'GetStatistics',
+   /** §3.2.5 / technical reference §7.9 — retrieve an Actions result by movement ID. */
    ACTIONS: 'Actions',
    /** §3.2.4 / 5.3.5 — Start the re-initialization of all national records. */
    START_INIT: 'StartInit',
