@@ -17,6 +17,7 @@ export class AuthDbMigrationService implements OnModuleInit {
       await this.sequelize.authenticate();
       await this.migrateUsersTable();
       await this.migrateRequestLogsTable();
+      await this.migrateIntegrationCallLogsTable();
       await this.seedDefaultUser();
    }
 
@@ -67,6 +68,48 @@ export class AuthDbMigrationService implements OnModuleInit {
             "createdAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
             "updatedAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW()
          );
+      `);
+
+      // Timing / correlation columns, added in place so existing rows are kept.
+      await this.sequelize.query(`
+         ALTER TABLE request_logs ADD COLUMN IF NOT EXISTS "requestId" VARCHAR(64) NULL;
+         ALTER TABLE request_logs ADD COLUMN IF NOT EXISTS "durationMs" INTEGER NULL;
+         ALTER TABLE request_logs ADD COLUMN IF NOT EXISTS "upstreamMs" INTEGER NULL;
+         ALTER TABLE request_logs ADD COLUMN IF NOT EXISTS "upstreamCalls" TEXT NULL;
+      `);
+
+      await this.sequelize.query(`
+         CREATE INDEX IF NOT EXISTS request_logs_created_at_idx ON request_logs ("createdAt");
+         CREATE INDEX IF NOT EXISTS request_logs_request_id_idx ON request_logs ("requestId");
+         CREATE INDEX IF NOT EXISTS request_logs_duration_idx ON request_logs ("durationMs");
+      `);
+   }
+
+   private async migrateIntegrationCallLogsTable() {
+      await this.sequelize.query(`
+         CREATE TABLE IF NOT EXISTS integration_call_logs (
+            id SERIAL PRIMARY KEY,
+            "requestId" VARCHAR(64) NULL,
+            integration VARCHAR(128) NOT NULL,
+            method VARCHAR(16) NOT NULL,
+            url VARCHAR(1024) NOT NULL,
+            "statusCode" INTEGER NULL,
+            "durationMs" INTEGER NOT NULL,
+            attempts INTEGER NOT NULL DEFAULT 1,
+            "timedOut" BOOLEAN NOT NULL DEFAULT FALSE,
+            error TEXT NULL,
+            "createdAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
+            "updatedAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW()
+         );
+      `);
+
+      await this.sequelize.query(`
+         CREATE INDEX IF NOT EXISTS integration_call_logs_created_at_idx
+            ON integration_call_logs ("createdAt");
+         CREATE INDEX IF NOT EXISTS integration_call_logs_integration_idx
+            ON integration_call_logs (integration, "createdAt");
+         CREATE INDEX IF NOT EXISTS integration_call_logs_request_id_idx
+            ON integration_call_logs ("requestId");
       `);
    }
 }
