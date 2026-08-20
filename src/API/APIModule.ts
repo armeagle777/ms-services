@@ -20,6 +20,7 @@ import {
    KtakController,
    EsignController,
 } from './Controllers';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { CoreModule } from 'src/Core/Core.module';
 import { BasicAuthGuard } from './Guards/BasicAuth.guard';
 import { ProtectedRequestLoggingInterceptor } from './Interceptors/ProtectedRequestLogging.interceptor';
@@ -45,7 +46,15 @@ import { MinistryOfJusticeController } from './Controllers/MinistryOfJutice.cont
       KtakController,
       EsignController,
    ],
-   providers: [BasicAuthGuard, ProtectedRequestLoggingInterceptor],
+   providers: [
+      BasicAuthGuard,
+      ProtectedRequestLoggingInterceptor,
+      // Applies to every route, so logging can no longer be forgotten per controller.
+      {
+         provide: APP_INTERCEPTOR,
+         useClass: ProtectedRequestLoggingInterceptor,
+      },
+   ],
 })
 export class APIModule {
    // configure(consumer: MiddlewareConsumer) {

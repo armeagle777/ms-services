@@ -3,11 +3,13 @@ import { ConfigService } from '@nestjs/config';
 import { Sequelize } from 'sequelize';
 import {
    ARTSAKH_CONNECTION,
+   AUTH_INTEGRATION_CALL_LOG_MODEL,
    AUTH_POSTGRES_SEQUELIZE,
    AUTH_REQUEST_LOG_MODEL,
    AUTH_USER_MODEL,
 } from './database.tokens';
 import { initAuthUserEntity } from './Entities/AuthUser.entity';
+import { initIntegrationCallLogEntity } from './Entities/IntegrationCallLog.entity';
 import { initRequestLogEntity } from './Entities/RequestLog.entity';
 import { AuthDbMigrationService } from './Migrations/AuthDbMigration.service';
 import { ArtsakhDbProvider } from './ArtsakhDb/ArtsakhDb.provider';
@@ -40,6 +42,11 @@ const databaseProviders = [
       provide: AUTH_REQUEST_LOG_MODEL,
       inject: [AUTH_POSTGRES_SEQUELIZE],
       useFactory: (sequelize: Sequelize) => initRequestLogEntity(sequelize),
+   },
+   {
+      provide: AUTH_INTEGRATION_CALL_LOG_MODEL,
+      inject: [AUTH_POSTGRES_SEQUELIZE],
+      useFactory: (sequelize: Sequelize) => initIntegrationCallLogEntity(sequelize),
    },
 ];
 

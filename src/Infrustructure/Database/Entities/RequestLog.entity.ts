@@ -2,6 +2,7 @@ import { DataTypes, Model, Optional, Sequelize } from 'sequelize';
 
 export type RequestLogAttributes = {
    id: number;
+   requestId: string | null;
    username: string | null;
    method: string;
    path: string;
@@ -10,6 +11,9 @@ export type RequestLogAttributes = {
    body: string | null;
    query: string | null;
    error: string | null;
+   durationMs: number | null;
+   upstreamMs: number | null;
+   upstreamCalls: string | null;
    createdAt?: Date;
    updatedAt?: Date;
 };
@@ -24,6 +28,7 @@ export class RequestLogEntity
    implements RequestLogAttributes
 {
    declare id: number;
+   declare requestId: string | null;
    declare username: string | null;
    declare method: string;
    declare path: string;
@@ -32,6 +37,9 @@ export class RequestLogEntity
    declare body: string | null;
    declare query: string | null;
    declare error: string | null;
+   declare durationMs: number | null;
+   declare upstreamMs: number | null;
+   declare upstreamCalls: string | null;
    declare createdAt: Date;
    declare updatedAt: Date;
 }
@@ -43,6 +51,10 @@ export const initRequestLogEntity = (sequelize: Sequelize) => {
             type: DataTypes.INTEGER,
             autoIncrement: true,
             primaryKey: true,
+         },
+         requestId: {
+            type: DataTypes.STRING(64),
+            allowNull: true,
          },
          username: {
             type: DataTypes.STRING(255),
@@ -73,6 +85,18 @@ export const initRequestLogEntity = (sequelize: Sequelize) => {
             allowNull: true,
          },
          error: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+         },
+         durationMs: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+         },
+         upstreamMs: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+         },
+         upstreamCalls: {
             type: DataTypes.TEXT,
             allowNull: true,
          },
