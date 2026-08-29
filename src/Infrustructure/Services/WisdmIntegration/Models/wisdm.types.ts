@@ -103,6 +103,8 @@ export type WisdmRetentionParams = WisdmRecordIdentifier & {
 export type WisdmMutationResponse = WisdmBaseResponse & {
    din: string;
    typeOfDocument: string;
+   /** WISDM `item_id`, returned by successful create/update calls when available. */
+   itemId: string | null;
    /** Echo of the retention date applied by INTERPOL, when returned. */
    recordRetentionDate: string | null;
    xmlData: Record<string, unknown> | null;

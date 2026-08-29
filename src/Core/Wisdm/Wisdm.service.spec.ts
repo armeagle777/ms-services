@@ -49,7 +49,7 @@ describe('WisdmService request normalization', () => {
       await service.createRecord({
          din: ' ab-123 ',
          typeOfDocument: 'p',
-         fraudType: 'THEFT_CODE',
+         fraudType: 'stl',
          additionalInformation: '  Կորած փաստաթուղթ  ',
       } as WisdmCreateRecordDto);
 
@@ -57,7 +57,7 @@ describe('WisdmService request normalization', () => {
          expect.objectContaining({
             din: 'AB123',
             typeOfDocument: 'P',
-            fraudType: 'THEFT_CODE',
+            fraudType: 'STL',
             additionalInformation: 'Կորած փաստաթուղթ',
          }),
       );

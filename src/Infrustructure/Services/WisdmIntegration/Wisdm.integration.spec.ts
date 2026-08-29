@@ -2,7 +2,10 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { of } from 'rxjs';
 
-import { WisdmInfosDocumentedSchemaOperation } from 'src/Core/Wisdm/Enums/wisdm.enums';
+import {
+   WisdmInfosDocumentedSchemaOperation,
+   WisdmReferenceTable,
+} from 'src/Core/Wisdm/Enums/wisdm.enums';
 import { WisdmIntegration } from './Wisdm.integration';
 
 const SLTD_ENDPOINT = 'http://102.28.110.3:9248/v2/wisdm/sltd/1.0/sltd.asmx';
@@ -45,10 +48,52 @@ const statisticsSchemaResponseXml = `
    </soap:Body>
 </soap:Envelope>`;
 
+const referenceTableResponseXml = `
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+   <soap:Body>
+      <GetSchemaResponse xmlns="http://tempuri.org/">
+         <GetSchemaResult>
+            <resultCode>NO_ERROR</resultCode>
+            <xmlData>
+               <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                  <xs:simpleType name="IPSGT_ICPO_Countries">
+                     <xs:restriction base="xs:string">
+                        <xs:enumeration value="106">
+                           <xs:annotation><xs:documentation>Armenia</xs:documentation></xs:annotation>
+                        </xs:enumeration>
+                     </xs:restriction>
+                  </xs:simpleType>
+               </xs:schema>
+            </xmlData>
+         </GetSchemaResult>
+      </GetSchemaResponse>
+   </soap:Body>
+</soap:Envelope>`;
+
 const noAnswerResponseXml = `
 <soap:Envelope>
    <soap:Body>
       <resultCode>NO_ANSWER</resultCode>
+   </soap:Body>
+</soap:Envelope>`;
+
+const searchDocumentResponseXml = `
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+   <soap:Body>
+      <SearchDocumentResponse xmlns="urn:interpol:ws:wisdm:sltd">
+         <SearchDocumentResult>
+            <resultCode>NO_ERROR</resultCode>
+            <xmlData>
+               <result>
+                  <search>
+                     <origin>
+                        <document item_id="59BAE8088C5F872FE063546410AC2986" />
+                     </origin>
+                  </search>
+               </result>
+            </xmlData>
+         </SearchDocumentResult>
+      </SearchDocumentResponse>
    </soap:Body>
 </soap:Envelope>`;
 
@@ -117,7 +162,7 @@ describe('WisdmIntegration SOAP routing', () => {
          expect.stringContaining('<tns:GetStatistics>'),
          expect.objectContaining({
             headers: expect.objectContaining({
-               SOAPAction: '"urn:interpol:ws:wisdm:sltd/GetStatistics"',
+               SOAPAction: 'urn:interpol:ws:wisdm:sltd/GetStatistics',
             }),
          }),
       );
@@ -129,19 +174,31 @@ describe('WisdmIntegration SOAP routing', () => {
 
       await integration.createRecord({
          din: 'ARMTEST202600001',
-         typeOfDocument: 'P',
-         fraudType: 'LOST',
+         typeOfDocument: 'PAS',
+         fraudType: 'STL',
+         countryOfTheft: '106',
+         dateOfTheft: '20240201',
+         documentIssuanceDate: '20200101',
+         documentExpiryDate: '20300101',
+         additionalInformation: 'TEST ONLY',
       });
 
       const requestXml = post.mock.calls[0][1] as string;
       expect(requestXml).toContain('<tns:CreateOrUpdateSLTDRecord>');
       expect(requestXml).toContain('<tns:XMLDatas>');
-      expect(requestXml).toContain('<record:record xmlns:record="urn:application:ws:sltd:record">');
-      expect(requestXml).toContain('<record:DIN>ARMTEST202600001</record:DIN>');
+      expect(requestXml).toContain('<document xmlns="urn:interpol:ws:sltd:document">');
+      expect(requestXml).toContain(
+         '<theft><add_info><value>TEST ONLY</value></add_info><country_id>106</country_id><date>20240201</date><type_id>STL</type_id></theft>',
+      );
+      expect(requestXml).toContain('<nr>ARMTEST202600001</nr>');
+      expect(requestXml).toContain('<type_id>PAS</type_id>');
+      expect(requestXml).toContain('<date_of_issuance>20200101</date_of_issuance>');
+      expect(requestXml).toContain('<expiry_date>20300101</expiry_date>');
+      expect(requestXml).not.toContain('Version=');
       expect(post.mock.calls[0][2]).toEqual(
          expect.objectContaining({
             headers: expect.objectContaining({
-               SOAPAction: '"urn:interpol:ws:wisdm:sltd/CreateOrUpdateSLTDRecord"',
+               SOAPAction: 'urn:interpol:ws:wisdm:sltd/CreateOrUpdateSLTDRecord',
             }),
          }),
       );
@@ -195,7 +252,7 @@ describe('WisdmIntegration SOAP routing', () => {
       expect(post.mock.calls[0][2]).toEqual(
          expect.objectContaining({
             headers: expect.objectContaining({
-               SOAPAction: '"urn:interpol:ws:wisdm:sltd/Clear"',
+               SOAPAction: 'urn:interpol:ws:wisdm:sltd/Clear',
             }),
          }),
       );
@@ -212,7 +269,7 @@ describe('WisdmIntegration SOAP routing', () => {
       expect(post.mock.calls[0][2]).toEqual(
          expect.objectContaining({
             headers: expect.objectContaining({
-               SOAPAction: '"urn:interpol:ws:wisdm:sltd/Actions"',
+               SOAPAction: 'urn:interpol:ws:wisdm:sltd/Actions',
             }),
          }),
       );
@@ -247,7 +304,7 @@ describe('WisdmIntegration SOAP routing', () => {
          expect.stringContaining('<tns:GetSLTDStatisticsSchema>'),
          expect.objectContaining({
             headers: expect.objectContaining({
-               SOAPAction: '"http://tempuri.org/GetSLTDStatisticsSchema"',
+               SOAPAction: 'http://tempuri.org/GetSLTDStatisticsSchema',
             }),
          }),
       );
@@ -268,6 +325,40 @@ describe('WisdmIntegration SOAP routing', () => {
          },
       });
       expect(response).not.toHaveProperty('xmlData');
+   });
+
+   it('resolves the live item_id attribute before retrieve/delete/retention calls', async () => {
+      const { integration, post } = createIntegration();
+      post
+         .mockReturnValueOnce(of({ status: 200, data: searchDocumentResponseXml }))
+         .mockReturnValueOnce(of({ status: 200, data: responseXml }));
+
+      await integration.deleteRecord({
+         din: 'ARMTEST202600001',
+         typeOfDocument: 'PAS',
+      });
+
+      expect(post).toHaveBeenCalledTimes(2);
+      expect(post.mock.calls[1][1]).toContain(
+         '<tns:DocumentId>59BAE8088C5F872FE063546410AC2986</tns:DocumentId>',
+      );
+   });
+
+   it('loads reference values through Infos GetSchema instead of rejecting the route', async () => {
+      const { integration, post } = createIntegration({}, referenceTableResponseXml);
+
+      const response = await integration.getReferenceTable(WisdmReferenceTable.COUNTRIES);
+
+      expect(post).toHaveBeenCalledWith(
+         INFOS_ENDPOINT,
+         expect.stringContaining('<tns:sKey>IPSGT_ICPO_Countries</tns:sKey>'),
+         expect.objectContaining({
+            headers: expect.objectContaining({
+               SOAPAction: 'http://tempuri.org/GetSchema',
+            }),
+         }),
+      );
+      expect(response.entries).toEqual([{ code: '106', label: 'Armenia', attributes: {} }]);
    });
 
    it('rejects infos.asmx when configured as the SLTD business endpoint', async () => {

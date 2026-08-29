@@ -348,7 +348,7 @@ export class WisdmService {
       const params: WisdmRecordParams = {
          din: this.requireCleanDin(body.din),
          typeOfDocument: this.requireTypeOfDocument(body.typeOfDocument),
-         fraudType: extras.fraudType,
+         fraudType: normalizeOptional(extras.fraudType)?.toUpperCase(),
          stolenBatchIdentifier: normalizeField(body.stolenBatchIdentifier),
          countryOfTheft,
          dateOfTheft: normalizeField(body.dateOfTheft),
@@ -358,7 +358,7 @@ export class WisdmService {
          ncbReferenceNumber: normalizeField(body.ncbReferenceNumber),
          additionalInformation: normalizeField(body.additionalInformation),
          recordRetentionDate: normalizeOptional(body.recordRetentionDate),
-         extensionReason: extras.extensionReason,
+         extensionReason: normalizeOptional(extras.extensionReason)?.toUpperCase(),
       };
 
       this.assertDateOrdering(params);

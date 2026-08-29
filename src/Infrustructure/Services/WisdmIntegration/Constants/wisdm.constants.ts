@@ -15,20 +15,17 @@ export const SOAP_ENVELOPE_NAMESPACE = 'http://schemas.xmlsoap.org/soap/envelope
 export const XSI_NAMESPACE = 'http://www.w3.org/2001/XMLSchema-instance';
 export const XSD_NAMESPACE = 'http://www.w3.org/2001/XMLSchema';
 
-/** Default `UsernameToken` version attribute. */
-export const WISDM_USERNAME_TOKEN_VERSION_DEFAULT = '1.0';
-
 /** Exact namespace published by the supplied `infos.asmx?WSDL`. */
 export const WISDM_INFOS_NAMESPACE = 'http://tempuri.org/';
 
 /** Exact target namespace published by the supplied `sltd.asmx?WSDL`. */
 export const WISDM_SLTD_NAMESPACE = 'urn:interpol:ws:wisdm:sltd';
 
-/** Application namespace used by the separately published `sltd_record` schema. */
-export const WISDM_SLTD_RECORD_NAMESPACE = 'urn:application:ws:sltd:record';
+/** Application namespace returned by the live `sltd_record` schema. */
+export const WISDM_SLTD_RECORD_NAMESPACE = 'urn:interpol:ws:sltd:document';
 
 /** Single application element carried by the WSDL's `XMLDatas/xs:any` slot. */
-export const WISDM_SLTD_RECORD_ROOT = 'record';
+export const WISDM_SLTD_RECORD_ROOT = 'document';
 
 /**
  * SOAP operation names, one per functional feature.
@@ -97,19 +94,16 @@ export const WISDM_INFOS_SOAP_ACTIONS: Record<WisdmInfosOperation, string> = Obj
  * public API stays stable if INTERPOL renames something in the schema.
  */
 export const WISDM_RECORD_ELEMENTS = {
-   din: 'DIN',
-   typeOfDocument: 'TypeOfDocument',
-   fraudType: 'TypeOfFraud',
-   stolenBatchIdentifier: 'StolenBatchIdentifier',
-   countryOfTheft: 'CountryOfTheft',
-   dateOfTheft: 'DateOfTheft',
-   documentIssuanceDate: 'DocumentIssuanceDate',
-   documentExpiryDate: 'DocumentExpiryDate',
-   nationalReferenceNumber: 'NationalReferenceNumber',
-   ncbReferenceNumber: 'NCBReferenceNumber',
-   additionalInformation: 'AdditionalInformation',
-   recordRetentionDate: 'RecordRetentionDate',
-   extensionReason: 'ReasonForExtension',
+   din: 'nr',
+   typeOfDocument: 'type_id',
+   fraudType: 'type_id',
+   stolenBatchIdentifier: 'batch_id',
+   countryOfTheft: 'country_id',
+   dateOfTheft: 'date',
+   documentIssuanceDate: 'date_of_issuance',
+   documentExpiryDate: 'expiry_date',
+   additionalInformation: 'value',
+   recordRetentionDate: 'db_review_date',
 } as const;
 
 /** Request timeouts, in milliseconds. */
@@ -123,6 +117,11 @@ export const WISDM_ENV = {
    USERNAME: 'INTERPOL_WISDM_USERNAME',
    PASSWORD: 'INTERPOL_WISDM_PASSWORD',
    WS_USERINFO_USERNAME: 'INTERPOL_WISDM_WS_USERINFO_USERNAME',
-   USERNAME_TOKEN_VERSION: 'INTERPOL_WISDM_WS_USERNAME_VERSION',
+   REFERENCE_IN_COUNTRY: 'INTERPOL_WISDM_REFERENCE_IN_COUNTRY',
    XML_PREFIX: 'INTERPOL_WISDM_XML_PREFIX',
+   BASE_URL_COMPAT: 'WISDM_BASE_URL',
+   USERNAME_COMPAT: 'WISDM_USERNAME',
+   PASSWORD_COMPAT: 'WISDM_PASSWORD',
+   WS_USERINFO_USERNAME_COMPAT: 'WISDM_USER_INFORMATION_USERNAME',
+   REFERENCE_IN_COUNTRY_COMPAT: 'WISDM_REFERENCE_IN_COUNTRY',
 } as const;

@@ -18,8 +18,8 @@ export const WISDM_NATIONAL_REFERENCE_MAX_LENGTH = 25;
 export const WISDM_NCB_REFERENCE_MAX_LENGTH = 25;
 export const WISDM_ADDITIONAL_INFORMATION_MAX_LENGTH = 40;
 
-/** ICPO country codes from `IPSGT_ICPO_Countries` (e.g. `ARM`, `FRA`). */
-export const WISDM_COUNTRY_CODE_PATTERN = /^[A-Z]{2,3}$/;
+/** Numeric IDs from the live `IPSGT_ICPO_Countries` reference (e.g. Armenia is `106`). */
+export const WISDM_COUNTRY_CODE_PATTERN = /^\d{3}$/;
 
 /** §3.1.1 — "Date format is YYYYMMDD." */
 export const WISDM_DATE_FORMAT = 'YYYYMMDD';

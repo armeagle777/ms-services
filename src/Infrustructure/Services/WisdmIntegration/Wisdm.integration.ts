@@ -5,7 +5,6 @@ import {
    InternalServerErrorException,
    Logger,
    NotFoundException,
-   NotImplementedException,
    ServiceUnavailableException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -32,7 +31,6 @@ import {
    WISDM_SLTD_RECORD_ROOT,
    WISDM_SLTD_SOAP_ACTIONS,
    WISDM_TIMEOUT_DEFAULT_MS,
-   WISDM_USERNAME_TOKEN_VERSION_DEFAULT,
    WISDM_XML_PREFIX_DEFAULT,
    WisdmInfosOperation,
    WisdmOperation,
@@ -229,11 +227,19 @@ export class WisdmIntegration {
       return { ...base, entries };
    }
 
-   /** Legacy reference-table call retained until its schema is retrieved and implemented. */
+   /** Pulls a live reference table through Infos `GetSchema`, as published by the WSDL. */
    async getReferenceTable(table: WisdmReferenceTable): Promise<WisdmReferenceTableResponse> {
-      throw new NotImplementedException(
-         `The supplied SLTD WSDL has no reference-table operation (${table}). Retrieve the published application schema/reference-table service contract before enabling this endpoint.`,
-      );
+      const operation = WISDM_INFOS_OPERATIONS.GET_SCHEMA;
+      const prefix = this.getXmlPrefix();
+      const body = this.buildInfosOperationBody(operation, buildElement(prefix, 'sKey', table));
+      const { status, xml } = await this.callInfos(operation, body);
+      const base = this.mapBaseResponse(status, xml, true);
+
+      return {
+         ...base,
+         table,
+         entries: base.ok ? this.parseReferenceEntries(xml) : [],
+      };
    }
 
    /** §3.2.5 / §7.9 — retrieve expiry alerts through the WSDL's Actions(MovementId) call. */
@@ -334,59 +340,43 @@ export class WisdmIntegration {
         </${prefix}:${operation}>`;
    }
 
-   private buildRecordElements(
-      params: WisdmRecordParams,
-      options: { includeFraudType: boolean; prefix?: string },
-   ): string {
-      const prefix = options.prefix ?? this.getXmlPrefix();
+   private buildRecordElements(params: WisdmRecordParams, includeFraudType: boolean): string {
+      const theftElements = buildElements([
+         params.additionalInformation === undefined
+            ? ''
+            : `<add_info>${buildElement(
+                 '',
+                 WISDM_RECORD_ELEMENTS.additionalInformation,
+                 params.additionalInformation,
+              )}</add_info>`,
+         buildElement('', WISDM_RECORD_ELEMENTS.countryOfTheft, params.countryOfTheft),
+         buildElement('', WISDM_RECORD_ELEMENTS.dateOfTheft, params.dateOfTheft),
+         includeFraudType
+            ? buildElement('', WISDM_RECORD_ELEMENTS.fraudType, params.fraudType)
+            : '',
+      ]);
 
       return buildElements([
-         buildElement(prefix, WISDM_RECORD_ELEMENTS.din, params.din),
-         buildElement(prefix, WISDM_RECORD_ELEMENTS.typeOfDocument, params.typeOfDocument),
-         options.includeFraudType
-            ? buildElement(prefix, WISDM_RECORD_ELEMENTS.fraudType, params.fraudType)
-            : '',
+         theftElements ? `<theft>${theftElements}</theft>` : '',
+         buildElement('', WISDM_RECORD_ELEMENTS.din, params.din),
+         buildElement('', WISDM_RECORD_ELEMENTS.typeOfDocument, params.typeOfDocument),
+         buildElement('', WISDM_RECORD_ELEMENTS.documentIssuanceDate, params.documentIssuanceDate),
+         buildElement('', WISDM_RECORD_ELEMENTS.documentExpiryDate, params.documentExpiryDate),
          buildElement(
-            prefix,
+            '',
             WISDM_RECORD_ELEMENTS.stolenBatchIdentifier,
             params.stolenBatchIdentifier,
          ),
-         buildElement(prefix, WISDM_RECORD_ELEMENTS.countryOfTheft, params.countryOfTheft),
-         buildElement(prefix, WISDM_RECORD_ELEMENTS.dateOfTheft, params.dateOfTheft),
-         buildElement(
-            prefix,
-            WISDM_RECORD_ELEMENTS.documentIssuanceDate,
-            params.documentIssuanceDate,
-         ),
-         buildElement(prefix, WISDM_RECORD_ELEMENTS.documentExpiryDate, params.documentExpiryDate),
-         buildElement(
-            prefix,
-            WISDM_RECORD_ELEMENTS.nationalReferenceNumber,
-            params.nationalReferenceNumber,
-         ),
-         buildElement(prefix, WISDM_RECORD_ELEMENTS.ncbReferenceNumber, params.ncbReferenceNumber),
-         buildElement(
-            prefix,
-            WISDM_RECORD_ELEMENTS.additionalInformation,
-            params.additionalInformation,
-         ),
-         buildElement(
-            prefix,
-            WISDM_RECORD_ELEMENTS.recordRetentionDate,
-            params.recordRetentionDate,
-         ),
-         buildElement(prefix, WISDM_RECORD_ELEMENTS.extensionReason, params.extensionReason),
       ]);
    }
 
    /** Builds the WSDL's single `XMLDatas/xs:any` application record. */
    private buildCreateOrUpdateBody(params: WisdmRecordParams, includeFraudType: boolean): string {
       const soapPrefix = this.getXmlPrefix();
-      const recordPrefix = 'record';
-      const recordXml = `<${recordPrefix}:${WISDM_SLTD_RECORD_ROOT} xmlns:${recordPrefix}="${WISDM_SLTD_RECORD_NAMESPACE}">${this.buildRecordElements(
+      const recordXml = `<${WISDM_SLTD_RECORD_ROOT} xmlns="${WISDM_SLTD_RECORD_NAMESPACE}">${this.buildRecordElements(
          params,
-         { includeFraudType, prefix: recordPrefix },
-      )}</${recordPrefix}:${WISDM_SLTD_RECORD_ROOT}>`;
+         includeFraudType,
+      )}</${WISDM_SLTD_RECORD_ROOT}>`;
 
       return this.buildOperationBody(
          WISDM_OPERATIONS.CREATE_OR_UPDATE_RECORD,
@@ -425,7 +415,14 @@ export class WisdmIntegration {
       const documentId =
          firstTagValue(payload, 'DocumentId') ??
          firstTagValue(payload, 'DocumentID') ??
-         this.firstXmlAttribute(payload, ['DocumentId', 'DocumentID', 'documentId', 'id']);
+         this.firstXmlAttribute(payload, [
+            'item_id',
+            'document_id',
+            'DocumentId',
+            'DocumentID',
+            'documentId',
+            'id',
+         ]);
 
       if (!documentId) {
          throw new BadGatewayException(
@@ -447,7 +444,7 @@ export class WisdmIntegration {
       const headers = {
          'Content-Type': 'text/xml; charset=utf-8',
          Accept: 'text/xml; charset=utf-8',
-         SOAPAction: `"${WISDM_SLTD_SOAP_ACTIONS[operation]}"`,
+         SOAPAction: WISDM_SLTD_SOAP_ACTIONS[operation],
       };
 
       try {
@@ -474,22 +471,19 @@ export class WisdmIntegration {
       operation: WisdmInfosOperation,
       bodyXml: string,
    ): Promise<WisdmSoapCallResult> {
-      const endpoint = this.getRequiredConfig(WISDM_ENV.INFOS_ENDPOINT);
+      const endpoint = this.getInfosEndpoint();
       const envelope = buildWisdmInfosEnvelope({
          prefix: this.getXmlPrefix(),
          namespace: WISDM_INFOS_NAMESPACE,
          bodyXml,
-         username: this.getRequiredConfig(WISDM_ENV.USERNAME),
-         password: this.getRequiredConfig(WISDM_ENV.PASSWORD),
-         usernameTokenVersion:
-            this.getConfig(WISDM_ENV.USERNAME_TOKEN_VERSION) ||
-            WISDM_USERNAME_TOKEN_VERSION_DEFAULT,
+         username: this.getWisdmUsername(),
+         password: this.getWisdmPassword(),
       });
 
       const headers = {
          'Content-Type': 'text/xml; charset=utf-8',
          Accept: 'text/xml; charset=utf-8',
-         SOAPAction: `"${WISDM_INFOS_SOAP_ACTIONS[operation]}"`,
+         SOAPAction: WISDM_INFOS_SOAP_ACTIONS[operation],
       };
 
       try {
@@ -515,21 +509,29 @@ export class WisdmIntegration {
    }
 
    private buildEnvelope(bodyXml: string): string {
-      const username = this.getRequiredConfig(WISDM_ENV.USERNAME);
-      const password = this.getRequiredConfig(WISDM_ENV.PASSWORD);
-      const userInfoUsername = this.getConfig(WISDM_ENV.WS_USERINFO_USERNAME) || username;
+      const username = this.getWisdmUsername();
+      const password = this.getWisdmPassword();
+      const userInfoUsername =
+         this.getConfigAny(WISDM_ENV.WS_USERINFO_USERNAME, WISDM_ENV.WS_USERINFO_USERNAME_COMPAT) ||
+         'WISDM-TEST';
+      const referenceInCountry =
+         this.getConfigAny(WISDM_ENV.REFERENCE_IN_COUNTRY, WISDM_ENV.REFERENCE_IN_COUNTRY_COMPAT) ||
+         this.generateRequestIdentifier();
+
+      if (userInfoUsername.length > 20) {
+         throw new InternalServerErrorException(
+            `${WISDM_ENV.WS_USERINFO_USERNAME} must be 20 characters or fewer`,
+         );
+      }
 
       return buildWisdmEnvelope({
          prefix: this.getXmlPrefix(),
          namespace: WISDM_SLTD_NAMESPACE,
          bodyXml,
          userInfoUsername,
-         referenceInCountry: this.generateRequestIdentifier(),
+         referenceInCountry,
          username,
          password,
-         usernameTokenVersion:
-            this.getConfig(WISDM_ENV.USERNAME_TOKEN_VERSION) ||
-            WISDM_USERNAME_TOKEN_VERSION_DEFAULT,
       });
    }
 
@@ -647,6 +649,7 @@ export class WisdmIntegration {
          ...base,
          din: params.din,
          typeOfDocument: params.typeOfDocument,
+         itemId: this.firstXmlAttribute(extractXmlDataRaw(xml) || xml, ['item_id', 'document_id']),
          recordRetentionDate:
             firstTagValue(xml, WISDM_RECORD_ELEMENTS.recordRetentionDate) ??
             firstTagValue(xml, 'RetentionDate'),
@@ -656,25 +659,32 @@ export class WisdmIntegration {
 
    private parseDocumentProperties(xml: string): WisdmDocumentProperties | null {
       const payload = extractXmlDataRaw(xml) || xml;
-      const read = (tag: string) => firstTagValue(payload, tag) ?? '';
+      const documentXml = firstTagInner(payload, WISDM_SLTD_RECORD_ROOT) ?? payload;
+      const theftXml = firstTagInner(documentXml, 'theft') ?? '';
+      const documentWithoutTheft = documentXml.replace(
+         /<(?:\w+:)?theft(?:\s[^>]*)?>[\s\S]*?<\/(?:\w+:)?theft>/i,
+         '',
+      );
+      const readDocument = (tag: string) => firstTagValue(documentWithoutTheft, tag) ?? '';
+      const readTheft = (tag: string) => firstTagValue(theftXml, tag) ?? '';
 
-      const din = read(WISDM_RECORD_ELEMENTS.din);
+      const din = readDocument(WISDM_RECORD_ELEMENTS.din);
       if (!din) return null;
 
       return {
          din,
-         countryOfRegistration: read('CountryOfRegistration'),
-         typeOfDocument: read(WISDM_RECORD_ELEMENTS.typeOfDocument),
-         fraudType: read(WISDM_RECORD_ELEMENTS.fraudType),
-         stolenBatchIdentifier: read(WISDM_RECORD_ELEMENTS.stolenBatchIdentifier),
-         countryOfTheft: read(WISDM_RECORD_ELEMENTS.countryOfTheft),
-         dateOfTheft: read(WISDM_RECORD_ELEMENTS.dateOfTheft),
-         documentIssuanceDate: read(WISDM_RECORD_ELEMENTS.documentIssuanceDate),
-         documentExpiryDate: read(WISDM_RECORD_ELEMENTS.documentExpiryDate),
-         nationalReferenceNumber: read(WISDM_RECORD_ELEMENTS.nationalReferenceNumber),
-         ncbReferenceNumber: read(WISDM_RECORD_ELEMENTS.ncbReferenceNumber),
-         additionalInformation: read(WISDM_RECORD_ELEMENTS.additionalInformation),
-         recordRetentionDate: read(WISDM_RECORD_ELEMENTS.recordRetentionDate),
+         countryOfRegistration: '',
+         typeOfDocument: readDocument(WISDM_RECORD_ELEMENTS.typeOfDocument),
+         fraudType: readTheft(WISDM_RECORD_ELEMENTS.fraudType),
+         stolenBatchIdentifier: readDocument(WISDM_RECORD_ELEMENTS.stolenBatchIdentifier),
+         countryOfTheft: readTheft(WISDM_RECORD_ELEMENTS.countryOfTheft),
+         dateOfTheft: readTheft(WISDM_RECORD_ELEMENTS.dateOfTheft),
+         documentIssuanceDate: readDocument(WISDM_RECORD_ELEMENTS.documentIssuanceDate),
+         documentExpiryDate: readDocument(WISDM_RECORD_ELEMENTS.documentExpiryDate),
+         nationalReferenceNumber: '',
+         ncbReferenceNumber: '',
+         additionalInformation: readTheft(WISDM_RECORD_ELEMENTS.additionalInformation),
+         recordRetentionDate: readDocument(WISDM_RECORD_ELEMENTS.recordRetentionDate),
       };
    }
 
@@ -771,6 +781,24 @@ export class WisdmIntegration {
    private parseReferenceEntries(xml: string): WisdmReferenceEntry[] {
       const payload = extractXmlDataRaw(xml) || xml;
       const entries: WisdmReferenceEntry[] = [];
+
+      const enumerationPattern =
+         /<(?:\w+:)?enumeration\b([^>]*)(?:\/>|>([\s\S]*?)<\/(?:\w+:)?enumeration>)/gi;
+      let enumerationMatch: RegExpExecArray | null;
+      while ((enumerationMatch = enumerationPattern.exec(payload)) !== null) {
+         const code = this.firstXmlAttribute(enumerationMatch[1], ['value']);
+         if (!code) continue;
+         const block = enumerationMatch[2] ?? '';
+         const label =
+            firstTagValue(block, 'documentation') ??
+            firstTagValue(block, 'Description') ??
+            firstTagValue(block, 'Name') ??
+            '';
+         entries.push({ code, label, attributes: {} });
+      }
+
+      if (entries.length > 0) return entries;
+
       const blocks = [
          ...allTagBlocks(payload, 'Row'),
          ...allTagBlocks(payload, 'Entry'),
@@ -809,28 +837,40 @@ export class WisdmIntegration {
       const payload = extractXmlDataRaw(xml) || xml;
       const records: WisdmExpiringRecord[] = [];
       const blocks = [
+         ...allTagBlocks(payload, 'action'),
          ...allTagBlocks(payload, 'Record'),
          ...allTagBlocks(payload, 'Document'),
          ...allTagBlocks(payload, 'Alert'),
       ];
 
       for (const block of blocks) {
-         const din = firstTagValue(block, WISDM_RECORD_ELEMENTS.din);
+         const din = firstTagValue(block, 'din') ?? firstTagValue(block, WISDM_RECORD_ELEMENTS.din);
          if (!din) continue;
          const deletedFlag = (
             firstTagValue(block, 'Deleted') ??
             firstTagValue(block, 'IsDeleted') ??
+            this.firstXmlAttribute(block, ['action_request']) ??
             ''
          ).toLowerCase();
 
          records.push({
             din,
-            typeOfDocument: firstTagValue(block, WISDM_RECORD_ELEMENTS.typeOfDocument) ?? '',
+            typeOfDocument:
+               firstTagValue(block, 'type_of_document') ??
+               firstTagValue(block, 'TypeOfDocument') ??
+               '',
             recordRetentionDate:
+               firstTagValue(block, 'retention_date') ??
                firstTagValue(block, WISDM_RECORD_ELEMENTS.recordRetentionDate) ??
+               firstTagValue(block, 'RecordRetentionDate') ??
                firstTagValue(block, 'RetentionDate') ??
                '',
-            alreadyDeleted: deletedFlag === 'true' || deletedFlag === '1' || deletedFlag === 'y',
+            alreadyDeleted:
+               deletedFlag === 'true' ||
+               deletedFlag === '1' ||
+               deletedFlag === 'y' ||
+               deletedFlag === 'delete' ||
+               deletedFlag === 'deleted',
          });
       }
 
@@ -842,7 +882,9 @@ export class WisdmIntegration {
    /* ---------------------------------------------------------------------- */
 
    private getSltdEndpoint(): string {
-      const endpoint = this.getRequiredConfig(WISDM_ENV.SLTD_ENDPOINT);
+      const endpoint =
+         this.getConfig(WISDM_ENV.SLTD_ENDPOINT) ||
+         this.endpointFromBaseUrl('/v2/wisdm/sltd/1.0/sltd.asmx');
 
       if (/\/infos\.asmx(?:[/?#]|$)/i.test(endpoint)) {
          throw new InternalServerErrorException(
@@ -851,6 +893,26 @@ export class WisdmIntegration {
       }
 
       return endpoint;
+   }
+
+   private getInfosEndpoint(): string {
+      return (
+         this.getConfig(WISDM_ENV.INFOS_ENDPOINT) ||
+         this.endpointFromBaseUrl('/v2/wisdm/sltd/1.0/infos.asmx')
+      );
+   }
+
+   private endpointFromBaseUrl(path: string): string {
+      const baseUrl = this.getRequiredConfig(WISDM_ENV.BASE_URL_COMPAT).replace(/\/+$/, '');
+      return `${baseUrl}${path}`;
+   }
+
+   private getWisdmUsername(): string {
+      return this.getRequiredConfigAny(WISDM_ENV.USERNAME, WISDM_ENV.USERNAME_COMPAT);
+   }
+
+   private getWisdmPassword(): string {
+      return this.getRequiredConfigAny(WISDM_ENV.PASSWORD, WISDM_ENV.PASSWORD_COMPAT);
    }
 
    private getXmlPrefix(): string {
@@ -865,10 +927,28 @@ export class WisdmIntegration {
       return (this.configService.get<string>(key) || '').trim();
    }
 
+   private getConfigAny(...keys: string[]): string {
+      for (const key of keys) {
+         const value = this.getConfig(key);
+         if (value) return value;
+      }
+      return '';
+   }
+
    private getRequiredConfig(key: string): string {
       const value = this.getConfig(key);
       if (!value) {
          throw new InternalServerErrorException(`${key} is missing in environment variables`);
+      }
+      return value;
+   }
+
+   private getRequiredConfigAny(primaryKey: string, ...fallbackKeys: string[]): string {
+      const value = this.getConfigAny(primaryKey, ...fallbackKeys);
+      if (!value) {
+         throw new InternalServerErrorException(
+            `${primaryKey} is missing in environment variables`,
+         );
       }
       return value;
    }

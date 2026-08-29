@@ -201,7 +201,7 @@ class IsIcpoCountryCodeConstraint implements ValidatorConstraintInterface {
    }
 
    defaultMessage(args: ValidationArguments): string {
-      return `${args.property} must be a 2 or 3 letter ICPO country code from IPSGT_ICPO_Countries (e.g. ARM).`;
+      return `${args.property} must be a 3-digit country ID from IPSGT_ICPO_Countries (e.g. 106 for Armenia).`;
    }
 }
 

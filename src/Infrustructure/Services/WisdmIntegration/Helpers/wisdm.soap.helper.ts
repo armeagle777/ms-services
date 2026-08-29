@@ -47,7 +47,8 @@ export const buildElement = (
    value: string | number | undefined | null,
 ): string => {
    if (value === undefined || value === null) return '';
-   return `<${prefix}:${name}>${xmlEscape(value)}</${prefix}:${name}>`;
+   const qualifiedName = prefix ? `${prefix}:${name}` : name;
+   return `<${qualifiedName}>${xmlEscape(value)}</${qualifiedName}>`;
 };
 
 /** Joins non-empty elements produced by {@link buildElement}. */
@@ -65,12 +66,11 @@ type EnvelopeParams = {
    referenceInCountry: string;
    username: string;
    password: string;
-   usernameTokenVersion: string;
 };
 
 type InfosEnvelopeParams = Pick<
    EnvelopeParams,
-   'prefix' | 'namespace' | 'bodyXml' | 'username' | 'password' | 'usernameTokenVersion'
+   'prefix' | 'namespace' | 'bodyXml' | 'username' | 'password'
 >;
 
 /**
@@ -85,7 +85,6 @@ export const buildWisdmEnvelope = ({
    referenceInCountry,
    username,
    password,
-   usernameTokenVersion,
 }: EnvelopeParams): string => `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="${SOAP_ENVELOPE_NAMESPACE}"
                xmlns:xsi="${XSI_NAMESPACE}"
@@ -97,7 +96,7 @@ export const buildWisdmEnvelope = ({
             <${prefix}:ReferenceInCountry>${xmlEscape(referenceInCountry)}</${prefix}:ReferenceInCountry>
         </${prefix}:UserInformation>
 
-        <${prefix}:UsernameToken Version="${xmlEscape(usernameTokenVersion)}">
+        <${prefix}:UsernameToken>
             <${prefix}:Username>${xmlEscape(username)}</${prefix}:Username>
             <${prefix}:Password>${xmlEscape(password)}</${prefix}:Password>
         </${prefix}:UsernameToken>
@@ -120,14 +119,13 @@ export const buildWisdmInfosEnvelope = ({
    bodyXml,
    username,
    password,
-   usernameTokenVersion,
 }: InfosEnvelopeParams): string => `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="${SOAP_ENVELOPE_NAMESPACE}"
                xmlns:xsi="${XSI_NAMESPACE}"
                xmlns:xsd="${XSD_NAMESPACE}"
                xmlns:${prefix}="${namespace}">
     <soap:Header>
-        <${prefix}:UsernameToken Version="${xmlEscape(usernameTokenVersion)}">
+        <${prefix}:UsernameToken>
             <${prefix}:Username>${xmlEscape(username)}</${prefix}:Username>
             <${prefix}:Password>${xmlEscape(password)}</${prefix}:Password>
         </${prefix}:UsernameToken>
