@@ -14,7 +14,7 @@ export class CivilActsRegistrationService {
       firstName: string,
       lastName: string,
    ): Promise<QkagDocumentResponse[]> {
-      if (!firstName || !lastName) {
+      if (!ssn || !firstName || !lastName) {
          throw new BadRequestException('Missing fields');
       }
 

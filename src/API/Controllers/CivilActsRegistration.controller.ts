@@ -1,14 +1,13 @@
 import {
    Controller,
-   Param,
    Post,
    Body,
    UseGuards,
    // UseInterceptors
 } from '@nestjs/common';
+import { ApiConsumes } from '@nestjs/swagger';
 
 import { CivilActsRegistrationService } from 'src/Core/CivilActsRegistration/CivilActsRegistration.service';
-import { SsnParamDto } from 'src/API/DTO/Tax/params.dto';
 import { QkagInfoRequestDto } from 'src/API/DTO/Persons/qkag-info.dto';
 import { BasicAuthGuard } from 'src/API/Guards/BasicAuth.guard';
 // import { ProtectedRequestLoggingInterceptor } from 'src/API/Interceptors/ProtectedRequestLogging.interceptor';
@@ -19,8 +18,9 @@ import { BasicAuthGuard } from 'src/API/Guards/BasicAuth.guard';
 export class CivilActsRegistrationController {
    constructor(private readonly civilActsService: CivilActsRegistrationService) {}
 
-   @Post('documents/ssn/:ssn')
-   getCivilActsInfoBySsn(@Param() params: SsnParamDto, @Body() body: QkagInfoRequestDto) {
-      return this.civilActsService.getCivilActsInfoBySsn(params.ssn, body.firstName, body.lastName);
+   @Post('documents/ssn')
+   @ApiConsumes('application/x-www-form-urlencoded')
+   getCivilActsInfoBySsn(@Body() body: QkagInfoRequestDto) {
+      return this.civilActsService.getCivilActsInfoBySsn(body.ssn, body.first_name, body.last_name);
    }
 }

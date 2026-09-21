@@ -1,4 +1,12 @@
+import { ApiProperty } from '@nestjs/swagger';
+
 export class QkagInfoRequestDto {
-   firstName!: string;
-   lastName!: string;
+   @ApiProperty()
+   ssn!: string;
+
+   @ApiProperty()
+   first_name!: string;
+
+   @ApiProperty()
+   last_name!: string;
 }
