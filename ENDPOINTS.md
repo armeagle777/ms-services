@@ -519,16 +519,40 @@ If the upstream response status is not `ok`, an empty object (`{}`) is returned.
 
 ## Civil Acts Registration
 
-### Get Civil Acts Info By SSN
+### Get Civil Acts Info By SSN (SSN in URL)
+
+```
+POST /civil-acts-registration/documents/ssn/:ssn
+```
+
+**Path Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `ssn` | string | Yes | Social Security Number |
+
+**Body** (`application/json`):
+
+```json
+{
+   "firstName": "Jane",
+   "lastName": "Doe"
+}
+```
+
+### Get Civil Acts Info By SSN (SSN in body)
 
 ```
 POST /civil-acts-registration/documents/ssn
 ```
 
-**Body** (`application/x-www-form-urlencoded`):
+**Body** (`application/json`):
 
-```text
-ssn=1234567890&first_name=Jane&last_name=Doe
+```json
+{
+   "ssn": "1234567890",
+   "first_name": "Jane",
+   "last_name": "Doe"
+}
 ```
 
 ---
