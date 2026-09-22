@@ -34,4 +34,24 @@ export class CivilActsRegistrationService {
 
       return documents as QkagDocumentResponse[];
    }
+
+   async getCivilActsInfoBySsnRaw(
+      ssn: string,
+      firstName: string,
+      lastName: string,
+   ): Promise<any> {
+      if (!ssn || !firstName || !lastName) {
+         throw new BadRequestException('Missing fields');
+      }
+
+      const request: CivilActsRegistrationRequest = {
+         ssn,
+         firstName,
+         lastName,
+      };
+
+      const response = await this.civilActsIntegration.getCivilActsInfoBySsn(request);
+
+      return response;
+   }
 }
