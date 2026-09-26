@@ -29,7 +29,10 @@ export class CivilActsRegistrationIntegration {
             first_name: request.firstName,
             last_name: request.lastName,
          },
-         { encode: true },
+         {
+            encode: true,
+            format: 'RFC1738',
+         },
       );
 
       const config: AxiosRequestConfig = {
