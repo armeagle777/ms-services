@@ -16,6 +16,10 @@ export class CivilActsRegistrationController {
 
    @Post('documents/ssn')
    getCivilActsInfoBySsnFromBody(@Body() body: QkagInfoBodyRequestDto) {
-      return this.civilActsService.getCivilActsInfoBySsnRaw(body.ssn, body.first_name, body.last_name);
+      return this.civilActsService.getCivilActsInfoBySsnRaw(
+         body.ssn,
+         body.first_name,
+         body.last_name,
+      );
    }
 }
