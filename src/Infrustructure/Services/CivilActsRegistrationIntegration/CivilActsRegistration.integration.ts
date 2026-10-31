@@ -2,12 +2,12 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosRequestConfig } from 'axios';
 import * as qs from 'qs';
+import {
+   CivilActsRegistrationRequest,
+   CivilActsRegistrationResponse,
+} from './CivilActsRegistration.types';
 
-export interface CivilActsRegistrationRequest {
-   ssn: string;
-   firstName: string;
-   lastName: string;
-}
+export { CivilActsRegistrationRequest, CivilActsRegistrationResponse };
 
 @Injectable()
 export class CivilActsRegistrationIntegration {
@@ -22,7 +22,9 @@ export class CivilActsRegistrationIntegration {
       }
    }
 
-   async getCivilActsInfoBySsn(request: CivilActsRegistrationRequest): Promise<any> {
+   async getCivilActsInfoBySsn(
+      request: CivilActsRegistrationRequest,
+   ): Promise<CivilActsRegistrationResponse> {
       const queryData = qs.stringify(
          {
             ssn: request.ssn,
@@ -43,6 +45,6 @@ export class CivilActsRegistrationIntegration {
       };
 
       const response = await axios(config);
-      return response.data;
+      return response.data as CivilActsRegistrationResponse;
    }
 }

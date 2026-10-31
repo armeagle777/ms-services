@@ -2,7 +2,9 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import {
    CivilActsRegistrationIntegration,
    CivilActsRegistrationRequest,
+   CivilActsRegistrationResponse,
 } from 'src/Infrustructure/Services/CivilActsRegistrationIntegration/CivilActsRegistration.integration';
+import { CivilActDocument } from 'src/Infrustructure/Services/CivilActsRegistrationIntegration/CivilActsRegistration.types';
 import { QkagDocumentResponse } from 'src/Core/Persons/interfaces/persons.interfaces';
 
 @Injectable()
@@ -35,7 +37,11 @@ export class CivilActsRegistrationService {
       return documents as QkagDocumentResponse[];
    }
 
-   async getCivilActsInfoBySsnRaw(ssn: string, firstName: string, lastName: string): Promise<any> {
+   async getCivilActsInfoBySsnRaw(
+      ssn: string,
+      firstName: string,
+      lastName: string,
+   ): Promise<CivilActsRegistrationResponse> {
       if (!ssn || !firstName || !lastName) {
          throw new BadRequestException('Missing fields');
       }
@@ -48,6 +54,44 @@ export class CivilActsRegistrationService {
 
       const response = await this.civilActsIntegration.getCivilActsInfoBySsn(request);
 
-      return response;
+      return {
+         ...response,
+         result: this.filterChildDocuments(response.result, ssn),
+      };
+   }
+
+   private filterChildDocuments(
+      result: Record<string, CivilActDocument>,
+      searchedSsn: string,
+   ): Record<string, CivilActDocument> {
+      const entries = Object.entries(result || {});
+      const birthChildPsns = new Set(
+         entries
+            .filter(([, document]) => document.type === 'birth')
+            .map(([, document]) => this.normalizePsn(document.child?.psn))
+            .filter((psn): psn is string => Boolean(psn)),
+      );
+      const normalizedSearchedSsn = this.normalizePsn(searchedSsn);
+
+      return Object.fromEntries(
+         entries.filter(([, document]) => {
+            const childPsn = this.normalizePsn(document.child?.psn);
+
+            if (document.type === 'birth') {
+               return childPsn !== normalizedSearchedSsn;
+            }
+
+            if (document.type === 'paternity') {
+               return !childPsn || !birthChildPsns.has(childPsn);
+            }
+
+            return false;
+         }),
+      );
+   }
+
+   private normalizePsn(psn: string | undefined): string | undefined {
+      const normalized = psn?.trim();
+      return normalized || undefined;
    }
 }
