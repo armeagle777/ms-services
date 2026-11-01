@@ -555,6 +555,9 @@ POST /civil-acts-registration/documents/ssn
 }
 ```
 
+Birth certificates are omitted when the child has reached age 16, including requests made on
+the child's 16th birthday.
+
 ---
 
 ## Tax Service
