@@ -65,30 +65,19 @@ export class CivilActsRegistrationService {
       searchedSsn: string,
    ): Record<string, CivilActDocument> {
       const entries = Object.entries(result || {});
-      const birthChildPsns = new Set(
-         entries
-            .filter(([, document]) => document.type === 'birth')
-            .map(([, document]) => this.normalizePsn(document.child?.psn))
-            .filter((psn): psn is string => Boolean(psn)),
-      );
       const normalizedSearchedSsn = this.normalizePsn(searchedSsn);
 
       return Object.fromEntries(
          entries.filter(([, document]) => {
+            if (document.type !== 'birth') {
+               return false;
+            }
+
             const childPsn = this.normalizePsn(document.child?.psn);
-
-            if (document.type === 'birth') {
-               return (
-                  childPsn !== normalizedSearchedSsn &&
-                  !this.isAtLeastAge(document.child?.base_info?.birth_date, 16)
-               );
-            }
-
-            if (document.type === 'paternity') {
-               return !childPsn || !birthChildPsns.has(childPsn);
-            }
-
-            return false;
+            return (
+               childPsn !== normalizedSearchedSsn &&
+               !this.isAtLeastAge(document.child?.base_info?.birth_date, 16)
+            );
          }),
       );
    }
